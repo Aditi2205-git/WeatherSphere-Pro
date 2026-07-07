@@ -6,37 +6,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WeatherSphere Pro | Smart Weather Dashboard</title>
+<title>WeatherSphere Pro | Real-Time Weather Intelligence</title>
 
 <meta name="description"
-content="WeatherSphere Pro - Real time weather dashboard with dynamic themes and forecasts">
+content="WeatherSphere Pro - A responsive real-time weather dashboard with dynamic themes, forecasts and analytics">
 
 
 <!-- Google Font -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet">
 
 
-<!-- CSS -->
+
+<!-- Chart.js -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<!-- Styles -->
+
 <link rel="stylesheet" href="style.css">
 
 
 </head>
 
 
-<body>
 
-
-<!-- Dynamic Weather Background Layers -->
-
-<div class="weather-background"></div>
+<body class="day">
 
 
 
-<!-- HEADER -->
+<!-- =========================
+ WEATHER BACKGROUND ENGINE
+========================= -->
+
+
+<div class="weather-background">
+
+
+<div class="stars"></div>
+
+
+<div class="cloud cloud-one"></div>
+
+<div class="cloud cloud-two"></div>
+
+
+<div class="rain-container"></div>
+
+
+<div class="snow-container"></div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+ HEADER
+========================= -->
+
 
 <header class="header">
 
@@ -49,9 +88,16 @@ rel="stylesheet">
 </div>
 
 
-<div class="search-container">
 
-<input 
+
+
+<div class="controls">
+
+
+<div class="search-box">
+
+
+<input
 type="text"
 id="cityInput"
 placeholder="Search city..."
@@ -66,6 +112,26 @@ autocomplete="off"
 </button>
 
 
+
+<button id="locationBtn">
+
+📍
+
+</button>
+
+
+
+<button id="themeBtn">
+
+🌙
+
+</button>
+
+
+
+</div>
+
+
 </div>
 
 
@@ -75,9 +141,19 @@ autocomplete="off"
 
 
 
-<!-- MAIN CONTENT -->
+
+
+
+
+<!-- =========================
+ MAIN
+========================= -->
+
 
 <main class="container">
+
+
+
 
 
 
@@ -85,6 +161,7 @@ autocomplete="off"
 
 
 <section class="weather-main glass-card">
+
 
 
 <div class="location">
@@ -95,6 +172,7 @@ autocomplete="off"
 Delhi, India
 
 </h1>
+
 
 
 <p id="localTime">
@@ -109,12 +187,20 @@ Loading local time...
 
 
 
+
+
+
 <div class="weather-icon"
 id="weatherIcon">
 
 ☀️
 
 </div>
+
+
+
+
+
 
 
 
@@ -125,9 +211,7 @@ id="weatherIcon">
 
 <span id="temperature">
 28
-</span>
-
-°
+</span>°
 
 </h2>
 
@@ -144,7 +228,11 @@ Sunny
 
 
 
-<div class="updated">
+
+
+
+
+<div class="update-box">
 
 
 <p>
@@ -165,7 +253,11 @@ Last Updated
 
 
 
+
+
 </section>
+
+
 
 
 
@@ -182,18 +274,16 @@ Last Updated
 
 <div class="detail-card glass-card">
 
-
 <h3>
 Feels Like
 </h3>
-
 
 <p id="feelsLike">
 31°C
 </p>
 
-
 </div>
+
 
 
 
@@ -207,11 +297,15 @@ Humidity
 
 
 <p id="humidity">
+
 45%
+
 </p>
 
 
 </div>
+
+
 
 
 
@@ -226,11 +320,14 @@ Wind
 
 
 <p id="wind">
+
 12 km/h
+
 </p>
 
 
 </div>
+
 
 
 
@@ -245,11 +342,14 @@ Pressure
 
 
 <p id="pressure">
+
 1015 hPa
+
 </p>
 
 
 </div>
+
 
 
 
@@ -271,7 +371,7 @@ Pressure
 
 
 <h2>
-Hourly Forecast
+Hourly Temperature
 </h2>
 
 
@@ -294,10 +394,10 @@ Hourly Forecast
 
 
 
-<!-- EXTRA INFORMATION -->
+<!-- WEATHER INFORMATION -->
 
 
-<section class="extra-grid">
+<section class="info-grid">
 
 
 
@@ -307,7 +407,9 @@ Hourly Forecast
 
 
 <h3>
+
 🌅 Sunrise
+
 </h3>
 
 
@@ -325,11 +427,14 @@ Hourly Forecast
 
 
 
+
 <div class="info-card glass-card">
 
 
 <h3>
+
 🌇 Sunset
+
 </h3>
 
 
@@ -348,23 +453,25 @@ Hourly Forecast
 
 
 
+
 <div class="info-card glass-card">
 
 
 <h3>
+
 🌿 Air Quality
+
 </h3>
 
 
 <p id="aqi">
 
-Good 🟢
+Loading...
 
 </p>
 
 
 </div>
-
 
 
 
@@ -380,7 +487,7 @@ Good 🟢
 
 
 
-<!-- 7 DAY FORECAST -->
+<!-- FORECAST -->
 
 
 <section class="section">
@@ -394,9 +501,6 @@ Good 🟢
 
 <div class="forecast-container"
 id="forecastContainer">
-
-
-<!-- Javascript will add cards here -->
 
 
 
@@ -421,19 +525,38 @@ id="forecastContainer">
 
 
 
-<!-- LOADING OVERLAY -->
+
+
+<!-- LOADER -->
 
 
 <div class="loader hidden"
 id="loader">
 
 
-<div class="loader-box">
+<div class="loader-card">
+
+
+<div class="loader-icon">
 
 🌎
 
+</div>
+
+
+
+<h3>
+
+Fetching Weather
+
+</h3>
+
+
+
 <p>
-Fetching weather...
+
+Please wait...
+
 </p>
 
 
@@ -447,16 +570,38 @@ Fetching weather...
 
 
 
-<!-- Chart Library -->
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-<!-- JavaScript -->
+
+<!-- ERROR MESSAGE -->
+
+
+<div class="error hidden"
+id="errorBox">
+
+
+<p id="errorText">
+
+Unable to fetch weather data
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- JAVASCRIPT -->
 
 <script src="script.js"></script>
 
 
 </body>
+
 
 </html>
