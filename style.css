@@ -1,1675 +1,2618 @@
 /*==========================================================
-    WeatherSphere Pro 3.0
-    Premium Weather Dashboard
-    Google Weather + Apple Weather Inspired
-    Portfolio Edition
+ WeatherSphere Pro 3.0
+ Final Premium CSS v4.0
+
+ Google Weather + Apple Weather Inspired
+ Fully Responsive
 ==========================================================*/
 
-/*==============================
-    RESET
-==============================*/
+
+/*==========================================================
+ RESET
+==========================================================*/
+
 
 *,
 *::before,
 *::after{
+
     margin:0;
     padding:0;
     box-sizing:border-box;
+
 }
+
+
 
 html{
+
     scroll-behavior:smooth;
-}
-
-:root{
-
-    /* Colors */
-
-    --primary:#4F9DFF;
-    --secondary:#7AB8FF;
-    --accent:#89C4FF;
-
-    --white:#ffffff;
-    --text:#f8fbff;
-    --dark:#08121d;
-
-    --glass:rgba(255,255,255,.16);
-    --glass-border:rgba(255,255,255,.25);
-
-    --shadow:
-        0 12px 40px rgba(0,0,0,.18);
-
-    --radius:22px;
-
-    --transition:.35s ease;
-
-    --sidebar:280px;
 
 }
 
-body.dark{
 
-    --text:#ffffff;
-
-    --glass:rgba(20,27,40,.70);
-
-    --glass-border:rgba(255,255,255,.08);
-
-    background:#06111f;
-
-}
-
-/*==============================
-    BODY
-==============================*/
 
 body{
 
-    font-family:"Poppins",sans-serif;
+    min-height:100vh;
+
+    font-family:
+    "Poppins",
+    sans-serif;
 
     color:var(--text);
-
-    min-height:100vh;
 
     overflow-x:hidden;
 
-    background:linear-gradient(
-        135deg,
-        #5fa8ff 0%,
-        #80c7ff 35%,
-        #b5e3ff 100%
-    );
-
-    transition:.4s;
+    transition:
+    background .5s ease,
+    color .5s ease;
 
 }
 
-/*==============================
-    Animated Background
-==============================*/
+
+
+
+
+/*==========================================================
+ ROOT VARIABLES
+==========================================================*/
+
+
+:root{
+
+
+    --primary:#4f9dff;
+
+    --secondary:#89c4ff;
+
+    --accent:#ffe16c;
+
+
+    --text:#ffffff;
+
+
+    --bg1:#5fa8ff;
+
+    --bg2:#8ed8ff;
+
+
+    --glass:
+    rgba(255,255,255,.18);
+
+
+    --glass-dark:
+    rgba(15,25,45,.65);
+
+
+    --border:
+    rgba(255,255,255,.25);
+
+
+
+    --shadow:
+
+    0 20px 50px
+    rgba(0,0,0,.18);
+
+
+
+    --radius:24px;
+
+
+    --transition:
+    .35s ease;
+
+
+}
+
+
+
+/*==========================================================
+ DARK MODE VARIABLES
+==========================================================*/
+
+
+body.dark{
+
+
+    --text:#ffffff;
+
+
+    --glass:
+
+    rgba(20,30,50,.72);
+
+
+
+    --border:
+
+    rgba(255,255,255,.10);
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ GLOBAL BACKGROUND
+==========================================================*/
+
+
+body{
+
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#5fa8ff,
+
+#8bd8ff,
+
+#d9f2ff
+
+);
+
+
+}
+
+
+
+
+
+/*==========================================================
+ WEATHER BACKGROUND WRAPPER
+==========================================================*/
+
 
 .background-wrapper{
 
-    position:fixed;
 
-    inset:0;
+position:fixed;
 
-    overflow:hidden;
+inset:0;
 
-    z-index:-2;
+z-index:-5;
+
+overflow:hidden;
+
 
 }
+
+
+
 
 .gradient-layer{
 
-    position:absolute;
 
-    width:180%;
+position:absolute;
 
-    height:180%;
+width:180%;
 
-    left:-40%;
+height:180%;
 
-    top:-30%;
 
-    background:
+left:-40%;
 
-    radial-gradient(circle,#ffffff55 0%,transparent 60%),
+top:-40%;
 
-    radial-gradient(circle,#8fd3ff55 0%,transparent 65%),
 
-    radial-gradient(circle,#5aa8ff66 0%,transparent 70%);
 
-    animation:gradientMove 18s linear infinite;
+background:
+
+
+radial-gradient(
+
+circle,
+
+rgba(255,255,255,.45),
+
+transparent 55%
+
+),
+
+
+radial-gradient(
+
+circle,
+
+rgba(255,220,120,.25),
+
+transparent 60%
+
+);
+
+
+
+animation:
+
+gradientRotate
+
+25s linear infinite;
+
 
 }
 
-@keyframes gradientMove{
 
-0%{
+
+
+
+@keyframes gradientRotate{
+
+
+from{
+
 transform:rotate(0deg);
+
 }
 
-100%{
+
+to{
+
 transform:rotate(360deg);
-}
 
 }
 
-/*==============================
-    Floating Clouds
-==============================*/
+
+}
+
+
+
+
+
+/*==========================================================
+ WEATHER PARTICLE CONTAINER
+==========================================================*/
+
+
+.weather-particles{
+
+
+position:absolute;
+
+inset:0;
+
+pointer-events:none;
+
+
+}
+
+
+
+
+
+/*==========================================================
+ FLOATING CLOUDS
+==========================================================*/
+
 
 .floating-cloud{
 
-    position:absolute;
 
-    width:280px;
+position:absolute;
 
-    height:90px;
 
-    background:rgba(255,255,255,.22);
+width:280px;
 
-    filter:blur(15px);
+height:90px;
 
-    border-radius:100px;
 
-    animation:floatCloud 45s linear infinite;
+
+background:
+
+rgba(255,255,255,.25);
+
+
+
+border-radius:
+
+100px;
+
+
+
+filter:
+
+blur(18px);
+
+
+
+animation:
+
+cloudMove
+
+60s linear infinite;
+
 
 }
+
+
+
+
 
 .cloud1{
 
-top:10%;
+
+top:15%;
+
 left:-300px;
 
+
 }
+
+
 
 .cloud2{
 
-top:38%;
+
+top:45%;
+
 left:-350px;
-animation-duration:60s;
+
+
+animation-duration:
+
+75s;
+
 
 }
+
+
 
 .cloud3{
 
-top:72%;
-left:-280px;
-animation-duration:70s;
+
+top:70%;
+
+left:-250px;
+
+
+animation-duration:
+
+90s;
+
 
 }
 
-@keyframes floatCloud{
 
-0%{
+
+
+
+@keyframes cloudMove{
+
+
+from{
+
 transform:translateX(0);
+
 }
 
-100%{
+
+to{
+
 transform:translateX(180vw);
-}
 
 }
 
-/*==============================
-    APP LAYOUT
-==============================*/
-
-.app{
-
-    display:grid;
-
-    grid-template-columns:280px 1fr;
-
-    min-height:100vh;
 
 }
 
-/*==============================
-    GLASS
-==============================*/
+
+
+
+
+
+/*==========================================================
+ GLASS SYSTEM
+==========================================================*/
+
 
 .glass{
 
-    background:var(--glass);
 
-    backdrop-filter:blur(24px);
+background:
 
-    -webkit-backdrop-filter:blur(24px);
+var(--glass);
 
-    border:1px solid var(--glass-border);
 
-    box-shadow:var(--shadow);
 
-    border-radius:var(--radius);
+border:
 
-}
-
-/*==============================
-    SIDEBAR
-==============================*/
-
-.sidebar{
-
-    margin:20px;
-
-    padding:30px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:35px;
-
-}
-
-.logo{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-}
-
-.logo i{
-
-    font-size:2rem;
-
-    color:#ffe27a;
-
-}
-
-.logo h1{
-
-    font-size:1.45rem;
-
-    font-weight:700;
-
-}
-
-.sidebar nav{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:14px;
-
-}
-
-.sidebar nav a{
-
-    text-decoration:none;
-
-    color:var(--text);
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:15px 18px;
-
-    border-radius:14px;
-
-    transition:var(--transition);
-
-    font-weight:500;
-
-}
-
-.sidebar nav a:hover{
-
-    background:rgba(255,255,255,.15);
-
-    transform:translateX(6px);
-
-}
-
-.sidebar nav i{
-
-    width:25px;
-
-    text-align:center;
-
-}
-
-.favorites h3{
-
-    margin-bottom:15px;
-
-}
-
-#favoriteCities{
-
-    list-style:none;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-}
-
-/*==============================
-    MAIN
-==============================*/
-
-.main-content{
-
-    padding:22px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:24px;
-
-}
-
-/*==============================
-    TOP BAR
-==============================*/
-
-.topbar{
-
-    padding:18px 22px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:20px;
-
-}
-
-.search-box{
-
-    display:flex;
-
-    align-items:center;
-
-    flex:1;
-
-    gap:14px;
-
-    background:rgba(255,255,255,.15);
-
-    padding:14px 18px;
-
-    border-radius:18px;
-
-}
-
-.search-box input{
-
-    flex:1;
-
-    border:none;
-
-    background:none;
-
-    color:var(--text);
-
-    font-size:1rem;
-
-    outline:none;
-
-}
-
-.search-box input::placeholder{
-
-    color:#eef6ff;
-
-}
-
-.search-box button{
-
-    border:none;
-
-    cursor:pointer;
-
-    background:var(--primary);
-
-    color:white;
-
-    padding:11px 22px;
-
-    border-radius:14px;
-
-    font-weight:600;
-
-    transition:.3s;
-
-}
-
-.search-box button:hover{
-
-    transform:translateY(-2px);
-
-}
-
-.actions{
-
-    display:flex;
-
-    gap:14px;
-
-}
-
-.actions button{
-
-    width:50px;
-
-    height:50px;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.15);
-
-    color:white;
-
-    cursor:pointer;
-
-    font-size:1.1rem;
-
-    transition:.3s;
-
-}
-
-.actions button:hover{
-
-    transform:scale(1.08);
-
-}
-
-/*==============================
-    HERO
-==============================*/
-
-.hero{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:38px;
-
-    gap:40px;
-
-}
-
-.hero-left{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-}
-
-.hero-left h2{
-
-    font-size:2.3rem;
-
-}
-
-.temperature{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:25px;
-
-}
-
-.temperature span{
-
-    font-size:5rem;
-
-    font-weight:700;
-
-}
-
-.temperature img{
-
-    width:110px;
-
-    height:110px;
-
-}
-
-.hero-right{
-
-    display:grid;
-
-    grid-template-columns:repeat(3,1fr);
-
-    gap:18px;
-
-}
-
-.info{
-
-    background:rgba(255,255,255,.10);
-
-    padding:22px;
-
-    border-radius:18px;
-
-    text-align:center;
-
-}
-
-.info span{
-
-    font-size:.9rem;
-
-    opacity:.85;
-
-}
-
-.info h3{
-
-    margin-top:10px;
-
-    font-size:1.2rem;
-
-}
-
-/*==============================
-    HIGHLIGHTS
-==============================*/
-
-.grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(4,1fr);
-
-    gap:20px;
-
-}
-
-.card{
-
-    padding:25px;
-
-    transition:.35s;
-
-}
-
-.card:hover{
-
-    transform:translateY(-6px);
-
-}
-
-.card h4{
-
-    font-weight:500;
-
-    opacity:.9;
-
-}
-
-.card h2{
-
-    margin-top:16px;
-
-    font-size:2rem;
-
-}
-
-/*==============================
-    SECTION TITLES
-==============================*/
-
-.section{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:20px;
-
-}
-
-.section-title{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
-.section-title h2{
-
-    font-size:1.8rem;
-
-    font-weight:700;
-
-}
-
-.section-title span{
-
-    opacity:.8;
-
-}
-/*==================================================
-    AQI SECTION
-==================================================*/
-
-.aqi-grid{
-
-    display:grid;
-
-    grid-template-columns:2fr repeat(5,1fr);
-
-    gap:20px;
-
-    align-items:stretch;
-
-}
-
-.aqi-main{
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-    min-height:260px;
-
-}
-
-.aqi-circle{
-
-    width:170px;
-
-    height:170px;
-
-    border-radius:50%;
-
-    margin:20px auto;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:2.8rem;
-
-    font-weight:700;
-
-    color:#fff;
-
-    background:
-    conic-gradient(
-        #00d26a 0deg,
-        #b8d600 90deg,
-        #ffb400 180deg,
-        #ff6f00 270deg,
-        #ff2b2b 360deg
-    );
-
-    position:relative;
-
-}
-
-.aqi-circle::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:16px;
-
-    background:rgba(18,25,42,.95);
-
-    border-radius:50%;
-
-}
-
-.aqi-circle span{
-
-    position:relative;
-
-    z-index:5;
-
-}
-
-.aqi-main h4{
-
-    font-size:1.1rem;
-
-    margin-top:10px;
-
-}
-
-/*==================================================
-    HOURLY FORECAST
-==================================================*/
-
-.hourly-scroll{
-
-    display:flex;
-
-    gap:18px;
-
-    overflow-x:auto;
-
-    padding:8px 5px 18px;
-
-    scroll-behavior:smooth;
-
-}
-
-.hourly-scroll::-webkit-scrollbar{
-
-    height:8px;
-
-}
-
-.hourly-scroll::-webkit-scrollbar-thumb{
-
-    background:rgba(255,255,255,.25);
-
-    border-radius:20px;
-
-}
-
-.hour-card{
-
-    min-width:130px;
-
-    padding:22px;
-
-    text-align:center;
-
-    border-radius:22px;
-
-    background:rgba(255,255,255,.15);
-
-    backdrop-filter:blur(18px);
-
-    transition:.35s;
-
-}
-
-.hour-card:hover{
-
-    transform:translateY(-8px);
-
-}
-
-.hour-card img{
-
-    width:62px;
-
-    margin:14px auto;
-
-}
-
-.hour-card h4{
-
-    font-size:1rem;
-
-}
-
-.hour-card p{
-
-    margin-top:10px;
-
-    font-size:.95rem;
-
-    opacity:.9;
-
-}
-
-/*==================================================
-    DAILY FORECAST
-==================================================*/
-
-.daily-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-
-    gap:22px;
-
-}
-
-.day-card{
-
-    padding:26px;
-
-    border-radius:22px;
-
-    text-align:center;
-
-    background:rgba(255,255,255,.15);
-
-    backdrop-filter:blur(20px);
+1px solid var(--border);
 
-    transition:.35s;
 
-}
-
-.day-card:hover{
-
-    transform:translateY(-8px);
-
-}
-
-.day-card img{
-
-    width:72px;
-
-    margin:15px auto;
-
-}
-
-.day-card h3{
-
-    margin-bottom:12px;
-
-}
-
-.day-card h2{
-
-    margin-top:15px;
-
-    font-size:2rem;
-
-}
-
-/*==================================================
-    CHARTS
-==================================================*/
-
-.charts-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-
-    gap:24px;
-
-}
-
-.chart-card{
-
-    padding:25px;
-
-    min-height:380px;
-
-}
-
-.chart-card h3{
-
-    margin-bottom:20px;
-
-}
-
-.chart-card canvas{
-
-    width:100%!important;
-
-    height:290px!important;
-
-}
-
-/*==================================================
-    RADAR
-==================================================*/
-
-.radar-card{
-
-    padding:18px;
-
-}
-
-#radarFrame{
-
-    width:100%;
-
-    height:600px;
-
-    border:none;
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-}
-
-/*==================================================
-    MAP
-==================================================*/
-
-.map{
-
-    width:100%;
-
-    height:560px;
-
-    border-radius:22px;
-
-    overflow:hidden;
 
-}
-
-/*==================================================
-    ASTRONOMY
-==================================================*/
-
-.astro-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-    gap:22px;
-
-}
-
-.astro-grid .card{
-
-    text-align:center;
-
-}
-
-.astro-grid h2{
-
-    margin-top:18px;
-
-    font-size:2rem;
-
-}
-
-/*==================================================
-    RECOMMENDATIONS
-==================================================*/
-
-.recommendation-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-
-    gap:22px;
-
-}
-
-.recommendation{
-
-    padding:30px;
-
-    text-align:center;
-
-    transition:.35s;
-
-}
+backdrop-filter:
 
-.recommendation:hover{
+blur(25px);
 
-    transform:translateY(-8px);
 
-}
-
-.recommendation i{
-
-    font-size:2.5rem;
-
-    margin-bottom:18px;
-
-    color:#ffe16c;
-
-}
-
-.recommendation h3{
-
-    margin-bottom:14px;
-
-}
-
-.recommendation p{
-
-    line-height:1.7;
-
-    opacity:.95;
-
-}
-
-/*==================================================
-    RECENT SEARCHES
-==================================================*/
-
-.recent-grid{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:14px;
-
-}
-
-.search-chip{
-
-    padding:12px 22px;
-
-    border-radius:30px;
 
-    background:rgba(255,255,255,.15);
+-webkit-backdrop-filter:
 
-    cursor:pointer;
+blur(25px);
 
-    transition:.3s;
 
-}
 
-.search-chip:hover{
+box-shadow:
 
-    background:rgba(255,255,255,.25);
+var(--shadow);
 
-}
 
-/*==================================================
-    FOOTER
-==================================================*/
 
-.footer{
+border-radius:
 
-    margin:22px;
+var(--radius);
 
-    padding:22px;
 
-    display:flex;
 
-    justify-content:space-between;
+transition:
 
-    align-items:center;
+var(--transition);
 
-    flex-wrap:wrap;
 
-    gap:18px;
 
 }
 
-/*==================================================
-    PREMIUM HOVER EFFECTS
-==================================================*/
 
-.glass{
 
-    transition:
-    transform .35s,
-    box-shadow .35s,
-    background .35s;
-
-}
 
 .glass:hover{
 
-    transform:translateY(-5px);
 
-    box-shadow:
-    0 20px 50px rgba(0,0,0,.22);
+transform:
 
-}
+translateY(-5px);
 
-button{
 
-    transition:.3s;
 
-}
+box-shadow:
 
-button:hover{
+0 25px 60px
 
-    transform:translateY(-3px);
+rgba(0,0,0,.25);
+
 
 }
 
-button:active{
 
-    transform:scale(.96);
+
+
+
+
+/*==========================================================
+ MAIN APP GRID
+==========================================================*/
+
+
+.app{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+270px
+
+1fr;
+
+
+
+min-height:100vh;
+
+
+
+gap:20px;
+
+
+
+padding:20px;
+
 
 }
 
-/*==================================================
-    WEATHER ANIMATIONS
-==================================================*/
 
-.sun-glow{
 
-    animation:sunGlow 4s ease infinite;
+
+
+/*==========================================================
+ SIDEBAR
+==========================================================*/
+
+
+.sidebar{
+
+
+padding:28px;
+
+
+display:flex;
+
+flex-direction:column;
+
+
+gap:35px;
+
+
+height:
+
+calc(100vh - 40px);
+
+
+
+position:sticky;
+
+top:20px;
+
+
 
 }
 
-@keyframes sunGlow{
 
-0%,100%{
 
-filter:drop-shadow(0 0 8px gold);
+
+
+/* LOGO */
+
+
+.logo{
+
+
+display:flex;
+
+align-items:center;
+
+gap:14px;
+
 
 }
+
+
+
+.logo i{
+
+
+font-size:2.2rem;
+
+color:
+
+var(--accent);
+
+
+}
+
+
+
+.logo h1{
+
+
+font-size:
+
+1.45rem;
+
+
+
+font-weight:
+
+700;
+
+
+}
+
+
+
+
+
+/* NAVIGATION */
+
+
+.sidebar nav{
+
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+
+}
+
+
+
+
+
+.sidebar nav a{
+
+
+display:flex;
+
+
+align-items:center;
+
+
+gap:15px;
+
+
+padding:
+
+14px 16px;
+
+
+
+border-radius:
+
+16px;
+
+
+
+text-decoration:none;
+
+
+
+color:
+
+var(--text);
+
+
+
+font-weight:
+
+500;
+
+
+
+transition:
+
+var(--transition);
+
+
+}
+
+
+
+
+.sidebar nav a:hover{
+
+
+background:
+
+rgba(255,255,255,.18);
+
+
+
+transform:
+
+translateX(8px);
+
+
+}
+
+
+
+
+
+.sidebar nav i{
+
+
+width:25px;
+
+text-align:center;
+
+
+}
+
+
+
+
+
+/* FAVORITES */
+
+
+.favorites h3{
+
+
+margin-bottom:
+
+15px;
+
+
+}
+
+
+
+#favoriteCities{
+
+
+list-style:none;
+
+
+display:flex;
+
+
+flex-direction:column;
+
+
+gap:10px;
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ MAIN CONTENT
+==========================================================*/
+
+
+.main-content{
+
+
+display:flex;
+
+
+flex-direction:column;
+
+
+gap:25px;
+
+
+
+min-width:0;
+
+
+}
+
+
+
+
+
+/*==========================================================
+ END PART 1
+==========================================================*/
+/*==========================================================
+ TOP BAR
+==========================================================*/
+
+
+.topbar{
+
+
+padding:18px 22px;
+
+
+
+display:flex;
+
+
+
+align-items:center;
+
+
+
+justify-content:space-between;
+
+
+
+gap:20px;
+
+
+
+}
+
+
+
+.search-box{
+
+
+display:flex;
+
+
+
+align-items:center;
+
+
+
+gap:15px;
+
+
+
+flex:1;
+
+
+
+padding:
+
+14px 18px;
+
+
+
+background:
+
+rgba(255,255,255,.12);
+
+
+
+border-radius:
+
+18px;
+
+
+
+}
+
+
+
+.search-box i{
+
+
+font-size:1.1rem;
+
+
+}
+
+
+
+
+.search-box input{
+
+
+flex:1;
+
+
+
+background:none;
+
+
+
+border:none;
+
+
+
+outline:none;
+
+
+
+font-size:1rem;
+
+
+
+color:var(--text);
+
+
+}
+
+
+
+.search-box input::placeholder{
+
+
+color:
+
+rgba(255,255,255,.8);
+
+
+}
+
+
+
+
+
+.search-box button{
+
+
+border:none;
+
+
+
+cursor:pointer;
+
+
+
+background:
+
+var(--primary);
+
+
+
+color:white;
+
+
+
+padding:
+
+12px 25px;
+
+
+
+border-radius:
+
+14px;
+
+
+
+font-weight:600;
+
+
+
+transition:.3s;
+
+
+}
+
+
+
+.search-box button:hover{
+
+
+transform:
+
+translateY(-3px);
+
+
+}
+
+
+
+
+
+.actions{
+
+
+display:flex;
+
+
+gap:12px;
+
+
+}
+
+
+
+
+
+.actions button{
+
+
+height:50px;
+
+
+width:50px;
+
+
+
+border:none;
+
+
+
+border-radius:50%;
+
+
+
+cursor:pointer;
+
+
+
+font-size:1.2rem;
+
+
+
+color:white;
+
+
+
+background:
+
+rgba(255,255,255,.15);
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ HERO WEATHER SECTION
+==========================================================*/
+
+
+.hero{
+
+
+padding:
+
+40px;
+
+
+
+display:flex;
+
+
+
+justify-content:
+
+space-between;
+
+
+
+align-items:center;
+
+
+
+gap:40px;
+
+
+}
+
+
+
+
+
+.hero-left{
+
+
+display:flex;
+
+
+
+flex-direction:column;
+
+
+
+gap:12px;
+
+
+}
+
+
+
+
+
+.hero-left h2{
+
+
+font-size:
+
+2.4rem;
+
+
+}
+
+
+
+.hero-left p{
+
+
+opacity:.85;
+
+
+}
+
+
+
+
+
+
+.temperature{
+
+
+display:flex;
+
+
+
+align-items:center;
+
+
+
+gap:25px;
+
+
+}
+
+
+
+
+.temperature span{
+
+
+font-size:
+
+5rem;
+
+
+
+font-weight:
+
+800;
+
+
+
+line-height:1;
+
+
+}
+
+
+
+.temperature img{
+
+
+width:120px;
+
+
+
+height:120px;
+
+
+
+object-fit:contain;
+
+
+
+animation:
+
+floatIcon
+
+4s ease infinite;
+
+
+}
+
+
+
+
+@keyframes floatIcon{
+
 
 50%{
 
-filter:drop-shadow(0 0 30px yellow);
+transform:translateY(-10px);
 
 }
 
+
 }
+
+
+
+
+
+
+.hero-left h3{
+
+
+font-size:
+
+1.5rem;
+
+
+}
+
+
+
+.hero-right{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+
+gap:18px;
+
+
+
+width:45%;
+
+
+}
+
+
+
+
+
+.info{
+
+
+padding:
+
+22px;
+
+
+
+text-align:center;
+
+
+
+background:
+
+rgba(255,255,255,.12);
+
+
+
+border-radius:
+
+20px;
+
+
+}
+
+
+
+
+
+.info span{
+
+
+font-size:.85rem;
+
+
+opacity:.8;
+
+
+}
+
+
+
+
+.info h3{
+
+
+margin-top:10px;
+
+
+font-size:
+
+1.1rem;
+
+
+}
+
+
+
+
+
+
+
+
+/*==========================================================
+ WEATHER HIGHLIGHT GRID
+==========================================================*/
+
+
+.grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(4,1fr);
+
+
+
+gap:20px;
+
+
+}
+
+
+
+
+
+.card{
+
+
+padding:
+
+25px;
+
+
+}
+
+
+
+.card h4{
+
+
+font-weight:500;
+
+
+opacity:.85;
+
+
+}
+
+
+
+.card h2{
+
+
+margin-top:
+
+15px;
+
+
+
+font-size:
+
+2rem;
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ SECTION
+==========================================================*/
+
+
+.section{
+
+
+display:flex;
+
+
+
+flex-direction:column;
+
+
+
+gap:20px;
+
+
+}
+
+
+
+.section-title{
+
+
+display:flex;
+
+
+
+justify-content:
+
+space-between;
+
+
+
+align-items:center;
+
+
+}
+
+
+
+.section-title h2{
+
+
+font-size:
+
+1.8rem;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ AQI SECTION
+==========================================================*/
+
+
+.aqi-grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+2fr repeat(5,1fr);
+
+
+
+gap:20px;
+
+
+}
+
+
+
+
+
+.aqi-main{
+
+
+display:flex;
+
+
+
+flex-direction:column;
+
+
+
+align-items:center;
+
+
+
+justify-content:center;
+
+
+
+text-align:center;
+
+
+
+padding:30px;
+
+
+}
+
+
+
+
+
+.aqi-circle{
+
+
+height:
+
+170px;
+
+
+
+width:
+
+170px;
+
+
+
+border-radius:
+
+50%;
+
+
+
+display:flex;
+
+
+
+align-items:center;
+
+
+
+justify-content:center;
+
+
+
+font-size:
+
+3rem;
+
+
+
+font-weight:700;
+
+
+
+background:
+
+conic-gradient(
+
+#00d26a,
+
+#ffe600,
+
+#ff9500,
+
+#ff0000,
+
+#00d26a
+
+);
+
+
+
+position:relative;
+
+
+
+margin:20px;
+
+
+}
+
+
+
+
+.aqi-circle::before{
+
+
+content:"";
+
+
+
+position:absolute;
+
+
+
+inset:18px;
+
+
+
+background:
+
+#172338;
+
+
+
+border-radius:
+
+50%;
+
+
+}
+
+
+
+
+.aqi-circle span{
+
+
+position:relative;
+
+
+
+z-index:2;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ HOURLY FORECAST
+==========================================================*/
+
+
+.hourly-scroll{
+
+
+display:flex;
+
+
+
+gap:18px;
+
+
+
+overflow-x:auto;
+
+
+
+padding-bottom:15px;
+
+
+}
+
+
+
+.hour-card{
+
+
+min-width:
+
+130px;
+
+
+
+padding:
+
+22px;
+
+
+
+text-align:center;
+
+
+
+border-radius:
+
+22px;
+
+
+
+background:
+
+rgba(255,255,255,.14);
+
+
+
+transition:.3s;
+
+
+}
+
+
+
+.hour-card:hover{
+
+
+transform:
+
+translateY(-8px);
+
+
+}
+
+
+
+
+.hour-card img{
+
+
+width:
+
+60px;
+
+
+margin:
+
+15px auto;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ DAILY FORECAST
+==========================================================*/
+
+
+.daily-grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(7,1fr);
+
+
+
+gap:18px;
+
+
+}
+
+
+
+
+
+.day-card{
+
+
+padding:
+
+25px;
+
+
+
+text-align:center;
+
+
+
+border-radius:
+
+22px;
+
+
+
+background:
+
+rgba(255,255,255,.14);
+
+
+
+transition:.3s;
+
+
+}
+
+
+
+
+.day-card:hover{
+
+
+transform:
+
+translateY(-8px);
+
+
+}
+
+
+
+
+
+.day-card img{
+
+
+width:
+
+70px;
+
+
+
+margin:
+
+15px auto;
+
+
+}
+
+
+
+
+
+.day-card h2{
+
+
+font-size:
+
+1.8rem;
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ END PART 2
+==========================================================*/
+
+/*==========================================================
+ CHARTS
+==========================================================*/
+
+
+.charts-grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+
+gap:25px;
+
+
+}
+
+
+
+
+.chart-card{
+
+
+padding:
+
+25px;
+
+
+
+min-height:
+
+350px;
+
+
+}
+
+
+
+
+
+.chart-card h3{
+
+
+margin-bottom:
+
+20px;
+
+
+}
+
+
+
+.chart-card canvas{
+
+
+width:100%!important;
+
+
+
+height:
+
+280px!important;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ RADAR
+==========================================================*/
+
+
+.radar-card{
+
+
+padding:
+
+18px;
+
+
+}
+
+
+
+
+#radarFrame{
+
+
+width:
+
+100%;
+
+
+
+height:
+
+clamp(280px,45vw,550px);
+
+
+
+border:none;
+
+
+
+border-radius:
+
+20px;
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ MAP
+==========================================================*/
+
+
+.map{
+
+
+width:
+
+100%;
+
+
+
+height:
+
+clamp(280px,45vw,550px);
+
+
+
+border-radius:
+
+24px;
+
+
+
+overflow:hidden;
+
+
+}
+
+
+
+
+
+.leaflet-container{
+
+
+border-radius:
+
+24px;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ ASTRONOMY
+==========================================================*/
+
+
+.astro-grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(6,1fr);
+
+
+
+gap:20px;
+
+
+}
+
+
+
+
+.astro-grid .card{
+
+
+text-align:center;
+
+
+}
+
+
+
+
+
+.astro-grid h2{
+
+
+font-size:
+
+1.8rem;
+
+
+margin-top:
+
+15px;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ HEALTH RECOMMENDATIONS
+==========================================================*/
+
+
+.recommendation-grid{
+
+
+display:grid;
+
+
+
+grid-template-columns:
+
+repeat(4,1fr);
+
+
+
+gap:22px;
+
+
+}
+
+
+
+
+
+.recommendation{
+
+
+padding:
+
+30px;
+
+
+
+text-align:center;
+
+
+}
+
+
+
+
+
+.recommendation i{
+
+
+font-size:
+
+2.5rem;
+
+
+
+color:
+
+var(--accent);
+
+
+
+margin-bottom:
+
+18px;
+
+
+}
+
+
+
+
+
+.recommendation p{
+
+
+line-height:
+
+1.7;
+
+
+
+opacity:.9;
+
+
+}
+
+
+
+
+
+
+
+
+/*==========================================================
+ RECENT SEARCH
+==========================================================*/
+
+
+.recent-grid{
+
+
+display:flex;
+
+
+
+flex-wrap:wrap;
+
+
+
+gap:14px;
+
+
+}
+
+
+
+
+.search-chip{
+
+
+padding:
+
+12px 22px;
+
+
+
+border-radius:
+
+30px;
+
+
+
+background:
+
+rgba(255,255,255,.18);
+
+
+
+cursor:pointer;
+
+
+
+transition:.3s;
+
+
+}
+
+
+
+
+.search-chip:hover{
+
+
+transform:
+
+translateY(-3px);
+
+
+
+background:
+
+rgba(255,255,255,.3);
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ FOOTER
+==========================================================*/
+
+
+.footer{
+
+
+margin:
+
+20px;
+
+
+
+padding:
+
+22px;
+
+
+
+display:flex;
+
+
+
+justify-content:
+
+space-between;
+
+
+
+align-items:center;
+
+
+
+flex-wrap:wrap;
+
+
+
+gap:20px;
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ WEATHER EFFECTS
+==========================================================*/
+
+
+.sun-glow{
+
+
+filter:
+
+drop-shadow(
+
+0 0 25px
+
+gold
+
+);
+
+
+
+animation:
+
+sunPulse
+
+3s infinite;
+
+
+}
+
+
+
+
+
+@keyframes sunPulse{
+
+
+50%{
+
+transform:scale(1.1);
+
+}
+
+
+}
+
+
+
+
+
 
 .rain-drop{
 
-    position:absolute;
 
-    width:2px;
+position:absolute;
 
-    height:18px;
 
-    background:white;
 
-    opacity:.5;
+width:
 
-    animation:rainFall linear infinite;
+2px;
+
+
+
+height:
+
+18px;
+
+
+
+background:white;
+
+
+
+opacity:.6;
+
+
+
+animation:
+
+rainFall
+
+linear infinite;
+
 
 }
 
+
+
+
 @keyframes rainFall{
 
-0%{
+
+from{
 
 transform:translateY(-30px);
 
 }
 
-100%{
+
+to{
 
 transform:translateY(110vh);
 
 }
 
-}
-
-.float{
-
-    animation:floating 5s ease-in-out infinite;
 
 }
 
-@keyframes floating{
 
-0%,100%{
 
-transform:translateY(0);
 
-}
 
-50%{
 
-transform:translateY(-12px);
 
-}
+@keyframes snowFall{
 
-}
-/*==================================================
-    RESPONSIVE DESIGN
-==================================================*/
 
-/* Laptop */
+from{
 
-@media (max-width:1400px){
-
-    .grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .hero{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .hero-right{
-        width:100%;
-        grid-template-columns:repeat(3,1fr);
-    }
+transform:translateY(-20px);
 
 }
 
-/* Tablet */
 
-@media (max-width:1024px){
+to{
 
-    .app{
-        grid-template-columns:1fr;
-    }
-
-    .sidebar{
-
-        margin:15px;
-
-        flex-direction:row;
-
-        align-items:center;
-
-        justify-content:space-between;
-
-        flex-wrap:wrap;
-
-    }
-
-    .sidebar nav{
-
-        flex-direction:row;
-
-        flex-wrap:wrap;
-
-    }
-
-    .main-content{
-
-        padding:15px;
-
-    }
-
-    .topbar{
-
-        flex-direction:column;
-
-        align-items:stretch;
-
-    }
-
-    .search-box{
-
-        width:100%;
-
-    }
-
-    .hero-right{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-    .aqi-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
+transform:translateY(110vh);
 
 }
 
-/* Mobile */
-
-@media (max-width:768px){
-
-    body{
-
-        font-size:15px;
-
-    }
-
-    .sidebar{
-
-        padding:18px;
-
-        gap:20px;
-
-    }
-
-    .sidebar nav{
-
-        justify-content:center;
-
-    }
-
-    .sidebar nav a{
-
-        flex:1 1 45%;
-
-        justify-content:center;
-
-    }
-
-    .hero{
-
-        padding:25px;
-
-    }
-
-    .temperature{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-    }
-
-    .temperature span{
-
-        font-size:4rem;
-
-    }
-
-    .temperature img{
-
-        width:85px;
-        height:85px;
-
-    }
-
-    .hero-right{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .charts-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .aqi-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .astro-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .recommendation-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .daily-grid{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
 
 }
 
-/* Small Mobile */
 
-@media (max-width:480px){
 
-    .daily-grid{
 
-        grid-template-columns:1fr;
 
-    }
 
-    .topbar{
+/*==========================================================
+ WEATHER THEMES
+==========================================================*/
 
-        padding:15px;
-
-    }
-
-    .search-box{
-
-        flex-direction:column;
-
-    }
-
-    .search-box button{
-
-        width:100%;
-
-    }
-
-    .actions{
-
-        justify-content:center;
-
-    }
-
-    .footer{
-
-        flex-direction:column;
-
-        text-align:center;
-
-    }
-
-}
-
-/*==================================================
-    DARK MODE
-==================================================*/
-
-body.dark{
-
-    background:
-    linear-gradient(
-        135deg,
-        #08131f,
-        #10233d,
-        #19385f
-    );
-
-}
-
-body.dark .glass{
-
-    background:rgba(18,30,48,.72);
-
-    border:1px solid rgba(255,255,255,.08);
-
-}
-
-body.dark .search-box{
-
-    background:rgba(255,255,255,.08);
-
-}
-
-body.dark .card{
-
-    background:rgba(255,255,255,.05);
-
-}
-
-body.dark input::placeholder{
-
-    color:#d7d7d7;
-
-}
-
-/*==================================================
-    WEATHER THEMES
-==================================================*/
 
 body.sunny{
 
-    background:
-    linear-gradient(
-        135deg,
-        #4ea8ff,
-        #8fd8ff,
-        #fff1a8
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#4ea8ff,
+
+#8bd8ff,
+
+#fff1a8
+
+);
+
 
 }
+
+
+
+
 
 body.cloudy{
 
-    background:
-    linear-gradient(
-        135deg,
-        #8ba9c9,
-        #b7cadf,
-        #dce6ef
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#8fa8c5,
+
+#c8d6e5
+
+);
+
 
 }
+
+
+
 
 body.rain{
 
-    background:
-    linear-gradient(
-        135deg,
-        #2d4c75,
-        #4d7298,
-        #7394b5
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#243b55,
+
+#4d7398
+
+);
+
 
 }
+
+
+
 
 body.snow{
 
-    background:
-    linear-gradient(
-        135deg,
-        #dbe7f3,
-        #f4f8fb,
-        #ffffff
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#dce8f5,
+
+#ffffff
+
+);
+
 
 }
+
+
+
 
 body.thunder{
 
-    background:
-    linear-gradient(
-        135deg,
-        #1b2134,
-        #3d4d6b,
-        #55657f
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#111827,
+
+#34495e
+
+);
+
 
 }
+
+
+
 
 body.night{
 
-    background:
-    linear-gradient(
-        135deg,
-        #06111d,
-        #102746,
-        #1b3c65
-    );
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#020617,
+
+#102a43,
+
+#193b66
+
+);
+
 
 }
 
-/*==================================================
-    LOADING SKELETON
-==================================================*/
 
-.skeleton{
 
-    position:relative;
 
-    overflow:hidden;
 
-    background:rgba(255,255,255,.15);
 
-}
+/*==========================================================
+ DARK MODE
+==========================================================*/
 
-.skeleton::before{
 
-    content:"";
+body.dark .glass{
 
-    position:absolute;
 
-    inset:0;
+background:
 
-    transform:translateX(-100%);
+rgba(15,25,45,.75);
 
-    background:
-    linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.35),
-        transparent
-    );
-
-    animation:skeleton 1.3s infinite;
 
 }
 
-@keyframes skeleton{
 
-100%{
 
-transform:translateX(100%);
 
-}
+body.dark .card{
 
-}
 
-/*==================================================
-    SCROLLBAR
-==================================================*/
+background:
 
-::-webkit-scrollbar{
+rgba(255,255,255,.06);
 
-    width:10px;
-
-    height:10px;
 
 }
 
-::-webkit-scrollbar-thumb{
 
-    background:rgba(255,255,255,.35);
 
-    border-radius:20px;
 
-}
 
-::-webkit-scrollbar-track{
 
-    background:transparent;
 
-}
+/*==========================================================
+ UTILITIES
+==========================================================*/
 
-/*==================================================
-    UTILITIES
-==================================================*/
-
-.text-center{
-
-    text-align:center;
-
-}
-
-.hidden{
-
-    display:none!important;
-
-}
 
 .fade-in{
 
-    animation:fadeIn .7s ease;
+
+animation:
+
+fadeIn .7s ease;
+
 
 }
 
+
+
+
 @keyframes fadeIn{
 
-0%{
+
+from{
 
 opacity:0;
 
@@ -1677,148 +2620,1303 @@ transform:translateY(20px);
 
 }
 
-100%{
+
+to{
 
 opacity:1;
 
-transform:translateY(0);
-
-}
-
-}
-
-.rotate{
-
-    animation:rotate360 18s linear infinite;
-
-}
-
-@keyframes rotate360{
-
-100%{
-
-transform:rotate(360deg);
-
-}
-
-}
-
-.scale{
-
-    animation:scalePulse 2.5s infinite;
-
-}
-
-@keyframes scalePulse{
-
-0%,100%{
-
-transform:scale(1);
-
-}
-
-50%{
-
-transform:scale(1.06);
-
-}
-
-}
-
-/*==================================================
-    ACCESSIBILITY
-==================================================*/
-
-button:focus,
-input:focus,
-a:focus{
-
-    outline:3px solid rgba(255,255,255,.45);
-
-    outline-offset:3px;
-
-}
-
-img{
-
-    max-width:100%;
-
-    display:block;
-
-}
-
-canvas{
-
-    display:block;
-
-}
-
-/*==================================================
-    END OF FILE
-==================================================*/
-
-@keyframes snowFall{
-
-0%{
-transform:translateY(-20px);
-}
-
-100%{
-transform:translateY(110vh);
-}
+transform:none;
 
 }
 
 
-body.night .gradient-layer{
+}
+
+
+
+
+
+.hidden{
+
+
+display:none!important;
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ SCROLLBAR
+==========================================================*/
+
+
+::-webkit-scrollbar{
+
+
+width:
+
+10px;
+
+
+}
+
+
+
+
+::-webkit-scrollbar-thumb{
+
 
 background:
-radial-gradient(
-circle,
-#ffffff22,
-transparent 60%
-),
-linear-gradient(
-135deg,
-#050b18,
-#102746
-);
+
+rgba(255,255,255,.35);
+
+
+
+border-radius:
+
+20px;
+
 
 }
 
 
 
-body.sunny .gradient-layer{
 
-animation:
-gradientMove 12s linear infinite;
+
+
+/*==========================================================
+ END PART 3
+==========================================================*/
+/*==========================================================
+ RESPONSIVE DESIGN SYSTEM
+ Desktop → Laptop → Tablet → Mobile
+==========================================================*/
+
+
+/*==========================================================
+ LARGE DESKTOP
+ 1600px+
+==========================================================*/
+
+
+@media(min-width:1600px){
+
+
+.app{
+
+
+grid-template-columns:
+
+300px 1fr;
+
+
+}
+
+
+
+.main-content{
+
+
+padding-right:
+
+40px;
+
 
 }
 
 
 
-body.rain .background-wrapper{
+.hero{
 
-filter:
-brightness(.75);
+
+padding:
+
+50px;
+
 
 }
 
 
 
-body.thunder .background-wrapper{
+.temperature span{
 
-animation:
-thunderFlash .3s infinite;
+
+font-size:
+
+5.5rem;
+
+
+}
+
 
 }
 
 
 
-@keyframes thunderFlash{
 
-50%{
-opacity:.8;
+
+/*==========================================================
+ LAPTOP
+ 1200px - 1599px
+==========================================================*/
+
+
+@media(max-width:1400px){
+
+
+
+.app{
+
+
+grid-template-columns:
+
+240px 1fr;
+
+
 }
 
+
+
+.sidebar{
+
+
+padding:
+
+22px;
+
+
 }
+
+
+
+.grid{
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+}
+
+
+
+.aqi-grid{
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+}
+
+
+
+.daily-grid{
+
+
+grid-template-columns:
+
+repeat(4,1fr);
+
+
+}
+
+
+
+.astro-grid{
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+}
+
+
+
+.recommendation-grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+.hero-right{
+
+
+width:
+
+100%;
+
+
+}
+
+
+
+.hero{
+
+
+flex-direction:
+
+column;
+
+
+align-items:
+
+flex-start;
+
+
+}
+
+
+
+.charts-grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ SMALL LAPTOP / TABLET LANDSCAPE
+ 1024px
+==========================================================*/
+
+
+@media(max-width:1100px){
+
+
+
+.app{
+
+
+display:block;
+
+
+padding:
+
+15px;
+
+
+}
+
+
+
+
+
+.sidebar{
+
+
+height:auto;
+
+
+position:relative;
+
+
+
+display:flex;
+
+
+
+flex-direction:row;
+
+
+
+align-items:center;
+
+
+
+overflow-x:auto;
+
+
+
+margin-bottom:
+
+20px;
+
+
+}
+
+
+
+.sidebar nav{
+
+
+display:flex;
+
+
+
+flex-direction:row;
+
+
+
+gap:8px;
+
+
+
+overflow-x:auto;
+
+
+}
+
+
+
+
+
+.sidebar nav a{
+
+
+white-space:nowrap;
+
+
+}
+
+
+
+
+.hero-right{
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+}
+
+
+
+.grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+.aqi-grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+.charts-grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+.daily-grid{
+
+
+grid-template-columns:
+
+repeat(3,1fr);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ TABLET
+ 768px - 1024px
+==========================================================*/
+
+
+@media(max-width:768px){
+
+
+
+body{
+
+
+font-size:
+
+14px;
+
+
+}
+
+
+
+
+
+.app{
+
+
+padding:
+
+10px;
+
+
+}
+
+
+
+
+
+.sidebar{
+
+
+padding:
+
+18px;
+
+
+flex-direction:
+
+column;
+
+
+align-items:
+
+stretch;
+
+
+}
+
+
+
+.logo{
+
+
+justify-content:
+
+center;
+
+
+}
+
+
+
+
+.sidebar nav{
+
+
+justify-content:
+
+flex-start;
+
+
+}
+
+
+
+
+.topbar{
+
+
+flex-direction:
+
+column;
+
+
+align-items:
+
+stretch;
+
+
+padding:
+
+15px;
+
+
+}
+
+
+
+.search-box{
+
+
+width:
+
+100%;
+
+
+}
+
+
+
+
+.actions{
+
+
+justify-content:
+
+center;
+
+
+}
+
+
+
+
+
+.hero{
+
+
+padding:
+
+25px;
+
+
+}
+
+
+
+.hero-left h2{
+
+
+font-size:
+
+1.8rem;
+
+
+}
+
+
+
+.temperature span{
+
+
+font-size:
+
+3.5rem;
+
+
+}
+
+
+
+.temperature img{
+
+
+width:
+
+90px;
+
+
+
+height:
+
+90px;
+
+
+}
+
+
+
+.hero-right{
+
+
+width:
+
+100%;
+
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+
+
+.grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+.aqi-grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+.daily-grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+
+.astro-grid{
+
+
+grid-template-columns:
+
+repeat(2,1fr);
+
+
+}
+
+
+
+.recommendation-grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+.chart-card{
+
+
+min-height:
+
+300px;
+
+
+}
+
+
+
+.chart-card canvas{
+
+
+height:
+
+230px!important;
+
+
+}
+
+
+
+.footer{
+
+
+flex-direction:
+
+column;
+
+
+
+text-align:center;
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/*==========================================================
+ MOBILE
+ BELOW 600px
+==========================================================*/
+
+
+@media(max-width:600px){
+
+
+
+body{
+
+
+font-size:
+
+13px;
+
+
+}
+
+
+
+.app{
+
+
+padding:
+
+8px;
+
+
+}
+
+
+
+.sidebar{
+
+
+border-radius:
+
+20px;
+
+
+}
+
+
+
+
+.logo h1{
+
+
+font-size:
+
+1.2rem;
+
+
+}
+
+
+
+
+.sidebar nav a{
+
+
+padding:
+
+10px;
+
+
+
+font-size:
+
+.8rem;
+
+
+}
+
+
+
+
+
+.topbar{
+
+
+gap:
+
+12px;
+
+
+}
+
+
+
+.search-box{
+
+
+flex-direction:
+
+column;
+
+
+}
+
+
+
+.search-box button{
+
+
+width:
+
+100%;
+
+
+}
+
+
+
+
+.hero{
+
+
+padding:
+
+20px;
+
+
+
+gap:
+
+25px;
+
+
+}
+
+
+
+.hero-left{
+
+
+width:
+
+100%;
+
+
+}
+
+
+
+
+.temperature{
+
+
+gap:
+
+15px;
+
+
+}
+
+
+
+.temperature span{
+
+
+font-size:
+
+3rem;
+
+
+}
+
+
+
+.temperature img{
+
+
+width:
+
+75px;
+
+
+
+height:
+
+75px;
+
+
+}
+
+
+
+
+.hero-right{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+
+
+.card{
+
+
+padding:
+
+18px;
+
+
+}
+
+
+
+.card h2{
+
+
+font-size:
+
+1.5rem;
+
+
+}
+
+
+
+
+
+.hour-card{
+
+
+min-width:
+
+105px;
+
+
+
+padding:
+
+18px;
+
+
+}
+
+
+
+
+.daily-grid{
+
+
+grid-template-columns:
+
+1fr 1fr;
+
+
+}
+
+
+
+.day-card{
+
+
+padding:
+
+16px;
+
+
+}
+
+
+
+
+.day-card img{
+
+
+width:
+
+55px;
+
+
+}
+
+
+
+
+.astro-grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+
+.map{
+
+
+height:
+
+280px;
+
+
+}
+
+
+
+
+#radarFrame{
+
+
+height:
+
+280px;
+
+
+}
+
+
+
+
+.footer{
+
+
+margin:
+
+10px;
+
+
+padding:
+
+18px;
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+/*==========================================================
+ SMALL PHONES
+ BELOW 380px
+==========================================================*/
+
+
+@media(max-width:380px){
+
+
+
+.daily-grid{
+
+
+grid-template-columns:
+
+1fr;
+
+
+}
+
+
+
+
+
+.temperature span{
+
+
+font-size:
+
+2.6rem;
+
+
+}
+
+
+
+.temperature{
+
+
+flex-direction:
+
+column;
+
+
+align-items:
+
+flex-start;
+
+
+}
+
+
+
+
+.section-title h2{
+
+
+font-size:
+
+1.4rem;
+
+
+}
+
+
+
+
+.logo i{
+
+
+font-size:
+
+1.6rem;
+
+
+}
+
+
+
+.logo h1{
+
+
+font-size:
+
+1rem;
+
+
+}
+
+
+
+.sidebar nav a{
+
+
+font-size:
+
+.7rem;
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+/*==========================================================
+ FINAL SAFETY FIXES
+==========================================================*/
+
+
+html,
+body{
+
+
+max-width:
+
+100%;
+
+
+
+overflow-x:
+
+hidden;
+
+
+}
+
+
+
+
+img,
+canvas,
+iframe{
+
+
+max-width:
+
+100%;
+
+
+}
+
+
+
+button,
+input{
+
+
+font-family:
+
+inherit;
+
+
+}
+
+
+
+
+
+button:active{
+
+
+transform:
+
+scale(.96);
+
+
+}
+
+
+
+
+/*==========================================================
+ END FINAL CSS v4.0
+==========================================================*/
