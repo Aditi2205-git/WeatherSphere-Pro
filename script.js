@@ -2200,3 +2200,569 @@ document.addEventListener(
 
 
 });
+
+/*==========================================================
+ WEATHERSPHERE PRO 3.0
+ ADVANCED DYNAMIC BACKGROUND ENGINE
+==========================================================*/
+
+
+function updateDynamicBackground(data){
+
+
+    const body = document.body;
+
+
+    const current =
+    data.current;
+
+
+    const code =
+    current.weather_code;
+
+
+
+    const sunrise =
+    new Date(
+    data.daily.sunrise[0]
+    );
+
+
+    const sunset =
+    new Date(
+    data.daily.sunset[0]
+    );
+
+
+
+    const now =
+    new Date();
+
+
+
+    const isNight =
+    now < sunrise ||
+    now > sunset;
+
+
+
+    // remove old themes
+
+    body.classList.remove(
+
+        "sunny",
+        "cloudy",
+        "rain",
+        "snow",
+        "thunder",
+        "night"
+
+    );
+
+
+
+    clearWeatherParticles();
+
+
+
+    /*
+    NIGHT MODE
+    */
+
+
+    if(isNight){
+
+
+        body.classList.add(
+        "night"
+        );
+
+
+        createStars();
+
+
+    }
+
+
+
+    /*
+    WEATHER BASED THEMES
+    */
+
+
+    else{
+
+
+        if(
+        code===0 ||
+        code===1
+        ){
+
+            body.classList.add(
+            "sunny"
+            );
+
+
+            createSunGlow();
+
+        }
+
+
+
+        else if(
+        code===2 ||
+        code===3 ||
+        code===45 ||
+        code===48
+        ){
+
+
+            body.classList.add(
+            "cloudy"
+            );
+
+
+            createCloudParticles();
+
+
+        }
+
+
+
+        else if(
+        code>=51 &&
+        code<=67 ||
+        code>=80 &&
+        code<=82
+        ){
+
+
+            body.classList.add(
+            "rain"
+            );
+
+
+            createRain();
+
+
+        }
+
+
+
+        else if(
+        code>=71 &&
+        code<=77
+        ){
+
+
+            body.classList.add(
+            "snow"
+            );
+
+
+            createSnow();
+
+
+        }
+
+
+
+        else if(
+        code>=95
+        ){
+
+
+            body.classList.add(
+            "thunder"
+            );
+
+
+            createLightning();
+
+
+        }
+
+
+    }
+
+
+}
+
+
+
+
+/*==========================================================
+ REMOVE OLD EFFECTS
+==========================================================*/
+
+
+function clearWeatherParticles(){
+
+
+    const container =
+    document.querySelector(
+    ".weather-particles"
+    );
+
+
+    if(container){
+
+        container.innerHTML="";
+
+    }
+
+
+}
+
+
+
+
+/*==========================================================
+ STAR EFFECT NIGHT
+==========================================================*/
+
+
+function createStars(){
+
+
+    const container =
+    document.querySelector(
+    ".weather-particles"
+    );
+
+
+    if(!container)
+    return;
+
+
+
+    for(
+    let i=0;i<80;i++
+    ){
+
+
+        const star =
+        document.createElement(
+        "span"
+        );
+
+
+        star.style.position="absolute";
+
+        star.style.width="3px";
+
+        star.style.height="3px";
+
+        star.style.background="white";
+
+        star.style.borderRadius="50%";
+
+        star.style.left=
+        Math.random()*100+"%";
+
+
+        star.style.top=
+        Math.random()*100+"%";
+
+
+        star.style.opacity=
+        Math.random();
+
+
+
+        container.appendChild(star);
+
+
+    }
+
+
+}
+
+
+
+
+/*==========================================================
+ SUN EFFECT
+==========================================================*/
+
+
+function createSunGlow(){
+
+
+    const icon =
+    document.getElementById(
+    "weatherIcon"
+    );
+
+
+    if(icon){
+
+        icon.classList.add(
+        "sun-glow"
+        );
+
+    }
+
+
+}
+
+
+
+
+
+/*==========================================================
+ CLOUD PARTICLES
+==========================================================*/
+
+
+function createCloudParticles(){
+
+
+    const container =
+    document.querySelector(
+    ".weather-particles"
+    );
+
+
+    if(!container)
+    return;
+
+
+
+    for(
+    let i=0;i<5;i++
+    ){
+
+
+        const cloud =
+        document.createElement(
+        "div"
+        );
+
+
+        cloud.className=
+        "floating-cloud";
+
+
+        cloud.style.top=
+        Math.random()*80+"%";
+
+
+        cloud.style.animationDuration=
+        40+i*10+"s";
+
+
+        container.appendChild(
+        cloud
+        );
+
+
+    }
+
+
+}
+
+
+
+
+
+/*==========================================================
+ RAIN EFFECT
+==========================================================*/
+
+
+function createRain(){
+
+
+    const container =
+    document.querySelector(
+    ".weather-particles"
+    );
+
+
+    if(!container)
+    return;
+
+
+
+    for(
+    let i=0;i<120;i++
+    ){
+
+
+        const drop =
+        document.createElement(
+        "span"
+        );
+
+
+        drop.className=
+        "rain-drop";
+
+
+        drop.style.left=
+        Math.random()*100+"%";
+
+
+        drop.style.animationDuration=
+        (
+        .5+
+        Math.random()
+        )
+        +"s";
+
+
+
+        container.appendChild(
+        drop
+        );
+
+
+    }
+
+
+}
+
+
+
+
+/*==========================================================
+ SNOW EFFECT
+==========================================================*/
+
+
+function createSnow(){
+
+
+    const container =
+    document.querySelector(
+    ".weather-particles"
+    );
+
+
+    if(!container)
+    return;
+
+
+
+    for(
+    let i=0;i<70;i++
+    ){
+
+
+        const snow =
+        document.createElement(
+        "span"
+        );
+
+
+        snow.style.position=
+        "absolute";
+
+
+        snow.style.width=
+        "8px";
+
+
+        snow.style.height=
+        "8px";
+
+
+        snow.style.background=
+        "white";
+
+
+        snow.style.borderRadius=
+        "50%";
+
+
+        snow.style.left=
+        Math.random()*100+"%";
+
+
+        snow.style.top=
+        "-20px";
+
+
+        snow.style.animation=
+        `snowFall ${5+
+        Math.random()*5}s linear infinite`;
+
+
+
+        container.appendChild(
+        snow
+        );
+
+    }
+
+
+}
+
+
+
+
+/*==========================================================
+ THUNDER EFFECT
+==========================================================*/
+
+
+function createLightning(){
+
+
+    setInterval(()=>{
+
+
+        document.body.style.filter=
+        "brightness(1.4)";
+
+
+        setTimeout(()=>{
+
+
+            document.body.style.filter=
+            "brightness(1)";
+
+
+        },150);
+
+
+    },5000);
+
+
+}
+
+
+
+
+
+/*==========================================================
+ OVERRIDE WEATHER LOADER
+==========================================================*/
+
+
+const oldWeatherThemeLoader =
+window.loadWeather;
+
+
+
+window.loadWeather =
+async function(){
+
+
+    await oldWeatherThemeLoader();
+
+
+
+    if(weatherState.data){
+
+
+        updateDynamicBackground(
+        weatherState.data
+        );
+
+
+    }
+
+
+};
