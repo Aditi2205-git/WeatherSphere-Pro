@@ -1756,3 +1756,69 @@ canvas{
 /*==================================================
     END OF FILE
 ==================================================*/
+
+@keyframes snowFall{
+
+0%{
+transform:translateY(-20px);
+}
+
+100%{
+transform:translateY(110vh);
+}
+
+}
+
+
+body.night .gradient-layer{
+
+background:
+radial-gradient(
+circle,
+#ffffff22,
+transparent 60%
+),
+linear-gradient(
+135deg,
+#050b18,
+#102746
+);
+
+}
+
+
+
+body.sunny .gradient-layer{
+
+animation:
+gradientMove 12s linear infinite;
+
+}
+
+
+
+body.rain .background-wrapper{
+
+filter:
+brightness(.75);
+
+}
+
+
+
+body.thunder .background-wrapper{
+
+animation:
+thunderFlash .3s infinite;
+
+}
+
+
+
+@keyframes thunderFlash{
+
+50%{
+opacity:.8;
+}
+
+}
