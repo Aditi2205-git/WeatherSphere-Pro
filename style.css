@@ -1,0 +1,961 @@
+/*====================================================
+ WeatherSphere Pro
+ Premium Weather Dashboard
+ Responsive Google Weather Inspired UI
+====================================================*/
+
+
+/*=========================
+ RESET
+=========================*/
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+html{
+    scroll-behavior:smooth;
+}
+
+
+body{
+
+    font-family:"Poppins",sans-serif;
+
+    min-height:100vh;
+
+    color:white;
+
+    overflow-x:hidden;
+
+    position:relative;
+
+}
+
+
+
+/*=========================
+ WEATHER BACKGROUND
+=========================*/
+
+
+.weather-background{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-2;
+
+    background:
+    linear-gradient(
+        135deg,
+        #56ccf2,
+        #2f80ed
+    );
+
+    transition:0.8s ease;
+
+}
+
+
+
+/* DAY THEME */
+
+
+body.day .weather-background{
+
+    background:
+    linear-gradient(
+        135deg,
+        #56ccf2,
+        #2f80ed
+    );
+
+}
+
+
+
+
+/* NIGHT THEME */
+
+
+body.night .weather-background{
+
+    background:
+    linear-gradient(
+        135deg,
+        #141e30,
+        #243b55
+    );
+
+}
+
+
+
+
+/* RAIN */
+
+
+body.rain .weather-background{
+
+    background:
+    linear-gradient(
+        135deg,
+        #314755,
+        #26a0da
+    );
+
+}
+
+
+
+/* STORM */
+
+
+body.storm .weather-background{
+
+    background:
+    linear-gradient(
+        135deg,
+        #232526,
+        #414345
+    );
+
+}
+
+
+
+/*=========================
+ HEADER
+=========================*/
+
+
+.header{
+
+
+    width:100%;
+
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:25px 20px;
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+
+
+.logo{
+
+
+    font-size:28px;
+
+    font-weight:700;
+
+    letter-spacing:0.5px;
+
+}
+
+
+.logo span{
+
+    color:#ffe082;
+
+}
+
+
+
+
+
+/* SEARCH */
+
+
+.search-container{
+
+    display:flex;
+
+    width:350px;
+
+}
+
+
+.search-container input{
+
+
+    flex:1;
+
+    padding:14px 18px;
+
+    border:none;
+
+    outline:none;
+
+
+    border-radius:30px 0 0 30px;
+
+
+    font-size:15px;
+
+
+}
+
+
+
+.search-container button{
+
+
+    width:55px;
+
+    border:none;
+
+    cursor:pointer;
+
+
+    border-radius:0 30px 30px 0;
+
+
+    background:#ffffff;
+
+    font-size:20px;
+
+}
+
+
+
+
+
+/*=========================
+ MAIN CONTAINER
+=========================*/
+
+
+.container{
+
+
+    width:100%;
+
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:20px;
+
+
+}
+
+
+
+
+/*=========================
+ GLASS CARD
+=========================*/
+
+
+.glass-card{
+
+
+    background:
+
+    rgba(255,255,255,0.18);
+
+
+    backdrop-filter:blur(18px);
+
+
+    -webkit-backdrop-filter:blur(18px);
+
+
+    border-radius:30px;
+
+
+    border:1px solid rgba(255,255,255,0.25);
+
+
+    box-shadow:
+
+    0 15px 40px rgba(0,0,0,0.15);
+
+
+}
+
+
+
+
+
+
+
+/*=========================
+ MAIN WEATHER
+=========================*/
+
+
+.weather-main{
+
+
+    padding:35px;
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+    1fr auto auto auto;
+
+
+    align-items:center;
+
+
+    gap:35px;
+
+
+
+}
+
+
+
+.location h1{
+
+
+    font-size:32px;
+
+}
+
+
+
+.location p{
+
+
+    opacity:0.85;
+
+    margin-top:8px;
+
+}
+
+
+
+
+.weather-icon{
+
+
+    font-size:90px;
+
+
+    animation:floating 4s infinite ease-in-out;
+
+
+}
+
+
+
+.temperature h2{
+
+
+    font-size:75px;
+
+    font-weight:600;
+
+    line-height:1;
+
+
+}
+
+
+
+.temperature p{
+
+
+    font-size:20px;
+
+}
+
+
+
+
+.updated{
+
+
+    text-align:center;
+
+}
+
+
+
+
+.updated strong{
+
+
+    font-size:20px;
+
+}
+
+
+
+
+
+
+
+/*=========================
+ DETAILS GRID
+=========================*/
+
+
+.details-grid{
+
+
+    margin-top:25px;
+
+
+    display:grid;
+
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+
+    gap:20px;
+
+
+}
+
+
+
+
+.detail-card{
+
+
+    padding:25px;
+
+    text-align:center;
+
+
+}
+
+
+
+
+.detail-card h3{
+
+
+    font-size:16px;
+
+    opacity:.8;
+
+}
+
+
+
+.detail-card p{
+
+
+    margin-top:10px;
+
+    font-size:25px;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+
+
+/*=========================
+ SECTIONS
+=========================*/
+
+
+.section{
+
+
+    margin-top:40px;
+
+}
+
+
+
+.section h2{
+
+
+    margin-bottom:20px;
+
+    font-size:26px;
+
+}
+
+
+
+
+
+
+
+/*=========================
+ CHART
+=========================*/
+
+
+.chart-card{
+
+
+    padding:25px;
+
+
+}
+
+
+
+
+
+
+
+/*=========================
+ EXTRA GRID
+=========================*/
+
+
+.extra-grid{
+
+
+    margin-top:30px;
+
+
+    display:grid;
+
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+
+    gap:20px;
+
+
+}
+
+
+
+.info-card{
+
+
+    padding:25px;
+
+    text-align:center;
+
+
+}
+
+
+
+.info-card h3{
+
+
+    font-size:18px;
+
+}
+
+
+
+.info-card p{
+
+
+    margin-top:12px;
+
+    font-size:22px;
+
+    font-weight:600;
+
+
+}
+
+
+
+
+
+
+
+
+/*=========================
+ FORECAST
+=========================*/
+
+
+.forecast-container{
+
+
+    display:flex;
+
+    gap:20px;
+
+
+    overflow-x:auto;
+
+
+    padding-bottom:10px;
+
+
+}
+
+
+
+.forecast-card{
+
+
+    min-width:150px;
+
+
+    padding:25px;
+
+
+    text-align:center;
+
+
+}
+
+
+
+.forecast-card:hover{
+
+
+    transform:translateY(-8px);
+
+}
+
+
+
+.forecast-card{
+
+
+    transition:.3s;
+
+}
+
+
+
+
+
+
+
+/*=========================
+ LOADER
+=========================*/
+
+
+.loader{
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    background:
+    rgba(0,0,0,.35);
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    z-index:10;
+
+
+}
+
+
+
+.loader-box{
+
+
+    background:white;
+
+    color:#333;
+
+
+    padding:35px;
+
+
+    border-radius:25px;
+
+
+    text-align:center;
+
+
+    font-size:30px;
+
+
+}
+
+
+
+.loader-box p{
+
+
+    font-size:16px;
+
+    margin-top:15px;
+
+
+}
+
+
+
+.hidden{
+
+    display:none;
+
+}
+
+
+
+
+
+
+
+/*=========================
+ ANIMATIONS
+=========================*/
+
+
+@keyframes floating{
+
+
+    0%,100%{
+
+        transform:translateY(0);
+
+    }
+
+
+    50%{
+
+        transform:translateY(-15px);
+
+    }
+
+
+}
+
+
+
+
+
+
+
+/*====================================================
+ TABLET RESPONSIVE
+====================================================*/
+
+
+@media(max-width:900px){
+
+
+
+.header{
+
+
+    flex-direction:column;
+
+
+}
+
+
+
+.search-container{
+
+
+    width:100%;
+
+}
+
+
+
+.weather-main{
+
+
+    grid-template-columns:1fr;
+
+
+    text-align:center;
+
+
+}
+
+
+
+.details-grid{
+
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+}
+
+
+
+.extra-grid{
+
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.temperature h2{
+
+
+    font-size:65px;
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/*====================================================
+ MOBILE RESPONSIVE
+====================================================*/
+
+
+@media(max-width:600px){
+
+
+
+.header{
+
+
+    padding:20px 15px;
+
+}
+
+
+
+.logo{
+
+
+    font-size:22px;
+
+}
+
+
+
+.container{
+
+
+    padding:15px;
+
+}
+
+
+
+.weather-main{
+
+
+    padding:25px 15px;
+
+
+}
+
+
+
+.location h1{
+
+
+    font-size:25px;
+
+}
+
+
+
+.weather-icon{
+
+
+    font-size:70px;
+
+}
+
+
+
+.temperature h2{
+
+
+    font-size:55px;
+
+}
+
+
+
+.details-grid{
+
+
+    grid-template-columns:1fr;
+
+
+}
+
+
+
+.detail-card{
+
+
+    padding:20px;
+
+}
+
+
+
+.section h2{
+
+
+    font-size:22px;
+
+}
+
+
+
+.chart-card{
+
+
+    padding:15px;
+
+}
+
+
+
+
+.forecast-card{
+
+
+    min-width:130px;
+
+}
+
+
+
+}
