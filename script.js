@@ -1,27 +1,70 @@
 /*====================================================
  WeatherSphere Pro
- Main JavaScript
+ Final Production JavaScript
 ====================================================*/
 
 
+/*=========================
+ DOM ELEMENTS
+=========================*/
+
+
 const cityInput = document.getElementById("cityInput");
+
 const searchBtn = document.getElementById("searchBtn");
 
+const locationBtn = document.getElementById("locationBtn");
+
+const themeBtn = document.getElementById("themeBtn");
+
+
 const cityName = document.getElementById("cityName");
+
 const temperature = document.getElementById("temperature");
-const weatherDescription = document.getElementById("weatherDescription");
 
-const weatherIcon = document.getElementById("weatherIcon");
+const weatherDescription =
+document.getElementById("weatherDescription");
 
-const feelsLike = document.getElementById("feelsLike");
-const humidity = document.getElementById("humidity");
-const wind = document.getElementById("wind");
 
-const sunrise = document.getElementById("sunrise");
-const sunset = document.getElementById("sunset");
+const weatherIcon =
+document.getElementById("weatherIcon");
 
-const updatedTime = document.getElementById("updatedTime");
-const localTime = document.getElementById("localTime");
+
+const feelsLike =
+document.getElementById("feelsLike");
+
+
+const humidity =
+document.getElementById("humidity");
+
+
+const wind =
+document.getElementById("wind");
+
+
+const pressure =
+document.getElementById("pressure");
+
+
+const sunrise =
+document.getElementById("sunrise");
+
+
+const sunset =
+document.getElementById("sunset");
+
+
+const aqi =
+document.getElementById("aqi");
+
+
+const updatedTime =
+document.getElementById("updatedTime");
+
+
+const localTime =
+document.getElementById("localTime");
+
 
 const forecastContainer =
 document.getElementById("forecastContainer");
@@ -31,27 +74,16 @@ const loader =
 document.getElementById("loader");
 
 
-
-let chart;
-
-
+const errorBox =
+document.getElementById("errorBox");
 
 
+const errorText =
+document.getElementById("errorText");
 
 
-/* DEFAULT CITY */
 
-
-window.onload=()=>{
-
-    getWeather(
-        "Delhi",
-        28.6139,
-        77.2090,
-        "India"
-    );
-
-};
+let temperatureChart;
 
 
 
@@ -60,14 +92,51 @@ window.onload=()=>{
 
 
 
-/* SEARCH BUTTON */
+/*=========================
+ INITIAL LOAD
+=========================*/
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+getWeather(
+
+"Delhi",
+
+28.6139,
+
+77.2090,
+
+"India"
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+
+/*=========================
+ SEARCH
+=========================*/
 
 
 searchBtn.addEventListener(
 "click",
 ()=>{
 
-let city =
+
+const city =
 cityInput.value.trim();
 
 
@@ -83,7 +152,6 @@ searchCity(city);
 
 
 
-
 cityInput.addEventListener(
 "keypress",
 (e)=>{
@@ -91,7 +159,9 @@ cityInput.addEventListener(
 
 if(e.key==="Enter"){
 
-searchCity(cityInput.value);
+searchCity(
+cityInput.value
+);
 
 }
 
@@ -103,9 +173,6 @@ searchCity(cityInput.value);
 
 
 
-
-
-/* CITY SEARCH */
 
 
 async function searchCity(city){
@@ -125,6 +192,7 @@ await fetch(
 );
 
 
+
 const data =
 await response.json();
 
@@ -132,22 +200,27 @@ await response.json();
 
 if(!data.results){
 
-alert("City not found");
-
-return;
+throw new Error(
+"City not found"
+);
 
 }
 
 
 
-const place=data.results[0];
+const place =
+data.results[0];
+
 
 
 getWeather(
 
 place.name,
+
 place.latitude,
+
 place.longitude,
+
 place.country
 
 );
@@ -162,7 +235,9 @@ saveSearch(place.name);
 
 catch(error){
 
-console.log(error);
+showError(
+error.message
+);
 
 }
 
@@ -170,15 +245,15 @@ console.log(error);
 
 finally{
 
+
 hideLoader();
 
-}
-
 
 }
 
 
 
+}
 
 
 
@@ -186,18 +261,29 @@ hideLoader();
 
 
 
-/* WEATHER API */
+
+
+
+/*=========================
+ WEATHER API
+=========================*/
 
 
 async function getWeather(
+
 city,
+
 lat,
+
 lon,
+
 country
+
 ){
 
 
 showLoader();
+
 
 
 try{
@@ -205,31 +291,34 @@ try{
 
 const url =
 
+
 `https://api.open-meteo.com/v1/forecast?
-latitude=${lat}&longitude=${lon}
+latitude=${lat}
+&longitude=${lon}
 &current=
 temperature_2m,
 relative_humidity_2m,
 apparent_temperature,
+pressure_msl,
 weather_code,
 wind_speed_10m
-
 &hourly=
 temperature_2m
-
 &daily=
 weather_code,
 temperature_2m_max,
 temperature_2m_min,
 sunrise,
 sunset
-
 &timezone=auto`;
 
 
 
+
 const response =
-await fetch(url.replace(/\s+/g,""));
+await fetch(
+url.replace(/\s+/g,"")
+);
 
 
 
@@ -238,10 +327,17 @@ await response.json();
 
 
 
-updateWeather(
+updateUI(
 data,
 city,
 country
+);
+
+
+
+getAQI(
+lat,
+lon
 );
 
 
@@ -250,7 +346,12 @@ country
 
 catch(error){
 
-console.log(error);
+
+showError(
+"Unable to load weather"
+);
+
+
 
 }
 
@@ -258,29 +359,37 @@ console.log(error);
 
 finally{
 
+
 hideLoader();
 
-}
-
-
 
 }
 
 
 
+}
 
 
 
 
 
 
-/* UPDATE UI */
 
 
-function updateWeather(
+
+/*=========================
+ UPDATE UI
+=========================*/
+
+
+function updateUI(
+
 data,
+
 city,
+
 country
+
 ){
 
 
@@ -291,31 +400,45 @@ data.current;
 
 
 cityName.innerHTML =
+
 `${city}, ${country}`;
 
 
 
+
+
 temperature.innerHTML =
+
 Math.round(
 current.temperature_2m
 );
 
 
 
+
+
 feelsLike.innerHTML =
+
 Math.round(
 current.apparent_temperature
-)+"°C";
+)
++"°C";
+
+
 
 
 
 humidity.innerHTML =
+
 current.relative_humidity_2m
 +"%";
 
 
 
+
+
 wind.innerHTML =
+
 Math.round(
 current.wind_speed_10m
 )
@@ -325,30 +448,58 @@ current.wind_speed_10m
 
 
 
-let weather =
+pressure.innerHTML =
+
+Math.round(
+current.pressure_msl
+)
++" hPa";
+
+
+
+
+
+
+const condition =
+
 getWeatherInfo(
 current.weather_code
 );
 
 
 
-weatherDescription.innerHTML =
-weather.text;
 
 
 weatherIcon.innerHTML =
-weather.icon;
+
+condition.icon;
+
+
+
+
+
+weatherDescription.innerHTML =
+
+condition.text;
+
+
+
+
 
 
 
 sunrise.innerHTML =
+
 formatTime(
 data.daily.sunrise[0]
 );
 
 
 
+
+
 sunset.innerHTML =
+
 formatTime(
 data.daily.sunset[0]
 );
@@ -356,34 +507,45 @@ data.daily.sunset[0]
 
 
 
+
 updatedTime.innerHTML =
+
 new Date()
 .toLocaleTimeString();
 
 
 
+
+
 localTime.innerHTML =
-new Date()
+
+new Date(
+data.current.time
+)
 .toLocaleString();
 
 
 
 
 
-changeBackground(
-current.weather_code
+
+changeTheme(
+current.weather_code,
+data.current.time
+);
+
+
+
+
+
+createForecast(
+data.daily
 );
 
 
 
 createChart(
 data.hourly
-);
-
-
-
-createForecast(
-data.daily
 );
 
 
@@ -398,14 +560,16 @@ data.daily
 
 
 
-
-/* WEATHER CONDITIONS */
+/*=========================
+ WEATHER DATABASE
+=========================*/
 
 
 function getWeatherInfo(code){
 
 
-const weather={
+const weather = {
+
 
 
 0:{
@@ -438,6 +602,12 @@ icon:"🌫️"
 },
 
 
+51:{
+text:"Drizzle",
+icon:"🌦️"
+},
+
+
 61:{
 text:"Rain",
 icon:"🌧️"
@@ -456,23 +626,31 @@ icon:"❄️"
 },
 
 
+80:{
+text:"Rain Showers",
+icon:"🌦️"
+},
+
+
 95:{
 text:"Thunderstorm",
 icon:"⛈️"
 }
 
 
+
 };
 
 
+return weather[code] ||
 
-return weather[code] || {
+{
 
-text:"Weather",
+text:"Unknown",
+
 icon:"🌍"
 
 };
-
 
 
 }
@@ -485,52 +663,47 @@ icon:"🌍"
 
 
 
-/* DAY NIGHT BACKGROUND */
+/*=========================
+ DYNAMIC THEME
+=========================*/
 
 
-function changeBackground(code){
+function changeTheme(
 
+code,
 
-let hour =
-new Date()
-.getHours();
+time
 
+){
 
 
 document.body.className="";
 
 
 
-if(hour>=6 && hour<=18){
+let hour =
 
-document.body.classList.add("day");
+new Date(time)
+.getHours();
+
+
+
+if(
+hour>=6 &&
+hour<18
+){
+
+document.body.classList.add(
+"day"
+);
 
 }
 
 else{
 
-document.body.classList.add("night");
-
-}
-
-
-
-
-if(code>=60 && code<70){
-
-document.body.classList.add("rain");
-
-}
-
-
-
-if(code>=95){
-
-document.body.classList.add("storm");
-
-}
-
-
+document.body.classList.add(
+"night"
+);
 
 }
 
@@ -538,27 +711,26 @@ document.body.classList.add("storm");
 
 
 
+if(code>=50 && code<70)
+
+document.body.classList.add(
+"rain"
+);
 
 
 
+if(code>=95)
 
-/* TIME FORMAT */
-
-
-function formatTime(time){
-
-
-let date =
-new Date(time);
+document.body.classList.add(
+"storm"
+);
 
 
 
-return date.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
-}
+if(code>=70 && code<80)
+
+document.body.classList.add(
+"snow"
 );
 
 
@@ -573,7 +745,99 @@ minute:"2-digit"
 
 
 
-/* FORECAST */
+/*=========================
+ AQI
+=========================*/
+
+
+async function getAQI(
+
+lat,
+
+lon
+
+){
+
+
+try{
+
+
+const response =
+
+await fetch(
+
+`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`
+
+);
+
+
+
+const data =
+await response.json();
+
+
+
+const value =
+data.current.us_aqi;
+
+
+
+aqi.innerHTML =
+
+value+
+" "+
+aqiStatus(value);
+
+
+
+}
+
+
+catch{
+
+
+aqi.innerHTML =
+"N/A";
+
+
+}
+
+
+}
+
+
+
+
+
+function aqiStatus(value){
+
+
+if(value<=50)
+
+return "🟢 Good";
+
+
+if(value<=100)
+
+return "🟡 Moderate";
+
+
+return "🔴 Poor";
+
+
+}
+
+
+
+
+
+
+
+
+
+/*=========================
+ FORECAST
+=========================*/
 
 
 function createForecast(data){
@@ -583,40 +847,54 @@ forecastContainer.innerHTML="";
 
 
 
-for(let i=0;i<7;i++){
+for(
+let i=0;
+i<7;
+i++
+){
 
 
 
-let weather =
+const weather =
+
 getWeatherInfo(
 data.weather_code[i]
 );
 
 
 
-let card =
-document.createElement("div");
+
+const card =
+
+document.createElement(
+"div"
+);
 
 
 
-card.className=
+card.className =
+
 "forecast-card glass-card";
 
 
 
-card.innerHTML=
 
+card.innerHTML =
 
 `
 
 <h3>
-${new Date(data.time[i])
+
+${new Date(
+data.time[i]
+)
 .toLocaleDateString(
 "en",
 {
 weekday:"short"
 }
 )}
+
 </h3>
 
 
@@ -649,7 +927,6 @@ ${weather.text}
 forecastContainer.appendChild(card);
 
 
-
 }
 
 
@@ -664,13 +941,16 @@ forecastContainer.appendChild(card);
 
 
 
-/* CHART */
+/*=========================
+ CHART
+=========================*/
 
 
-function createChart(hourly){
+function createChart(data){
 
 
 const ctx =
+
 document
 .getElementById(
 "hourlyChart"
@@ -678,16 +958,15 @@ document
 
 
 
-if(chart){
+if(temperatureChart)
 
-chart.destroy();
-
-}
+temperatureChart.destroy();
 
 
 
 
-chart =
+temperatureChart =
+
 new Chart(
 ctx,
 {
@@ -699,37 +978,40 @@ data:{
 
 
 labels:
-hourly.time
+
+data.time
 .slice(0,12)
 .map(
-x=>
-new Date(x)
+time=>
+
+new Date(time)
 .getHours()+"h"
+
 ),
+
 
 
 
 datasets:[{
 
 
-label:"Temperature °C",
-
-
 data:
-hourly.temperature_2m
-.slice(0,12),
 
+data.temperature_2m
+.slice(0,12),
 
 
 borderWidth:3,
 
 
-tension:.4
+tension:.4,
+
+
+label:"Temperature"
 
 
 
 }]
-
 
 },
 
@@ -760,8 +1042,9 @@ display:false
 }
 
 
+}
 
-});
+);
 
 
 
@@ -775,38 +1058,152 @@ display:false
 
 
 
+/*=========================
+ LOCATION
+=========================*/
 
-/* LOCAL STORAGE */
+
+locationBtn.addEventListener(
+"click",
+()=>{
+
+
+navigator.geolocation.getCurrentPosition(
+
+position=>{
+
+
+getWeather(
+
+"Current Location",
+
+position.coords.latitude,
+
+position.coords.longitude,
+
+""
+
+);
+
+
+},
+
+()=>{
+
+
+showError(
+"Location permission denied"
+);
+
+
+}
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+/*=========================
+ THEME BUTTON
+=========================*/
+
+
+themeBtn.addEventListener(
+"click",
+()=>{
+
+
+document.body.classList.toggle(
+"manual-dark"
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+/*=========================
+ RECENT SEARCH
+=========================*/
 
 
 function saveSearch(city){
 
 
-let searches =
+let data =
+
 JSON.parse(
 localStorage.getItem(
-"weatherSearches"
+"recentCities"
 )
 )||[];
 
 
 
-if(!searches.includes(city)){
+if(!data.includes(city)){
 
 
-searches.unshift(city);
+data.unshift(city);
 
 
-searches =
-searches.slice(0,5);
+data=data.slice(0,5);
+
 
 
 localStorage.setItem(
 
-"weatherSearches",
+"recentCities",
 
-JSON.stringify(searches)
+JSON.stringify(data)
 
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*=========================
+ HELPERS
+=========================*/
+
+
+function formatTime(time){
+
+
+return new Date(time)
+
+.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
 );
 
 
@@ -814,28 +1211,50 @@ JSON.stringify(searches)
 
 
 
-}
-
-
-
-
-
-
-
-
-
-/* LOADER */
-
-
 function showLoader(){
 
-loader.classList.remove("hidden");
+loader.classList.remove(
+"hidden"
+);
 
 }
+
 
 
 function hideLoader(){
 
-loader.classList.add("hidden");
+loader.classList.add(
+"hidden"
+);
+
+}
+
+
+
+
+function showError(message){
+
+
+errorText.innerHTML =
+message;
+
+
+errorBox.classList.remove(
+"hidden"
+);
+
+
+
+setTimeout(()=>{
+
+
+errorBox.classList.add(
+"hidden"
+);
+
+
+
+},3000);
+
 
 }
