@@ -4,35 +4,18 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WeatherSphere Pro | Weather Intelligence Dashboard</title>
+<title>WeatherSphere Pro | Smart Weather Dashboard</title>
 
-<meta name="description"
-content="WeatherSphere Pro - A modern real-time weather intelligence dashboard built with JavaScript APIs.">
-
-
-<!-- Google Font -->
+<meta name="description" content="WeatherSphere Pro - Real time weather dashboard with dynamic day night themes, astronomy and forecasts">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-rel="stylesheet">
-
-
-<!-- Icons -->
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
-
-<!-- Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
-
 
 </head>
 
@@ -40,41 +23,40 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 <body>
 
 
-<!-- Dynamic Background Layers -->
+<div class="weather-background"></div>
 
-<div class="weather-animation">
 
-<div class="cloud cloud-one"></div>
+<header class="header">
 
-<div class="cloud cloud-two"></div>
+<div class="logo">
 
-<div class="rain-container" id="rainContainer"></div>
-
-<div class="stars"></div>
+<span>🌎</span>
+<h1>WeatherSphere <b>Pro</b></h1>
 
 </div>
 
 
+<div class="controls">
+
+<button id="locationBtn">
+📍 Current Location
+</button>
 
 
-
-<!-- HEADER -->
-
-<header class="navbar">
-
-
-<div class="brand">
-
-<i class="fa-solid fa-cloud-sun"></i>
-
-WeatherSphere Pro
+<button id="themeBtn">
+🌙 Dark Mode
+</button>
 
 </div>
 
+</header>
 
 
-<div class="search-area">
 
+<main class="dashboard">
+
+
+<section class="search-section">
 
 <input 
 type="text"
@@ -84,46 +66,31 @@ placeholder="Search city..."
 
 
 <button id="searchBtn">
-
-<i class="fa-solid fa-magnifying-glass"></i>
-
+Search
 </button>
 
 
-</div>
-
-
-</header>
+</section>
 
 
 
 
 
+<section class="hero-card glass">
 
 
-<!-- MAIN -->
+<div class="location-info">
 
+<h2 id="cityName">
+Delhi, India
+</h2>
 
-<main>
+<p id="coordinates">
+Latitude -- | Longitude --
+</p>
 
-
-
-<!-- HERO WEATHER -->
-
-
-<section class="hero">
-
-
-<div class="location-box">
-
-
-<h1 id="cityName">
-Loading...
-</h1>
-
-
-<p id="currentDate">
-Fetching weather data...
+<p id="updatedTime">
+Last updated --
 </p>
 
 
@@ -131,202 +98,33 @@ Fetching weather data...
 
 
 
-
-<div class="hero-card">
-
-
-<div class="weather-main">
+<div class="main-weather">
 
 
-<div id="weatherIcon"
-class="main-icon">
-
+<div class="weather-icon" id="weatherIcon">
 ☀️
-
 </div>
-
 
 
 <div>
 
+<h1 id="temperature">
+--°C
+</h1>
 
-<h2>
-
-<span id="temperature">
---
-
-</span>
-
-°
-
-</h2>
-
-
-
-<p id="weatherDescription">
---
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="temperature-range">
+<h3 id="weatherDescription">
+Loading weather...
+</h3>
 
 
 <p>
-High
-<strong id="tempHigh">
---
-</strong>°
-</p>
-
-
-<p>
-Low
-<strong id="tempLow">
---
-</strong>°
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-
-<!-- WEATHER METRICS -->
-
-
-<section class="section">
-
-
-<h2>
-Weather Highlights
-</h2>
-
-
-
-<div class="metrics-grid">
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-temperature-half"></i>
-
-<span>Feels Like</span>
-
-<strong>
+Feels like 
 <span id="feelsLike">
---
-</span>°
-</strong>
-
-</div>
-
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-droplet"></i>
-
-<span>Humidity</span>
-
-<strong>
-<span id="humidity">
---
-</span>%
-</strong>
-
-</div>
-
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-wind"></i>
-
-<span>Wind</span>
-
-<strong>
-<span id="wind">
---
+--°C
 </span>
-km/h
-</strong>
 
-</div>
+</p>
 
-
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-eye"></i>
-
-<span>Visibility</span>
-
-<strong>
-<span id="visibility">
---
-</span>
-km
-</strong>
-
-</div>
-
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-sun"></i>
-
-<span>UV Index</span>
-
-<strong id="uvIndex">
---
-</strong>
-
-</div>
-
-
-
-
-
-<div class="metric-card">
-
-<i class="fa-solid fa-cloud"></i>
-
-<span>Cloud Cover</span>
-
-<strong>
-<span id="cloudCover">
---
-</span>%
-</strong>
 
 </div>
 
@@ -340,27 +138,97 @@ km
 
 
 
+<section class="weather-grid">
 
 
+<div class="info-card glass">
 
+<span>💧</span>
 
-<!-- HOURLY -->
+<h3>Humidity</h3>
 
-
-<section class="section">
-
-
-<h2>
-Hourly Forecast
-</h2>
-
-
-
-<div class="hourly-wrapper"
-id="hourlyForecast">
+<p id="humidity">
+-- %
+</p>
 
 </div>
 
+
+
+
+<div class="info-card glass">
+
+<span>🌬️</span>
+
+<h3>Wind Speed</h3>
+
+<p id="wind">
+-- km/h
+</p>
+
+</div>
+
+
+
+
+
+<div class="info-card glass">
+
+<span>🌡️</span>
+
+<h3>Pressure</h3>
+
+<p id="pressure">
+-- hPa
+</p>
+
+</div>
+
+
+
+
+
+<div class="info-card glass">
+
+<span>👁️</span>
+
+<h3>Visibility</h3>
+
+<p id="visibility">
+-- km
+</p>
+
+</div>
+
+
+
+
+<div class="info-card glass">
+
+<span>☀️</span>
+
+<h3>UV Index</h3>
+
+<p id="uv">
+--
+</p>
+
+</div>
+
+
+
+
+<div class="info-card glass">
+
+<span>☁️</span>
+
+<h3>Cloud Cover</h3>
+
+<p id="cloud">
+-- %
+</p>
+
+</div>
 
 
 </section>
@@ -369,14 +237,7 @@ id="hourlyForecast">
 
 
 
-
-
-
-
-<!-- DAILY FORECAST -->
-
-
-<section class="section">
+<section class="forecast-section glass">
 
 
 <h2>
@@ -384,12 +245,9 @@ id="hourlyForecast">
 </h2>
 
 
-
-<div class="daily-grid"
-id="dailyForecast">
+<div class="forecast-container" id="forecast">
 
 </div>
-
 
 
 </section>
@@ -398,183 +256,134 @@ id="dailyForecast">
 
 
 
-
-
-
-
-<!-- CHART -->
-
-
-<section class="section">
+<section class="astronomy glass">
 
 
 <h2>
-Temperature Trends
-</h2>
-
-
-<div class="chart-box">
-
-<canvas id="temperatureChart"></canvas>
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- ASTRONOMY -->
-
-
-<section class="section">
-
-
-<h2>
-Astronomy
+🌌 Astronomy
 </h2>
 
 
 
-
-<div class="astronomy-grid">
-
+<div class="astro-grid">
 
 
-<div class="astro-card">
+<div>
 
+<h3>
+🌅 Sunrise
+</h3>
 
-<i class="fa-solid fa-sun"></i>
-
-<span>
-Sunrise
-</span>
-
-
-<strong id="sunrise">
+<p id="sunrise">
 --
-</strong>
-
-
-</div>
-
-
-
-
-
-<div class="astro-card">
-
-
-<i class="fa-solid fa-cloud-sun"></i>
-
-<span>
-Sunset
-</span>
-
-
-<strong id="sunset">
---
-</strong>
-
-
-</div>
-
-
-
-
-
-
-<div class="astro-card">
-
-
-<i class="fa-solid fa-moon"></i>
-
-
-<span>
-Moon Phase
-</span>
-
-
-<strong id="moonPhase">
---
-</strong>
-
-
-</div>
-
-
-
-
-
-<div class="astro-card">
-
-
-<i class="fa-solid fa-circle"></i>
-
-
-<span>
-Illumination
-</span>
-
-
-<strong>
-
-<span id="moonIllumination">
---
-</span>%
-
-</strong>
-
-
-</div>
-
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- WEATHER INSIGHT -->
-
-
-<section class="section">
-
-
-<h2>
-Weather Intelligence
-</h2>
-
-
-
-<div class="insight-box">
-
-
-<i class="fa-solid fa-brain"></i>
-
-
-<p id="weatherInsight">
-
-Analysing current weather conditions...
-
 </p>
 
+</div>
+
+
+
+
+<div>
+
+<h3>
+🌇 Sunset
+</h3>
+
+<p id="sunset">
+--
+</p>
+
+</div>
+
+
+
+
+<div>
+
+<h3>
+🌙 Moon Phase
+</h3>
+
+<p id="moon">
+Calculating...
+</p>
+
+</div>
+
+
+
+
+<div>
+
+<h3>
+☀️ Day Length
+</h3>
+
+<p id="dayLength">
+--
+</p>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<section class="location-card glass">
+
+
+<h2>
+🌍 Location Astronomy
+</h2>
+
+
+<div class="location-grid">
+
+
+<div>
+
+<h4>
+Timezone
+</h4>
+
+<p id="timezone">
+--
+</p>
+
+</div>
+
+
+<div>
+
+<h4>
+Latitude
+</h4>
+
+<p id="latitude">
+--
+</p>
+
+</div>
+
+
+<div>
+
+<h4>
+Longitude
+</h4>
+
+<p id="longitude">
+--
+</p>
+
+</div>
 
 
 </div>
@@ -591,43 +400,19 @@ Analysing current weather conditions...
 
 
 
-
-
-
-
 <footer>
 
-
-<h3>
-WeatherSphere Pro
-</h3>
-
-
 <p>
-Built using HTML • CSS • JavaScript • Open-Meteo API
+WeatherSphere Pro • Real Time Weather Intelligence Dashboard
 </p>
-
 
 </footer>
 
 
 
 
-
-
-
-
-<!-- Chart Library -->
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-
 <script src="script.js"></script>
 
-
 </body>
-
 
 </html>
