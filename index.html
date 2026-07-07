@@ -2,416 +2,698 @@
 <html lang="en">
 
 <head>
+    <!--==================================================
+        WeatherSphere Pro 3.0
+        Premium Weather Dashboard
+        Resume Portfolio Project
+    ===================================================-->
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WeatherSphere Pro | Smart Weather Dashboard</title>
+    <title>WeatherSphere Pro 3.0 | Premium Weather Dashboard</title>
 
-<meta name="description" content="WeatherSphere Pro - Real time weather dashboard with dynamic day night themes, astronomy and forecasts">
+    <meta name="description"
+        content="Premium Google Weather + Apple Weather inspired dashboard using Open-Meteo API, AQI, RainViewer Radar, Leaflet Maps and Chart.js">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="theme-color" content="#5fa8ff">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Font -->
 
-<link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+
+    <!-- Leaflet -->
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
+<body class="light">
 
-<body>
+    <!-- Animated Background -->
 
+    <div class="background-wrapper">
 
-<div class="weather-background"></div>
+        <div class="gradient-layer"></div>
 
+        <div class="floating-cloud cloud1"></div>
+        <div class="floating-cloud cloud2"></div>
+        <div class="floating-cloud cloud3"></div>
 
-<header class="header">
+        <div class="weather-particles"></div>
 
-<div class="logo">
+    </div>
 
-<span>🌎</span>
-<h1>WeatherSphere <b>Pro</b></h1>
+    <!-- Main Wrapper -->
 
-</div>
+    <div class="app">
 
+        <!--========================
+            Sidebar
+        =========================-->
 
-<div class="controls">
+        <aside class="sidebar glass">
 
-<button id="locationBtn">
-📍 Current Location
-</button>
+            <div class="logo">
 
+                <i class="fa-solid fa-cloud-sun"></i>
 
-<button id="themeBtn">
-🌙 Dark Mode
-</button>
+                <h1>WeatherSphere</h1>
 
-</div>
+            </div>
 
-</header>
+            <nav>
 
+                <a href="#current">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
 
+                <a href="#forecast">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Forecast
+                </a>
 
-<main class="dashboard">
+                <a href="#air">
+                    <i class="fa-solid fa-wind"></i>
+                    Air Quality
+                </a>
 
+                <a href="#map">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Maps
+                </a>
 
-<section class="search-section">
+                <a href="#charts">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Analytics
+                </a>
 
-<input 
-type="text"
-id="cityInput"
-placeholder="Search city..."
->
+                <a href="#astronomy">
+                    <i class="fa-solid fa-moon"></i>
+                    Astronomy
+                </a>
 
+            </nav>
 
-<button id="searchBtn">
-Search
-</button>
+            <div class="favorites">
 
+                <h3>Favorites</h3>
 
-</section>
+                <ul id="favoriteCities">
 
+                </ul>
 
+            </div>
 
+        </aside>
 
+        <!--========================
+            Main
+        =========================-->
 
-<section class="hero-card glass">
+        <main class="main-content">
 
+            <!--========================
+                Top Bar
+            =========================-->
 
-<div class="location-info">
+            <header class="topbar glass">
 
-<h2 id="cityName">
-Delhi, India
-</h2>
+                <div class="search-box">
 
-<p id="coordinates">
-Latitude -- | Longitude --
-</p>
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-<p id="updatedTime">
-Last updated --
-</p>
+                    <input
+                        id="cityInput"
+                        type="text"
+                        placeholder="Search city...">
 
+                    <button id="searchBtn">
 
-</div>
+                        Search
 
+                    </button>
 
+                </div>
 
-<div class="main-weather">
+                <div class="actions">
 
+                    <button id="locationBtn">
 
-<div class="weather-icon" id="weatherIcon">
-☀️
-</div>
+                        <i class="fa-solid fa-location-crosshairs"></i>
 
+                    </button>
 
-<div>
+                    <button id="themeToggle">
 
-<h1 id="temperature">
---°C
-</h1>
+                        <i class="fa-solid fa-moon"></i>
 
-<h3 id="weatherDescription">
-Loading weather...
-</h3>
+                    </button>
 
+                </div>
 
-<p>
-Feels like 
-<span id="feelsLike">
---°C
-</span>
+            </header>
 
-</p>
+            <!--========================
+                Current Weather
+            =========================-->
 
+            <section
+                class="hero glass"
+                id="current">
 
-</div>
+                <div class="hero-left">
 
+                    <h2 id="cityName">
 
-</div>
+                        New Delhi
 
+                    </h2>
 
-</section>
+                    <p id="currentDate">
 
+                        Wednesday
 
+                    </p>
 
+                    <div class="temperature">
 
+                        <span id="temperature">
 
-<section class="weather-grid">
+                            30°
 
+                        </span>
 
-<div class="info-card glass">
+                        <img
+                            id="weatherIcon"
+                            src=""
+                            alt="Weather Icon">
 
-<span>💧</span>
+                    </div>
 
-<h3>Humidity</h3>
+                    <h3 id="weatherDescription">
 
-<p id="humidity">
--- %
-</p>
+                        Partly Cloudy
 
-</div>
+                    </h3>
 
+                    <p id="feelsLike">
 
+                        Feels like 32°C
 
+                    </p>
 
-<div class="info-card glass">
+                </div>
 
-<span>🌬️</span>
+                <div class="hero-right">
 
-<h3>Wind Speed</h3>
+                    <div class="info">
 
-<p id="wind">
--- km/h
-</p>
+                        <span>Local Time</span>
 
-</div>
+                        <h3 id="localTime">
 
+                            --:--
 
+                        </h3>
 
+                    </div>
 
+                    <div class="info">
 
-<div class="info-card glass">
+                        <span>Last Updated</span>
 
-<span>🌡️</span>
+                        <h3 id="lastUpdated">
 
-<h3>Pressure</h3>
+                            --
 
-<p id="pressure">
--- hPa
-</p>
+                        </h3>
 
-</div>
+                    </div>
 
+                    <div class="info">
 
+                        <span>Timezone</span>
 
+                        <h3 id="timezone">
 
+                            Asia/Kolkata
 
-<div class="info-card glass">
+                        </h3>
 
-<span>👁️</span>
+                    </div>
 
-<h3>Visibility</h3>
+                </div>
 
-<p id="visibility">
--- km
-</p>
+            </section>
 
-</div>
+            <!--========================
+                Today's Highlights
+            =========================-->
 
+            <section class="grid highlights">
 
+                <div class="card glass">
 
+                    <h4>Humidity</h4>
 
-<div class="info-card glass">
+                    <h2 id="humidity">--%</h2>
 
-<span>☀️</span>
+                </div>
 
-<h3>UV Index</h3>
+                <div class="card glass">
 
-<p id="uv">
---
-</p>
+                    <h4>Wind</h4>
 
-</div>
+                    <h2 id="windSpeed">-- km/h</h2>
 
+                </div>
 
+                <div class="card glass">
 
+                    <h4>Pressure</h4>
 
-<div class="info-card glass">
+                    <h2 id="pressure">----</h2>
 
-<span>☁️</span>
+                </div>
 
-<h3>Cloud Cover</h3>
+                <div class="card glass">
 
-<p id="cloud">
--- %
-</p>
+                    <h4>Visibility</h4>
 
-</div>
+                    <h2 id="visibility">-- km</h2>
 
+                </div>
 
-</section>
+                <div class="card glass">
 
+                    <h4>UV Index</h4>
 
+                    <h2 id="uv">--</h2>
 
+                </div>
 
+                <div class="card glass">
 
-<section class="forecast-section glass">
+                    <h4>Cloud Cover</h4>
 
+                    <h2 id="cloudCover">--%</h2>
 
-<h2>
-7 Day Forecast
-</h2>
+                </div>
 
+                <div class="card glass">
 
-<div class="forecast-container" id="forecast">
+                    <h4>Dew Point</h4>
 
-</div>
+                    <h2 id="dewPoint">--°</h2>
 
+                </div>
 
-</section>
+                <div class="card glass">
 
+                    <h4>Rain Chance</h4>
 
+                    <h2 id="rainChance">--%</h2>
 
+                </div>
 
+            </section>
+                        <!--========================
+                Air Quality Section
+            =========================-->
 
-<section class="astronomy glass">
+            <section id="air" class="section">
 
+                <div class="section-title">
+                    <h2>Air Quality</h2>
+                    <span>Live Open-Meteo Air Quality Data</span>
+                </div>
 
-<h2>
-🌌 Astronomy
-</h2>
+                <div class="aqi-grid">
 
+                    <div class="card glass aqi-main">
+                        <h3>Air Quality Index</h3>
+                        <div class="aqi-circle">
+                            <span id="aqiValue">--</span>
+                        </div>
 
+                        <h4 id="aqiStatus">Loading...</h4>
+                    </div>
 
-<div class="astro-grid">
+                    <div class="card glass">
+                        <h4>PM2.5</h4>
+                        <h2 id="pm25">--</h2>
+                    </div>
 
+                    <div class="card glass">
+                        <h4>PM10</h4>
+                        <h2 id="pm10">--</h2>
+                    </div>
 
-<div>
+                    <div class="card glass">
+                        <h4>Carbon Monoxide</h4>
+                        <h2 id="co">--</h2>
+                    </div>
 
-<h3>
-🌅 Sunrise
-</h3>
+                    <div class="card glass">
+                        <h4>Nitrogen Dioxide</h4>
+                        <h2 id="no2">--</h2>
+                    </div>
 
-<p id="sunrise">
---
-</p>
+                    <div class="card glass">
+                        <h4>Ozone</h4>
+                        <h2 id="ozone">--</h2>
+                    </div>
 
-</div>
+                </div>
 
+            </section>
 
+            <!--========================
+                Hourly Forecast
+            =========================-->
 
+            <section id="forecast" class="section">
 
-<div>
+                <div class="section-title">
+                    <h2>24 Hour Forecast</h2>
+                </div>
 
-<h3>
-🌇 Sunset
-</h3>
+                <div id="hourlyForecast"
+                    class="hourly-scroll">
 
-<p id="sunset">
---
-</p>
+                </div>
 
-</div>
+            </section>
 
+            <!--========================
+                7 Day Forecast
+            =========================-->
 
+            <section class="section">
 
+                <div class="section-title">
+                    <h2>7 Day Forecast</h2>
+                </div>
 
-<div>
+                <div id="dailyForecast"
+                    class="daily-grid">
 
-<h3>
-🌙 Moon Phase
-</h3>
+                </div>
 
-<p id="moon">
-Calculating...
-</p>
+            </section>
 
-</div>
+            <!--========================
+                Analytics
+            =========================-->
 
+            <section
+                id="charts"
+                class="section">
 
+                <div class="section-title">
 
+                    <h2>Weather Analytics</h2>
 
-<div>
+                </div>
 
-<h3>
-☀️ Day Length
-</h3>
+                <div class="charts-grid">
 
-<p id="dayLength">
---
-</p>
+                    <div class="glass chart-card">
 
-</div>
+                        <h3>Temperature</h3>
 
+                        <canvas
+                            id="temperatureChart">
+                        </canvas>
 
-</div>
+                    </div>
 
+                    <div class="glass chart-card">
 
-</section>
+                        <h3>Humidity</h3>
 
+                        <canvas
+                            id="humidityChart">
+                        </canvas>
 
+                    </div>
 
+                    <div class="glass chart-card">
 
+                        <h3>Wind Speed</h3>
 
+                        <canvas
+                            id="windChart">
+                        </canvas>
 
-<section class="location-card glass">
+                    </div>
 
+                </div>
 
-<h2>
-🌍 Location Astronomy
-</h2>
+            </section>
 
+            <!--========================
+                Radar
+            =========================-->
 
-<div class="location-grid">
+            <section
+                class="section">
 
+                <div class="section-title">
 
-<div>
+                    <h2>RainViewer Radar</h2>
 
-<h4>
-Timezone
-</h4>
+                </div>
 
-<p id="timezone">
---
-</p>
+                <div class="glass radar-card">
 
-</div>
+                    <iframe
 
+                        id="radarFrame"
 
-<div>
+                        loading="lazy"
 
-<h4>
-Latitude
-</h4>
+                        allowfullscreen>
 
-<p id="latitude">
---
-</p>
+                    </iframe>
 
-</div>
+                </div>
 
+            </section>
 
-<div>
+            <!--========================
+                Interactive Map
+            =========================-->
 
-<h4>
-Longitude
-</h4>
+            <section
+                id="map"
+                class="section">
 
-<p id="longitude">
---
-</p>
+                <div class="section-title">
 
-</div>
+                    <h2>Interactive Weather Map</h2>
 
+                </div>
 
-</div>
+                <div
+                    id="weatherMap"
+                    class="glass map">
 
+                </div>
 
-</section>
+            </section>
 
+            <!--========================
+                Astronomy
+            =========================-->
 
+            <section
+                id="astronomy"
+                class="section">
 
+                <div class="section-title">
 
-</main>
+                    <h2>Astronomy</h2>
 
+                </div>
 
+                <div class="astro-grid">
 
+                    <div class="glass card">
+                        <h4>Sunrise</h4>
+                        <h2 id="sunrise">--</h2>
+                    </div>
 
+                    <div class="glass card">
+                        <h4>Sunset</h4>
+                        <h2 id="sunset">--</h2>
+                    </div>
 
-<footer>
+                    <div class="glass card">
+                        <h4>Solar Noon</h4>
+                        <h2 id="solarNoon">--</h2>
+                    </div>
 
-<p>
-WeatherSphere Pro • Real Time Weather Intelligence Dashboard
-</p>
+                    <div class="glass card">
+                        <h4>Day Length</h4>
+                        <h2 id="dayLength">--</h2>
+                    </div>
 
-</footer>
+                    <div class="glass card">
+                        <h4>Moon Phase</h4>
+                        <h2 id="moonPhase">--</h2>
+                    </div>
 
+                    <div class="glass card">
+                        <h4>Golden Hour</h4>
+                        <h2 id="goldenHour">--</h2>
+                    </div>
 
+                </div>
 
+            </section>
 
-<script src="script.js"></script>
+            <!--========================
+                Health Suggestions
+            =========================-->
+
+            <section class="section">
+
+                <div class="section-title">
+
+                    <h2>Health Recommendations</h2>
+
+                </div>
+
+                <div class="recommendation-grid">
+
+                    <div class="glass recommendation">
+
+                        <i class="fa-solid fa-glass-water"></i>
+
+                        <h3>Hydration</h3>
+
+                        <p id="hydrationTip"></p>
+
+                    </div>
+
+                    <div class="glass recommendation">
+
+                        <i class="fa-solid fa-person-walking"></i>
+
+                        <h3>Exercise</h3>
+
+                        <p id="exerciseTip"></p>
+
+                    </div>
+
+                    <div class="glass recommendation">
+
+                        <i class="fa-solid fa-shirt"></i>
+
+                        <h3>Clothing</h3>
+
+                        <p id="clothingTip"></p>
+
+                    </div>
+
+                    <div class="glass recommendation">
+
+                        <i class="fa-solid fa-car"></i>
+
+                        <h3>Travel</h3>
+
+                        <p id="travelTip"></p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!--========================
+                Recent Searches
+            =========================-->
+
+            <section class="section">
+
+                <div class="section-title">
+
+                    <h2>Recent Searches</h2>
+
+                </div>
+
+                <div
+                    id="recentSearches"
+                    class="recent-grid">
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!--========================
+        Footer
+    =========================-->
+
+    <footer class="footer glass">
+
+        <div>
+
+            WeatherSphere Pro 3.0
+
+        </div>
+
+        <div>
+
+            Weather data by Open-Meteo
+
+        </div>
+
+        <div>
+
+            Last Updated :
+            <span id="footerUpdated">
+                --
+            </span>
+
+        </div>
+
+    </footer>
+
+    <!--========================
+        Libraries
+    =========================-->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!--========================
+        Main JavaScript
+    =========================-->
+
+    <script src="script.js"></script>
 
 </body>
 
