@@ -4060,3 +4060,315 @@ li
 
 
 }
+
+/*==========================================================
+ FINAL MOBILE + DESKTOP SAFE INITIALIZER
+==========================================================*/
+
+
+let appStarted = false;
+
+
+
+async function startApp(){
+
+
+    if(appStarted) return;
+
+
+    appStarted = true;
+
+
+
+    console.log(
+        "WeatherSphere Pro Started"
+    );
+
+
+
+    loadTheme();
+
+
+
+    setupEvents();
+
+
+
+    renderRecentSearches();
+
+
+
+    renderFavorites();
+
+
+
+    setTimeout(()=>{
+
+
+        initMap();
+
+
+        if(weatherState.map){
+
+            weatherState.map.invalidateSize();
+
+        }
+
+
+    },600);
+
+
+
+    await fetchWeather();
+
+
+
+}
+
+
+
+
+
+
+/*==========================================================
+ WAIT FOR COMPLETE PAGE LOAD
+==========================================================*/
+
+
+if(
+document.readyState === "loading"
+){
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+startApp();
+
+
+}
+
+);
+
+
+
+}
+
+else{
+
+
+startApp();
+
+
+}
+
+
+
+
+
+
+
+/*==========================================================
+ MOBILE MAP RESIZE FIX
+==========================================================*/
+
+
+window.addEventListener(
+
+"resize",
+
+()=>{
+
+
+if(weatherState.map){
+
+
+setTimeout(()=>{
+
+
+weatherState.map.invalidateSize();
+
+
+
+},300);
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+/*==========================================================
+ MOBILE SIDEBAR TOGGLE
+==========================================================*/
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+const menuButton =
+document.getElementById(
+"menuToggle"
+);
+
+
+
+const sidebar =
+document.querySelector(
+".sidebar"
+);
+
+
+
+if(
+menuButton &&
+sidebar
+){
+
+
+
+menuButton.onclick = ()=>{
+
+
+sidebar.classList.toggle(
+"active"
+);
+
+
+};
+
+
+
+/* close sidebar after clicking menu item */
+
+
+document
+.querySelectorAll(
+".sidebar a"
+)
+.forEach(link=>{
+
+
+link.onclick=()=>{
+
+
+sidebar.classList.remove(
+"active"
+);
+
+
+
+};
+
+
+});
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+/*==========================================================
+ AUTO WEATHER UPDATE
+==========================================================*/
+
+
+setInterval(
+
+()=>{
+
+
+if(weatherState.city){
+
+
+fetchWeather();
+
+
+}
+
+
+},
+
+15*60*1000
+
+);
+
+
+
+
+
+
+
+/*==========================================================
+ INTERNET STATUS
+==========================================================*/
+
+
+window.addEventListener(
+
+"offline",
+
+()=>{
+
+
+console.warn(
+"Internet disconnected"
+);
+
+
+}
+);
+
+
+
+window.addEventListener(
+
+"online",
+
+()=>{
+
+
+console.log(
+"Internet restored"
+);
+
+
+fetchWeather();
+
+
+}
+);
+
+
+
+
+
+/*==========================================================
+ END FINAL JS MOBILE PATCH
+==========================================================*/
