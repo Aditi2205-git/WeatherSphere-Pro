@@ -6,131 +6,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WeatherSphere Pro | Real-Time Weather Intelligence</title>
+<title>WeatherSphere Pro | Premium Weather Dashboard</title>
 
-<meta name="description"
-content="WeatherSphere Pro - A responsive real-time weather dashboard with dynamic themes, forecasts and analytics">
-
-
-<!-- Google Font -->
+<meta name="description" content="WeatherSphere Pro is a modern responsive weather dashboard with forecasts, astronomy data, weather insights and real-time conditions.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
-
-
-
-<!-- Chart.js -->
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-
-<!-- Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
-
 
 </head>
 
 
-
-<body class="day">
-
+<body>
 
 
-<!-- =========================
- WEATHER BACKGROUND ENGINE
-========================= -->
-
-
-<div class="weather-background">
-
-
-<div class="stars"></div>
-
-
-<div class="cloud cloud-one"></div>
-
-<div class="cloud cloud-two"></div>
-
-
-<div class="rain-container"></div>
-
-
-<div class="snow-container"></div>
-
-
-
-</div>
-
-
-
-
-
-
-<!-- =========================
- HEADER
-========================= -->
-
+<!-- ================= HEADER ================= -->
 
 <header class="header">
 
-
 <div class="logo">
-
-🌎 WeatherSphere
-<span>Pro</span>
-
+🌤️ WeatherSphere Pro
 </div>
-
-
-
-
-
-<div class="controls">
 
 
 <div class="search-box">
 
-
-<input
+<input 
 type="text"
 id="cityInput"
 placeholder="Search city..."
 autocomplete="off"
 >
 
-
 <button id="searchBtn">
-
-🔍
-
+Search
 </button>
-
-
-
-<button id="locationBtn">
-
-📍
-
-</button>
-
-
-
-<button id="themeBtn">
-
-🌙
-
-</button>
-
-
-
-</div>
-
 
 </div>
 
@@ -140,119 +53,78 @@ autocomplete="off"
 
 
 
+<!-- ================= HERO WEATHER ================= -->
 
-
-
-
-
-<!-- =========================
- MAIN
-========================= -->
-
-
-<main class="container">
-
-
-
-
-
-
-<!-- CURRENT WEATHER -->
-
-
-<section class="weather-main glass-card">
-
+<section class="hero">
 
 
 <div class="location">
 
-
 <h1 id="cityName">
-
-Delhi, India
-
+Loading...
 </h1>
 
-
-
-<p id="localTime">
-
-Loading local time...
-
+<p id="dateTime">
+Fetching latest weather data...
 </p>
 
-
 </div>
 
 
 
+<div class="current-weather-card">
 
 
-
-
-<div class="weather-icon"
-id="weatherIcon">
-
+<div class="weather-icon" id="weatherIcon">
 ☀️
-
 </div>
-
-
-
-
-
-
 
 
 <div class="temperature">
 
-
 <h2>
-
 <span id="temperature">
-28
-</span>°
-
+--</span>°
 </h2>
-
 
 <p id="weatherDescription">
-
-Sunny
-
+Clear Sky
 </p>
-
 
 </div>
 
 
 
+<div class="weather-extra">
 
-
-
-
-
-<div class="update-box">
-
-
-<p>
-
-Last Updated
-
-</p>
-
-
-<strong id="updatedTime">
-
---:--
-
+<div>
+<span>Feels Like</span>
+<strong>
+<span id="feelsLike">--</span>°
 </strong>
+</div>
+
+
+<div>
+<span>Humidity</span>
+<strong>
+<span id="humidity">--</span>%
+</strong>
+</div>
+
+
+<div>
+<span>Wind</span>
+<strong>
+<span id="windSpeed">--</span> km/h
+</strong>
+</div>
 
 
 </div>
 
 
-
+</div>
 
 
 </section>
@@ -262,123 +134,65 @@ Last Updated
 
 
 
-
-
-
-<!-- WEATHER DETAILS -->
-
-
-<section class="details-grid">
-
-
-
-<div class="detail-card glass-card">
-
-<h3>
-Feels Like
-</h3>
-
-<p id="feelsLike">
-31°C
-</p>
-
-</div>
-
-
-
-
-
-<div class="detail-card glass-card">
-
-
-<h3>
-Humidity
-</h3>
-
-
-<p id="humidity">
-
-45%
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="detail-card glass-card">
-
-
-<h3>
-Wind
-</h3>
-
-
-<p id="wind">
-
-12 km/h
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-<div class="detail-card glass-card">
-
-
-<h3>
-Pressure
-</h3>
-
-
-<p id="pressure">
-
-1015 hPa
-
-</p>
-
-
-</div>
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- HOURLY FORECAST -->
-
+<!-- ================= WEATHER HIGHLIGHTS ================= -->
 
 <section class="section">
 
 
-<h2>
-Hourly Temperature
+<h2 class="section-title">
+Weather Highlights
 </h2>
 
 
-<div class="chart-card glass-card">
+
+<div class="highlight-grid">
 
 
-<canvas id="hourlyChart"></canvas>
+<div class="weather-card">
+
+<h3>🌡 Pressure</h3>
+
+<p>
+<span id="pressure">--</span> hPa
+</p>
+
+</div>
+
+
+
+<div class="weather-card">
+
+<h3>🌫 Visibility</h3>
+
+<p>
+<span id="visibility">--</span> km
+</p>
+
+</div>
+
+
+
+<div class="weather-card">
+
+<h3>☁ Cloud Cover</h3>
+
+<p>
+<span id="cloudCover">--</span> %
+</p>
+
+</div>
+
+
+
+<div class="weather-card">
+
+<h3>☀ UV Index</h3>
+
+<p>
+<span id="uvIndex">--</span>
+</p>
+
+</div>
 
 
 </div>
@@ -392,115 +206,175 @@ Hourly Temperature
 
 
 
-
-
-<!-- WEATHER INFORMATION -->
-
-
-<section class="info-grid">
-
-
-
-
-
-<div class="info-card glass-card">
-
-
-<h3>
-
-🌅 Sunrise
-
-</h3>
-
-
-<p id="sunrise">
-
-05:30 AM
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="info-card glass-card">
-
-
-<h3>
-
-🌇 Sunset
-
-</h3>
-
-
-<p id="sunset">
-
-07:20 PM
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="info-card glass-card">
-
-
-<h3>
-
-🌿 Air Quality
-
-</h3>
-
-
-<p id="aqi">
-
-Loading...
-
-</p>
-
-
-</div>
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- FORECAST -->
+<!-- ================= HOURLY FORECAST ================= -->
 
 
 <section class="section">
 
 
-<h2>
+<h2 class="section-title">
+Hourly Forecast
+</h2>
+
+
+
+<div class="hourly-container" id="hourlyForecast">
+
+
+<!-- Javascript Inserts Hour Cards -->
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= DAILY FORECAST ================= -->
+
+<section class="section">
+
+
+<h2 class="section-title">
 7 Day Forecast
 </h2>
 
 
+<div class="forecast-grid" id="dailyForecast">
 
-<div class="forecast-container"
-id="forecastContainer">
+
+<!-- Javascript Inserts Forecast Cards -->
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= WEATHER CHART ================= -->
+
+
+<section class="section">
+
+
+<h2 class="section-title">
+Temperature Trends
+</h2>
+
+
+<div class="chart-card">
+
+<canvas id="temperatureChart"></canvas>
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= ASTRONOMY ================= -->
+
+
+<section class="section astronomy-section">
+
+
+<h2 class="section-title">
+🌙 Astronomy
+</h2>
+
+
+
+<div class="astronomy-grid">
+
+
+
+<div class="astro-card">
+
+
+<h3>
+🌅 Sunrise
+</h3>
+
+
+<p id="sunrise">
+--
+</p>
+
+
+</div>
+
+
+
+
+<div class="astro-card">
+
+
+<h3>
+🌇 Sunset
+</h3>
+
+
+<p id="sunset">
+--
+</p>
+
+
+</div>
+
+
+
+
+<div class="astro-card">
+
+
+<h3>
+🌕 Moon Phase
+</h3>
+
+
+<p id="moonPhase">
+--
+</p>
+
+
+</div>
+
+
+
+
+<div class="astro-card">
+
+
+<h3>
+🌙 Moon Illumination
+</h3>
+
+
+<p>
+<span id="moonIllumination">
+--
+</span>%
+</p>
+
+
+</div>
 
 
 
@@ -515,93 +389,66 @@ id="forecastContainer">
 
 
 
+<!-- ================= WEATHER INSIGHTS ================= -->
 
 
-</main>
+<section class="section">
+
+
+<h2 class="section-title">
+🧠 Weather Insights
+</h2>
 
 
 
+<div class="insights-card">
 
 
+<p id="weatherInsight">
 
+Analysing weather conditions...
 
+</p>
 
-
-<!-- LOADER -->
-
-
-<div class="loader hidden"
-id="loader">
-
-
-<div class="loader-card">
-
-
-<div class="loader-icon">
-
-🌎
 
 </div>
 
 
+</section>
 
-<h3>
 
-Fetching Weather
 
-</h3>
 
+
+
+
+<!-- ================= FOOTER ================= -->
+
+
+<footer>
 
 
 <p>
-
-Please wait...
-
+WeatherSphere Pro
 </p>
 
 
-</div>
+<span>
+Built with HTML • CSS • JavaScript • Open-Meteo API
+</span>
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<!-- ERROR MESSAGE -->
-
-
-<div class="error hidden"
-id="errorBox">
-
-
-<p id="errorText">
-
-Unable to fetch weather data
-
-</p>
-
-
-</div>
+</footer>
 
 
 
 
 
-
-
-
-<!-- JAVASCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script src="script.js"></script>
 
 
 </body>
-
 
 </html>
