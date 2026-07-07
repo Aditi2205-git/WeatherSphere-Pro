@@ -4,18 +4,35 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WeatherSphere Pro | Premium Weather Dashboard</title>
+<title>WeatherSphere Pro | Weather Intelligence Dashboard</title>
 
-<meta name="description" content="WeatherSphere Pro is a modern responsive weather dashboard with forecasts, astronomy data, weather insights and real-time conditions.">
+<meta name="description"
+content="WeatherSphere Pro - A modern real-time weather intelligence dashboard built with JavaScript APIs.">
+
+
+<!-- Google Font -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+
+<!-- Icons -->
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+
+<!-- Styles -->
 
 <link rel="stylesheet" href="style.css">
+
 
 </head>
 
@@ -23,27 +40,55 @@
 <body>
 
 
-<!-- ================= HEADER ================= -->
+<!-- Dynamic Background Layers -->
 
-<header class="header">
+<div class="weather-animation">
 
-<div class="logo">
-🌤️ WeatherSphere Pro
+<div class="cloud cloud-one"></div>
+
+<div class="cloud cloud-two"></div>
+
+<div class="rain-container" id="rainContainer"></div>
+
+<div class="stars"></div>
+
 </div>
 
 
-<div class="search-box">
+
+
+
+<!-- HEADER -->
+
+<header class="navbar">
+
+
+<div class="brand">
+
+<i class="fa-solid fa-cloud-sun"></i>
+
+WeatherSphere Pro
+
+</div>
+
+
+
+<div class="search-area">
+
 
 <input 
 type="text"
 id="cityInput"
 placeholder="Search city..."
-autocomplete="off"
 >
 
+
 <button id="searchBtn">
-Search
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
 </button>
+
 
 </div>
 
@@ -53,72 +98,104 @@ Search
 
 
 
-<!-- ================= HERO WEATHER ================= -->
+
+
+
+<!-- MAIN -->
+
+
+<main>
+
+
+
+<!-- HERO WEATHER -->
+
 
 <section class="hero">
 
 
-<div class="location">
+<div class="location-box">
+
 
 <h1 id="cityName">
 Loading...
 </h1>
 
-<p id="dateTime">
-Fetching latest weather data...
+
+<p id="currentDate">
+Fetching weather data...
 </p>
 
+
 </div>
 
 
 
-<div class="current-weather-card">
+
+<div class="hero-card">
 
 
-<div class="weather-icon" id="weatherIcon">
+<div class="weather-main">
+
+
+<div id="weatherIcon"
+class="main-icon">
+
 ☀️
+
 </div>
 
 
-<div class="temperature">
+
+<div>
+
 
 <h2>
+
 <span id="temperature">
---</span>°
+--
+
+</span>
+
+°
+
 </h2>
 
+
+
 <p id="weatherDescription">
-Clear Sky
+--
+
 </p>
 
+
+
+</div>
+
+
 </div>
 
 
 
-<div class="weather-extra">
-
-<div>
-<span>Feels Like</span>
-<strong>
-<span id="feelsLike">--</span>°
-</strong>
-</div>
 
 
-<div>
-<span>Humidity</span>
-<strong>
-<span id="humidity">--</span>%
-</strong>
-</div>
+<div class="temperature-range">
 
 
-<div>
-<span>Wind</span>
-<strong>
-<span id="windSpeed">--</span> km/h
-</strong>
-</div>
+<p>
+High
+<strong id="tempHigh">
+--
+</strong>°
+</p>
+
+
+<p>
+Low
+<strong id="tempLow">
+--
+</strong>°
+</p>
 
 
 </div>
@@ -134,63 +211,122 @@ Clear Sky
 
 
 
-<!-- ================= WEATHER HIGHLIGHTS ================= -->
+
+
+<!-- WEATHER METRICS -->
+
 
 <section class="section">
 
 
-<h2 class="section-title">
+<h2>
 Weather Highlights
 </h2>
 
 
 
-<div class="highlight-grid">
-
-
-<div class="weather-card">
-
-<h3>🌡 Pressure</h3>
-
-<p>
-<span id="pressure">--</span> hPa
-</p>
-
-</div>
+<div class="metrics-grid">
 
 
 
-<div class="weather-card">
+<div class="metric-card">
 
-<h3>🌫 Visibility</h3>
+<i class="fa-solid fa-temperature-half"></i>
 
-<p>
-<span id="visibility">--</span> km
-</p>
+<span>Feels Like</span>
+
+<strong>
+<span id="feelsLike">
+--
+</span>°
+</strong>
 
 </div>
 
 
 
-<div class="weather-card">
 
-<h3>☁ Cloud Cover</h3>
+<div class="metric-card">
 
-<p>
-<span id="cloudCover">--</span> %
-</p>
+<i class="fa-solid fa-droplet"></i>
+
+<span>Humidity</span>
+
+<strong>
+<span id="humidity">
+--
+</span>%
+</strong>
 
 </div>
 
 
 
-<div class="weather-card">
 
-<h3>☀ UV Index</h3>
+<div class="metric-card">
 
-<p>
-<span id="uvIndex">--</span>
-</p>
+<i class="fa-solid fa-wind"></i>
+
+<span>Wind</span>
+
+<strong>
+<span id="wind">
+--
+</span>
+km/h
+</strong>
+
+</div>
+
+
+
+
+
+<div class="metric-card">
+
+<i class="fa-solid fa-eye"></i>
+
+<span>Visibility</span>
+
+<strong>
+<span id="visibility">
+--
+</span>
+km
+</strong>
+
+</div>
+
+
+
+
+<div class="metric-card">
+
+<i class="fa-solid fa-sun"></i>
+
+<span>UV Index</span>
+
+<strong id="uvIndex">
+--
+</strong>
+
+</div>
+
+
+
+
+
+<div class="metric-card">
+
+<i class="fa-solid fa-cloud"></i>
+
+<span>Cloud Cover</span>
+
+<strong>
+<span id="cloudCover">
+--
+</span>%
+</strong>
 
 </div>
 
@@ -206,23 +342,22 @@ Weather Highlights
 
 
 
-<!-- ================= HOURLY FORECAST ================= -->
+
+
+<!-- HOURLY -->
 
 
 <section class="section">
 
 
-<h2 class="section-title">
+<h2>
 Hourly Forecast
 </h2>
 
 
 
-<div class="hourly-container" id="hourlyForecast">
-
-
-<!-- Javascript Inserts Hour Cards -->
-
+<div class="hourly-wrapper"
+id="hourlyForecast">
 
 </div>
 
@@ -236,23 +371,25 @@ Hourly Forecast
 
 
 
-<!-- ================= DAILY FORECAST ================= -->
+
+
+<!-- DAILY FORECAST -->
+
 
 <section class="section">
 
 
-<h2 class="section-title">
+<h2>
 7 Day Forecast
 </h2>
 
 
-<div class="forecast-grid" id="dailyForecast">
 
-
-<!-- Javascript Inserts Forecast Cards -->
-
+<div class="daily-grid"
+id="dailyForecast">
 
 </div>
+
 
 
 </section>
@@ -263,24 +400,27 @@ Hourly Forecast
 
 
 
-<!-- ================= WEATHER CHART ================= -->
+
+
+<!-- CHART -->
 
 
 <section class="section">
 
 
-<h2 class="section-title">
+<h2>
 Temperature Trends
 </h2>
 
 
-<div class="chart-card">
+<div class="chart-box">
 
 <canvas id="temperatureChart"></canvas>
 
 </div>
 
 
+
 </section>
 
 
@@ -289,15 +429,18 @@ Temperature Trends
 
 
 
-<!-- ================= ASTRONOMY ================= -->
 
 
-<section class="section astronomy-section">
+<!-- ASTRONOMY -->
 
 
-<h2 class="section-title">
-🌙 Astronomy
+<section class="section">
+
+
+<h2>
+Astronomy
 </h2>
+
 
 
 
@@ -308,14 +451,16 @@ Temperature Trends
 <div class="astro-card">
 
 
-<h3>
-🌅 Sunrise
-</h3>
+<i class="fa-solid fa-sun"></i>
+
+<span>
+Sunrise
+</span>
 
 
-<p id="sunrise">
+<strong id="sunrise">
 --
-</p>
+</strong>
 
 
 </div>
@@ -323,17 +468,20 @@ Temperature Trends
 
 
 
+
 <div class="astro-card">
 
 
-<h3>
-🌇 Sunset
-</h3>
+<i class="fa-solid fa-cloud-sun"></i>
+
+<span>
+Sunset
+</span>
 
 
-<p id="sunset">
+<strong id="sunset">
 --
-</p>
+</strong>
 
 
 </div>
@@ -341,17 +489,22 @@ Temperature Trends
 
 
 
+
+
 <div class="astro-card">
 
 
-<h3>
-🌕 Moon Phase
-</h3>
+<i class="fa-solid fa-moon"></i>
 
 
-<p id="moonPhase">
+<span>
+Moon Phase
+</span>
+
+
+<strong id="moonPhase">
 --
-</p>
+</strong>
 
 
 </div>
@@ -359,19 +512,25 @@ Temperature Trends
 
 
 
+
 <div class="astro-card">
 
 
-<h3>
-🌙 Moon Illumination
-</h3>
+<i class="fa-solid fa-circle"></i>
 
 
-<p>
+<span>
+Illumination
+</span>
+
+
+<strong>
+
 <span id="moonIllumination">
 --
 </span>%
-</p>
+
+</strong>
 
 
 </div>
@@ -379,6 +538,7 @@ Temperature Trends
 
 
 </div>
+
 
 
 </section>
@@ -389,26 +549,32 @@ Temperature Trends
 
 
 
-<!-- ================= WEATHER INSIGHTS ================= -->
+
+
+<!-- WEATHER INSIGHT -->
 
 
 <section class="section">
 
 
-<h2 class="section-title">
-🧠 Weather Insights
+<h2>
+Weather Intelligence
 </h2>
 
 
 
-<div class="insights-card">
+<div class="insight-box">
+
+
+<i class="fa-solid fa-brain"></i>
 
 
 <p id="weatherInsight">
 
-Analysing weather conditions...
+Analysing current weather conditions...
 
 </p>
+
 
 
 </div>
@@ -419,23 +585,27 @@ Analysing weather conditions...
 
 
 
+</main>
 
 
 
-<!-- ================= FOOTER ================= -->
+
+
+
+
 
 
 <footer>
 
 
-<p>
+<h3>
 WeatherSphere Pro
+</h3>
+
+
+<p>
+Built using HTML • CSS • JavaScript • Open-Meteo API
 </p>
-
-
-<span>
-Built with HTML • CSS • JavaScript • Open-Meteo API
-</span>
 
 
 </footer>
@@ -444,11 +614,20 @@ Built with HTML • CSS • JavaScript • Open-Meteo API
 
 
 
+
+
+
+<!-- Chart Library -->
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 
 <script src="script.js"></script>
 
 
 </body>
+
 
 </html>
