@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WeatherSphere Pro | Smart Weather Dashboard</title>
+
+<meta name="description"
+content="WeatherSphere Pro - Real time weather dashboard with dynamic themes and forecasts">
+
+
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+
+<!-- CSS -->
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body>
+
+
+<!-- Dynamic Weather Background Layers -->
+
+<div class="weather-background"></div>
+
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+
+<div class="logo">
+
+🌎 WeatherSphere
+<span>Pro</span>
+
+</div>
+
+
+<div class="search-container">
+
+<input 
+type="text"
+id="cityInput"
+placeholder="Search city..."
+autocomplete="off"
+>
+
+
+<button id="searchBtn">
+
+🔍
+
+</button>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+<!-- MAIN CONTENT -->
+
+<main class="container">
+
+
+
+<!-- CURRENT WEATHER -->
+
+
+<section class="weather-main glass-card">
+
+
+<div class="location">
+
+
+<h1 id="cityName">
+
+Delhi, India
+
+</h1>
+
+
+<p id="localTime">
+
+Loading local time...
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="weather-icon"
+id="weatherIcon">
+
+☀️
+
+</div>
+
+
+
+<div class="temperature">
+
+
+<h2>
+
+<span id="temperature">
+28
+</span>
+
+°
+
+</h2>
+
+
+<p id="weatherDescription">
+
+Sunny
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="updated">
+
+
+<p>
+
+Last Updated
+
+</p>
+
+
+<strong id="updatedTime">
+
+--:--
+
+</strong>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- WEATHER DETAILS -->
+
+
+<section class="details-grid">
+
+
+
+<div class="detail-card glass-card">
+
+
+<h3>
+Feels Like
+</h3>
+
+
+<p id="feelsLike">
+31°C
+</p>
+
+
+</div>
+
+
+
+
+<div class="detail-card glass-card">
+
+
+<h3>
+Humidity
+</h3>
+
+
+<p id="humidity">
+45%
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="detail-card glass-card">
+
+
+<h3>
+Wind
+</h3>
+
+
+<p id="wind">
+12 km/h
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="detail-card glass-card">
+
+
+<h3>
+Pressure
+</h3>
+
+
+<p id="pressure">
+1015 hPa
+</p>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- HOURLY FORECAST -->
+
+
+<section class="section">
+
+
+<h2>
+Hourly Forecast
+</h2>
+
+
+<div class="chart-card glass-card">
+
+
+<canvas id="hourlyChart"></canvas>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- EXTRA INFORMATION -->
+
+
+<section class="extra-grid">
+
+
+
+
+
+<div class="info-card glass-card">
+
+
+<h3>
+🌅 Sunrise
+</h3>
+
+
+<p id="sunrise">
+
+05:30 AM
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="info-card glass-card">
+
+
+<h3>
+🌇 Sunset
+</h3>
+
+
+<p id="sunset">
+
+07:20 PM
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="info-card glass-card">
+
+
+<h3>
+🌿 Air Quality
+</h3>
+
+
+<p id="aqi">
+
+Good 🟢
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- 7 DAY FORECAST -->
+
+
+<section class="section">
+
+
+<h2>
+7 Day Forecast
+</h2>
+
+
+
+<div class="forecast-container"
+id="forecastContainer">
+
+
+<!-- Javascript will add cards here -->
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+</main>
+
+
+
+
+
+
+
+<!-- LOADING OVERLAY -->
+
+
+<div class="loader hidden"
+id="loader">
+
+
+<div class="loader-box">
+
+🌎
+
+<p>
+Fetching weather...
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- Chart Library -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<!-- JavaScript -->
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
