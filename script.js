@@ -1,33 +1,11 @@
 /*==================================================
- WeatherSphere Pro
- Premium Weather Dashboard
- Final Production JavaScript
+ WeatherSphere Pro v2
+ Final Weather Engine
 ==================================================*/
 
 
-// ===============================
-// GLOBAL VARIABLES
-// ===============================
+let weatherChart = null;
 
-
-let temperatureChart;
-
-
-
-let currentCity = "Delhi";
-
-
-
-const API_BASE =
-"https://api.open-meteo.com/v1/forecast";
-
-
-
-
-
-// ===============================
-// DOM ELEMENTS
-// ===============================
 
 
 const cityInput =
@@ -41,127 +19,140 @@ document.getElementById("searchBtn");
 
 
 
-// ===============================
-// WEATHER CODE HANDLER
-// ===============================
+// Default city
+
+let currentCity = "Delhi";
+
+
+
+
+
+/*==================================================
+ WEATHER CODE MAPPING
+==================================================*/
 
 
 function getWeatherInfo(code){
 
 
-const weatherCodes = {
+const weather={
 
 
 0:{
 text:"Clear Sky",
-icon:"☀️"
+icon:"☀️",
+type:"clear"
 },
 
 
 1:{
 text:"Mainly Clear",
-icon:"🌤️"
+icon:"🌤️",
+type:"clear"
 },
 
 
 2:{
 text:"Partly Cloudy",
-icon:"⛅"
+icon:"⛅",
+type:"cloud"
 },
 
 
 3:{
 text:"Overcast",
-icon:"☁️"
+icon:"☁️",
+type:"cloud"
 },
 
 
 45:{
 text:"Fog",
-icon:"🌫️"
-},
-
-
-48:{
-text:"Rime Fog",
-icon:"🌫️"
+icon:"🌫️",
+type:"cloud"
 },
 
 
 51:{
 text:"Light Drizzle",
-icon:"🌦️"
+icon:"🌦️",
+type:"rain"
 },
 
 
 53:{
 text:"Drizzle",
-icon:"🌦️"
-},
-
-
-55:{
-text:"Heavy Drizzle",
-icon:"🌧️"
+icon:"🌦️",
+type:"rain"
 },
 
 
 61:{
-text:"Light Rain",
-icon:"🌦️"
+text:"Rain",
+icon:"🌧️",
+type:"rain"
 },
 
 
 63:{
-text:"Rain",
-icon:"🌧️"
+text:"Heavy Rain",
+icon:"🌧️",
+type:"rain"
 },
 
 
 65:{
 text:"Heavy Rain",
-icon:"🌧️"
+icon:"🌧️",
+type:"rain"
 },
 
 
 71:{
 text:"Snow",
-icon:"❄️"
+icon:"❄️",
+type:"snow"
 },
 
 
 80:{
-text:"Rain Showers",
-icon:"🌦️"
+text:"Rain Shower",
+icon:"🌦️",
+type:"rain"
 },
 
 
 95:{
 text:"Thunderstorm",
-icon:"⛈️"
+icon:"⛈️",
+type:"storm"
 },
 
 
 96:{
-text:"Thunderstorm With Hail",
-icon:"⛈️"
+text:"Thunderstorm",
+icon:"⛈️",
+type:"storm"
 },
 
 
 99:{
-text:"Heavy Thunderstorm",
-icon:"⛈️"
+text:"Heavy Storm",
+icon:"⛈️",
+type:"storm"
 }
 
 
 };
 
 
-return weatherCodes[code] || {
+return weather[code] || {
 
-text:"Unknown Weather",
+text:"Unknown",
 
-icon:"🌍"
+icon:"🌍",
+
+type:"clear"
 
 };
 
@@ -174,15 +165,17 @@ icon:"🌍"
 
 
 
-// ===============================
-// CITY SEARCH
-// ===============================
+/*==================================================
+ CITY SEARCH API
+==================================================*/
 
 
 async function getCoordinates(city){
 
 
+
 const url =
+
 `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`;
 
 
@@ -216,56 +209,75 @@ return data.results[0];
 
 
 
+/*==================================================
+ WEATHER API CALL
+==================================================*/
 
-// ===============================
-// WEATHER FETCH
-// ===============================
 
-
-async function fetchWeather(city){
+async function loadWeather(city){
 
 
 try{
 
 
-const location =
+const place =
 await getCoordinates(city);
 
 
 
-const {
-
-latitude,
-
-longitude,
-
-name,
-
-country
+const latitude =
+place.latitude;
 
 
-}=location;
+const longitude =
+place.longitude;
 
 
 
 document.getElementById("cityName")
 .textContent =
-`${name}, ${country}`;
 
-
+`${place.name}, ${place.country}`;
 
 
 
 const url =
 
-`${API_BASE}?latitude=${latitude}&longitude=${longitude}&timezone=auto&forecast_days=7&hourly=temperature_2m,weathercode,relativehumidity_2m,visibility,cloudcover,uv_index&daily=sunrise,sunset`;
+
+`https://api.open-meteo.com/v1/forecast?
+latitude=${latitude}&longitude=${longitude}
+&timezone=auto
+&current=
+temperature_2m,
+relative_humidity_2m,
+apparent_temperature,
+is_day,
+precipitation,
+weather_code,
+surface_pressure,
+wind_speed_10m,
+cloud_cover,
+visibility,
+uv_index
+&hourly=
+temperature_2m,
+weather_code
+&daily=
+weather_code,
+temperature_2m_max,
+temperature_2m_min,
+sunrise,
+sunset`;
 
 
+
+const cleanURL =
+url.replace(/\s/g,"");
 
 
 
 const response =
-await fetch(url);
+await fetch(cleanURL);
 
 
 
@@ -275,31 +287,25 @@ await response.json();
 
 
 
-updateCurrentWeather(data);
+updateCurrent(data);
 
+updateMetrics(data);
 
+updateHourly(data);
 
-updateHourlyForecast(data);
-
-
-
-updateDailyForecast(data);
-
-
-
-updateHighlights(data);
-
-
+updateDaily(data);
 
 updateAstronomy(data);
 
-
-
 updateChart(data);
 
+createInsight(data);
 
 
-generateInsight(data);
+
+changeBackground(
+data.current.weather_code
+);
 
 
 
@@ -308,11 +314,11 @@ generateInsight(data);
 catch(error){
 
 
-console.error(error);
+console.log(error);
 
 
 alert(
-"Unable to fetch weather data"
+"Unable to load weather data"
 );
 
 
@@ -326,7 +332,7 @@ alert(
 ==================================================*/
 
 
-function updateCurrentWeather(data){
+function updateCurrent(data){
 
 
 const current =
@@ -341,15 +347,17 @@ current.weather_code
 
 
 
-document.getElementById("temperature")
-.textContent =
-Math.round(current.temperature_2m);
-
-
-
 document.getElementById("weatherIcon")
 .textContent =
 info.icon;
+
+
+
+document.getElementById("temperature")
+.textContent =
+Math.round(
+current.temperature_2m
+);
 
 
 
@@ -359,29 +367,37 @@ info.text;
 
 
 
-document.getElementById("feelsLike")
+document.getElementById("currentDate")
 .textContent =
-Math.round(current.apparent_temperature);
 
-
-
-document.getElementById("humidity")
-.textContent =
-current.relative_humidity_2m || "--";
-
-
-
-document.getElementById("windSpeed")
-.textContent =
-Math.round(current.wind_speed_10m);
-
-
-
-document.getElementById("dateTime")
-.textContent =
 new Date()
-.toLocaleString();
+.toLocaleString(
+[],
+{
+weekday:"long",
+day:"numeric",
+month:"long",
+year:"numeric"
+}
+);
 
+
+
+document.getElementById("tempHigh")
+.textContent =
+
+Math.round(
+data.daily.temperature_2m_max[0]
+);
+
+
+
+document.getElementById("tempLow")
+.textContent =
+
+Math.round(
+data.daily.temperature_2m_min[0]
+);
 
 
 }
@@ -391,12 +407,15 @@ new Date()
 
 
 
+
+
 /*==================================================
- WEATHER HIGHLIGHTS
+ WEATHER METRICS
 ==================================================*/
 
 
-function updateHighlights(data){
+function updateMetrics(data){
+
 
 
 const current =
@@ -404,43 +423,51 @@ data.current;
 
 
 
+document.getElementById("feelsLike")
+.textContent =
+
+Math.round(
+current.apparent_temperature
+);
+
+
+
+document.getElementById("humidity")
+.textContent =
+
+current.relative_humidity_2m;
+
+
+
+document.getElementById("wind")
+.textContent =
+
+Math.round(
+current.wind_speed_10m
+);
+
+
+
 document.getElementById("visibility")
 .textContent =
 
-current.visibility
-?
 Math.round(
 current.visibility / 1000
-)
-:
-"--";
-
-
-
-document.getElementById("cloudCover")
-.textContent =
-
-current.cloud_cover
-||
-"--";
+);
 
 
 
 document.getElementById("uvIndex")
 .textContent =
 
-current.uv_index
-||
-"--";
+current.uv_index;
 
 
 
-document.getElementById("pressure")
+document.getElementById("cloudCover")
 .textContent =
 
-current.pressure_msl
-||
-"--";
+current.cloud_cover;
 
 
 }
@@ -457,7 +484,8 @@ current.pressure_msl
 ==================================================*/
 
 
-function updateHourlyForecast(data){
+function updateHourly(data){
+
 
 
 const container =
@@ -471,32 +499,30 @@ container.innerHTML="";
 
 
 
-for(let i=0;i<12;i++){
-
-
-const temp =
-data.hourly.temperature_2m[i];
-
-
-
-const code =
-data.hourly.weathercode[i];
+for(
+let i=0;
+i<12;
+i++
+){
 
 
 
 const info =
-getWeatherInfo(code);
+getWeatherInfo(
+data.hourly.weather_code[i]
+);
 
 
 
 const time =
+
 new Date(
 data.hourly.time[i]
 )
 .toLocaleTimeString(
 [],
 {
-hour:"2-digit"
+hour:"numeric"
 }
 );
 
@@ -508,17 +534,29 @@ container.innerHTML += `
 <div class="hour-card">
 
 
-<h4>${time}</h4>
+<div class="time">
 
+${time}
 
-<div class="icon">
-${info.icon}
 </div>
 
 
-<p>
-${Math.round(temp)}°
-</p>
+
+<div class="weather-small-icon">
+
+${info.icon}
+
+</div>
+
+
+
+<div class="degree">
+
+${Math.round(
+data.hourly.temperature_2m[i]
+)}°
+
+</div>
 
 
 </div>
@@ -526,11 +564,14 @@ ${Math.round(temp)}°
 
 `;
 
+
+
 }
 
 
 
 }
+
 
 
 
@@ -544,7 +585,8 @@ ${Math.round(temp)}°
 ==================================================*/
 
 
-function updateDailyForecast(data){
+function updateDaily(data){
+
 
 
 const container =
@@ -558,18 +600,23 @@ container.innerHTML="";
 
 
 
-for(let i=0;i<7;i++){
+for(
+let i=0;
+i<7;
+i++
+){
 
 
 
 const info =
 getWeatherInfo(
-data.daily.weathercode[i]
+data.daily.weather_code[i]
 );
 
 
 
 const day =
+
 new Date(
 data.daily.time[i]
 )
@@ -582,34 +629,45 @@ weekday:"short"
 
 
 
+
 container.innerHTML += `
 
 
-<div class="forecast-card">
+<div class="daily-card">
 
 
-<h4>
+<div class="day">
+
 ${day}
-</h4>
 
-
-<div class="forecast-icon">
-${info.icon}
 </div>
 
 
-<strong>
+<div class="icon">
+
+${info.icon}
+
+</div>
+
+
+
+<div class="max">
+
 ${Math.round(
 data.daily.temperature_2m_max[i]
 )}°
-</strong>
+
+</div>
 
 
-<p>
+
+<div class="min">
+
 ${Math.round(
 data.daily.temperature_2m_min[i]
 )}°
-</p>
+
+</div>
 
 
 </div>
@@ -622,8 +680,9 @@ data.daily.temperature_2m_min[i]
 }
 
 
-
 }
+
+
 
 
 
@@ -644,15 +703,9 @@ function updateAstronomy(data){
 document.getElementById("sunrise")
 .textContent =
 
-new Date(
+
+formatTime(
 data.daily.sunrise[0]
-)
-.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
-}
 );
 
 
@@ -660,21 +713,15 @@ minute:"2-digit"
 document.getElementById("sunset")
 .textContent =
 
-new Date(
+
+formatTime(
 data.daily.sunset[0]
-)
-.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
-}
 );
 
 
 
 const moon =
-calculateMoonPhase();
+calculateMoon();
 
 
 
@@ -698,17 +745,41 @@ moon.percent;
 
 
 
+function formatTime(value){
+
+
+
+return new Date(value)
+.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+
+}
+
+
+
+
+
+
+
 
 /*==================================================
- MOON PHASE CALCULATOR
+ MOON CALCULATION
 ==================================================*/
 
 
-function calculateMoonPhase(){
+function calculateMoon(){
 
 
-const knownNewMoon =
-new Date("2000-01-06");
+const known =
+new Date(
+"2000-01-06"
+);
 
 
 
@@ -720,22 +791,16 @@ new Date();
 const days =
 
 (
-today-knownNewMoon
+today-known
 )
 /
 86400000;
 
 
 
-const cycle =
+const phase =
+
 days % 29.53;
-
-
-
-const illumination =
-Math.round(
-(cycle/29.53)*100
-);
 
 
 
@@ -743,43 +808,206 @@ let name;
 
 
 
-if(cycle<3.7)
-name="New Moon 🌑";
+if(phase<3.7)
 
-else if(cycle<7.4)
-name="Waxing Crescent 🌒";
+name="🌑 New Moon";
 
-else if(cycle<11.1)
-name="First Quarter 🌓";
 
-else if(cycle<14.8)
-name="Waxing Gibbous 🌔";
+else if(phase<7.4)
 
-else if(cycle<18.5)
-name="Full Moon 🌕";
+name="🌒 Crescent";
 
-else if(cycle<22.1)
-name="Waning Gibbous 🌖";
 
-else if(cycle<25.8)
-name="Last Quarter 🌗";
+else if(phase<11.1)
+
+name="🌓 First Quarter";
+
+
+else if(phase<14.8)
+
+name="🌔 Gibbous";
+
+
+else if(phase<18.5)
+
+name="🌕 Full Moon";
+
+
+else if(phase<22.1)
+
+name="🌖 Waning";
+
+
+else if(phase<25.8)
+
+name="🌗 Last Quarter";
+
 
 else
-name="Waning Crescent 🌘";
+
+name="🌘 Crescent";
 
 
 
 return {
 
+
 name:name,
 
-percent:illumination
+percent:
+Math.round(
+(phase/29.53)*100
+)
+
 
 };
 
 
+}
+
+/*==================================================
+ TEMPERATURE CHART
+==================================================*/
+
+
+function updateChart(data){
+
+
+
+const ctx =
+
+document
+.getElementById(
+"temperatureChart"
+)
+.getContext("2d");
+
+
+
+if(weatherChart){
+
+weatherChart.destroy();
 
 }
+
+
+
+
+weatherChart =
+
+new Chart(
+ctx,
+{
+
+
+type:"line",
+
+
+
+data:{
+
+
+labels:
+
+data.hourly.time
+.slice(0,12)
+.map(time=>
+
+new Date(time)
+.toLocaleTimeString(
+[],
+{
+hour:"numeric"
+}
+
+)
+
+),
+
+
+
+datasets:[{
+
+
+label:
+"Temperature °C",
+
+
+
+data:
+
+data.hourly.temperature_2m
+.slice(0,12),
+
+
+
+borderWidth:3,
+
+
+tension:.4,
+
+
+fill:true
+
+
+}]
+
+
+},
+
+
+
+options:{
+
+
+responsive:true,
+
+
+maintainAspectRatio:false,
+
+
+
+plugins:{
+
+
+legend:{
+
+
+display:true
+
+
+}
+
+
+},
+
+
+
+scales:{
+
+
+y:{
+
+
+beginAtZero:false
+
+
+}
+
+
+}
+
+
+}
+
+
+}
+
+);
+
+
+}
+
 
 
 
@@ -789,20 +1017,16 @@ percent:illumination
 
 
 /*==================================================
- WEATHER INSIGHTS
+ WEATHER INTELLIGENCE
 ==================================================*/
 
 
-function generateInsight(data){
-
-
-const temp =
-data.current.temperature_2m;
+function createInsight(data){
 
 
 
-const humidity =
-data.current.relative_humidity_2m;
+const current =
+data.current;
 
 
 
@@ -810,37 +1034,84 @@ let message;
 
 
 
-if(temp>35){
+const temperature =
+current.temperature_2m;
+
+
+
+const humidity =
+current.relative_humidity_2m;
+
+
+
+const wind =
+current.wind_speed_10m;
+
+
+
+
+if(temperature>38){
+
 
 message =
-"Very hot conditions detected. Stay hydrated and avoid long outdoor exposure.";
+
+"Extreme heat detected. Stay hydrated and avoid prolonged outdoor activities.";
+
 
 }
+
+
 
 else if(humidity>80){
 
+
 message =
-"High humidity levels detected. The weather may feel warmer than actual temperature.";
+
+"High humidity levels detected. The temperature may feel warmer than usual.";
+
 
 }
 
-else if(temp<15){
+
+
+else if(wind>30){
+
 
 message =
-"Cool weather conditions. Light warm clothing is recommended.";
+
+"Strong winds detected. Outdoor activities may require caution.";
+
 
 }
+
+
+
+else if(current.uv_index>7){
+
+
+message =
+
+"High UV exposure expected. Sun protection is recommended.";
+
+
+}
+
+
 
 else{
 
+
 message =
-"Weather conditions are comfortable today. Enjoy your day!";
+
+"Weather conditions are comfortable today. Enjoy your day with pleasant conditions.";
+
 
 }
 
 
 
-document.getElementById(
+document
+.getElementById(
 "weatherInsight"
 )
 .textContent =
@@ -858,100 +1129,54 @@ message;
 
 
 /*==================================================
- TEMPERATURE CHART
+ DYNAMIC WEATHER BACKGROUND
 ==================================================*/
 
 
-function updateChart(data){
+function changeBackground(code){
 
 
 
-const ctx =
-document
-.getElementById(
-"temperatureChart"
-)
-.getContext("2d");
+const body =
+document.body;
 
 
 
-if(temperatureChart){
-
-temperatureChart.destroy();
-
-}
-
-
-
-temperatureChart =
-new Chart(ctx,{
-
-
-type:"line",
-
-
-data:{
-
-
-labels:
-data.hourly.time.slice(0,12)
-.map(t=>
-new Date(t)
-.toLocaleTimeString(
-[],
-{
-hour:"2-digit"
-}
-)
-),
+const rain =
+document.getElementById(
+"rainContainer"
+);
 
 
 
-datasets:[{
-
-
-label:
-"Temperature °C",
+rain.innerHTML="";
 
 
 
-data:
-data.hourly.temperature_2m.slice(0,12),
+const info =
+getWeatherInfo(code);
 
 
 
-tension:.4
+
+body.style.background =
+
+"linear-gradient(135deg,#2563eb,#38bdf8,#0f172a)";
 
 
 
-}]
 
-
-},
+if(info.type==="rain"){
 
 
 
-options:{
+body.style.background =
+
+"linear-gradient(135deg,#334155,#2563eb,#0f172a)";
 
 
-responsive:true,
 
-maintainAspectRatio:false,
-
-
-plugins:{
-
-
-legend:{
-
-
-display:true
-
-
-}
-
-
-}
+createRain();
 
 
 
@@ -959,11 +1184,115 @@ display:true
 
 
 
-});
+
+if(info.type==="storm"){
+
+
+
+body.style.background =
+
+"linear-gradient(135deg,#111827,#312e81,#020617)";
+
+
+createRain();
 
 
 
 }
+
+
+
+if(info.type==="cloud"){
+
+
+body.style.background =
+
+"linear-gradient(135deg,#64748b,#94a3b8,#334155)";
+
+
+}
+
+
+
+
+if(info.type==="snow"){
+
+
+body.style.background =
+
+"linear-gradient(135deg,#e0f2fe,#93c5fd,#64748b)";
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+function createRain(){
+
+
+
+const container =
+document.getElementById(
+"rainContainer"
+);
+
+
+
+for(
+let i=0;
+i<120;
+i++
+){
+
+
+const drop =
+document.createElement(
+"span"
+);
+
+
+
+drop.style.position="absolute";
+
+drop.style.width="2px";
+
+drop.style.height="20px";
+
+drop.style.background=
+"rgba(255,255,255,.5)";
+
+drop.style.left =
+Math.random()*100+"%";
+
+
+drop.style.top =
+Math.random()*100+"%";
+
+
+drop.style.animation =
+`rainFall ${1+Math.random()*2}s linear infinite`;
+
+
+
+container.appendChild(drop);
+
+
+
+}
+
+
+
+}
+
 
 
 
@@ -977,7 +1306,8 @@ display:true
 ==================================================*/
 
 
-searchBtn.addEventListener(
+searchBtn
+.addEventListener(
 "click",
 ()=>{
 
@@ -989,9 +1319,11 @@ cityInput.value.trim();
 
 if(city){
 
-fetchWeather(city);
+loadWeather(city);
+
 
 }
+
 
 
 });
@@ -1000,12 +1332,14 @@ fetchWeather(city);
 
 
 
-cityInput.addEventListener(
+
+cityInput
+.addEventListener(
 "keypress",
-(e)=>{
+(event)=>{
 
 
-if(e.key==="Enter"){
+if(event.key==="Enter"){
 
 
 searchBtn.click();
@@ -1014,7 +1348,6 @@ searchBtn.click();
 }
 
 
-
 });
 
 
@@ -1023,11 +1356,13 @@ searchBtn.click();
 
 
 
+
+
 /*==================================================
- INITIAL LOAD
+ START APPLICATION
 ==================================================*/
 
 
-fetchWeather(
+loadWeather(
 currentCity
 );
