@@ -1,226 +1,327 @@
-/* ============================================================
+/* ==========================================================
    WeatherSphere Pro 4.0
-   Final Polished Script.js
-   Image-free Emoji Weather System
-============================================================ */
+   Final Production Script.js
+   Dynamic Weather + Emoji System
+========================================================== */
 
 
-/* ===========================
-   CONFIGURATION
-=========================== */
+/* ==========================
+   API CONFIG
+========================== */
+
 
 const WEATHER_API =
 "https://api.open-meteo.com/v1/forecast";
+
 
 const GEO_API =
 "https://geocoding-api.open-meteo.com/v1/search";
 
 
+
 let currentLocation = {
-    city: "Delhi",
-    lat: 28.6139,
-    lon: 77.2090
+
+    city:"Delhi",
+
+    lat:28.6139,
+
+    lon:77.2090
+
 };
 
 
 
-/* ===========================
-   WEATHER ICON SYSTEM
-   (NO IMAGES REQUIRED)
-=========================== */
-
-function getWeatherEmoji(code, isDay = true){
-
-    const icons = {
-
-        0: isDay ? "☀️" : "🌙",
-
-        1: "🌤️",
-        2: "⛅",
-        3: "☁️",
-
-        45: "🌫️",
-        48: "🌫️",
-
-        51: "🌦️",
-        53: "🌦️",
-        55: "🌧️",
-
-        61: "🌧️",
-        63: "🌧️",
-        65: "🌧️",
-
-        71: "❄️",
-        73: "❄️",
-        75: "❄️",
-
-        80: "🌦️",
-        81: "🌧️",
-        82: "⛈️",
-
-        95: "⛈️",
-        96: "⛈️",
-        99: "⛈️"
-    };
 
 
-    return icons[code] || "🌍";
-}
+/* ==========================
+   DOM SHORTCUT
+========================== */
 
-
-
-/* ===========================
-   DOM ELEMENT HELPER
-=========================== */
 
 const $ = (id)=>document.getElementById(id);
 
 
 
-/* ===========================
-   FETCH WEATHER DATA
-=========================== */
 
 
-async function getWeather(
-    lat=currentLocation.lat,
-    lon=currentLocation.lon,
-    city=currentLocation.city
-){
+/* ==========================
+   WEATHER EMOJI ENGINE
+========================== */
+
+
+function weatherEmoji(code,isDay=true){
+
+
+const icons={
+
+
+0:
+isDay ? "☀️":"🌙",
+
+
+1:
+"🌤️",
+
+
+2:
+"⛅",
+
+
+3:
+"☁️",
+
+
+45:
+"🌫️",
+
+48:
+"🌫️",
+
+
+51:
+"🌦️",
+
+53:
+"🌦️",
+
+55:
+"🌧️",
+
+
+61:
+"🌧️",
+
+63:
+"🌧️",
+
+65:
+"🌧️",
+
+
+71:
+"❄️",
+
+73:
+"❄️",
+
+75:
+"❄️",
+
+
+80:
+🌦️",
+
+81:
+"🌧️",
+
+82:
+"⛈️",
+
+
+95:
+"⛈️",
+
+96:
+"⚡",
+
+99:
+"⚡"
+
+};
+
+
+return icons[code] || "🌍";
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   GET WEATHER
+========================== */
+
+
+async function getWeather(){
+
 
 try{
 
-    showLoading();
 
-
-    const url =
-`${WEATHER_API}?latitude=${lat}
-&longitude=${lon}
-&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,is_day,wind_speed_10m
-&hourly=temperature_2m,weather_code
-&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset
-&timezone=auto`;
-
-
-    const response = await fetch(
-        url.replace(/\s/g,"")
-    );
-
-
-    if(!response.ok)
-        throw new Error("Weather unavailable");
-
-
-    const data = await response.json();
+setLoading();
 
 
 
-    updateCurrentWeather(
-        data,
-        city
-    );
+const url=
 
-
-    updateForecast(
-        data
-    );
-
-
-    updateTheme(
-        data.current.is_day
-    );
-
-
-}
-catch(error){
-
-    console.error(error);
-
-    showError(
-        "Unable to fetch weather data"
-    );
-
-}
-
-}
+`${WEATHER_API}?
+latitude=${currentLocation.lat}
+&longitude=${currentLocation.lon}
+&current=
+temperature_2m,
+relative_humidity_2m,
+apparent_temperature,
+weather_code,
+is_day,
+wind_speed_10m
+&daily=
+weather_code,
+temperature_2m_max,
+temperature_2m_min
+&timezone=auto`
+.replace(/\s/g,"");
 
 
 
-/* ===========================
-   UPDATE CURRENT WEATHER
-=========================== */
+
+const response =
+await fetch(url);
 
 
-function updateCurrentWeather(data,city){
 
-const current =
-data.current;
+const data =
+await response.json();
 
 
-const emoji =
-getWeatherEmoji(
-current.weather_code,
-current.is_day
+
+updateCurrent(data);
+
+
+updateForecast(data);
+
+
+
+changeBackground(
+
+data.current.is_day,
+
+data.current.weather_code
+
 );
 
 
 
-if($("weatherIcon"))
-$("weatherIcon").textContent = emoji;
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+showError();
+
+
+}
+
+
+}
 
 
 
-if($("temperature"))
+
+
+
+
+/* ==========================
+   UPDATE CURRENT WEATHER
+========================== */
+
+
+function updateCurrent(data){
+
+
+const weather =
+data.current;
+
+
+
+$("weatherIcon").textContent =
+
+weatherEmoji(
+
+weather.weather_code,
+
+weather.is_day
+
+);
+
+
+
 $("temperature").textContent =
+
 Math.round(
-current.temperature_2m
+
+weather.temperature_2m
+
 )
+
 +"°";
 
 
 
-if($("city"))
-$("city").textContent =
-city;
-
-
-
-if($("feelsLike"))
 $("feelsLike").textContent =
+
 Math.round(
-current.apparent_temperature
+
+weather.apparent_temperature
+
 )
+
 +"°";
 
 
 
-if($("humidity"))
 $("humidity").textContent =
-current.relative_humidity_2m
+
+weather.relative_humidity_2m
+
 +"%";
 
 
 
-if($("wind"))
 $("wind").textContent =
+
 Math.round(
-current.wind_speed_10m
+
+weather.wind_speed_10m
+
 )
+
 +" km/h";
 
 
 
-if($("updatedTime"))
+$("city").textContent =
+
+currentLocation.city;
+
+
+
 $("updatedTime").textContent =
+
 "Updated "
+
 +
+
 new Date()
+
 .toLocaleTimeString(
+
 [],
+
 {
+
 hour:"2-digit",
+
 minute:"2-digit"
+
 }
+
 );
 
 
@@ -228,9 +329,13 @@ minute:"2-digit"
 
 
 
-/* ===========================
-   FORECAST CARDS
-=========================== */
+
+
+
+
+/* ==========================
+   FORECAST
+========================== */
 
 
 function updateForecast(data){
@@ -240,23 +345,21 @@ const container =
 $("forecastContainer");
 
 
-if(!container)
-return;
-
 
 container.innerHTML="";
 
 
+
 data.daily.time
+
 .slice(0,7)
-.forEach(
-(day,index)=>{
+
+.forEach((day,index)=>{
 
 
 const card =
-document.createElement(
-"div"
-);
+document.createElement("div");
+
 
 
 card.className =
@@ -266,37 +369,56 @@ card.className =
 
 const date =
 new Date(day)
+
 .toLocaleDateString(
+
 undefined,
+
 {
 weekday:"short"
 }
+
 );
 
 
 
 card.innerHTML=`
 
-<div class="forecast-day">
+<div>
+
 ${date}
+
 </div>
 
 
 <div class="forecast-icon">
-${getWeatherEmoji(
+
+${weatherEmoji(
+
 data.daily.weather_code[index]
+
 )}
+
 </div>
 
 
-<div class="forecast-temp">
+
+<div>
+
 ${Math.round(
+
 data.daily.temperature_2m_max[index]
+
 )}°
+
 /
+
 ${Math.round(
+
 data.daily.temperature_2m_min[index]
+
 )}°
+
 </div>
 
 `;
@@ -314,9 +436,101 @@ container.appendChild(card);
 
 
 
-/* ===========================
-   SEARCH LOCATION
-=========================== */
+
+
+
+
+
+/* ==========================
+   BACKGROUND ENGINE
+========================== */
+
+
+function changeBackground(isDay,code){
+
+
+document.body.className="";
+
+
+
+if(code>=95){
+
+
+document.body.classList.add(
+"storm"
+);
+
+
+}
+
+
+else if(code>=51 && code<=82){
+
+
+document.body.classList.add(
+"rain"
+);
+
+
+}
+
+
+else if(code>=71 && code<=75){
+
+
+document.body.classList.add(
+"snow"
+);
+
+
+}
+
+
+else if(code===45 || code===48){
+
+
+document.body.classList.add(
+"fog"
+);
+
+
+}
+
+
+else if(isDay){
+
+
+document.body.classList.add(
+"day"
+);
+
+
+}
+
+
+else{
+
+
+document.body.classList.add(
+"night"
+);
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+   CITY SEARCH
+========================== */
 
 
 async function searchCity(city){
@@ -326,8 +540,11 @@ try{
 
 
 const response =
+
 await fetch(
+
 `${GEO_API}?name=${city}&count=1`
+
 );
 
 
@@ -338,7 +555,8 @@ await response.json();
 
 
 if(!data.results)
-throw new Error();
+throw Error();
+
 
 
 const place =
@@ -346,11 +564,24 @@ data.results[0];
 
 
 
-currentLocation =
-{
-city:place.name,
-lat:place.latitude,
-lon:place.longitude
+currentLocation={
+
+
+city:
+
+place.name,
+
+
+lat:
+
+place.latitude,
+
+
+lon:
+
+place.longitude
+
+
 };
 
 
@@ -360,28 +591,47 @@ getWeather();
 
 
 }
+
 catch{
 
+
 alert(
+
 "City not found"
+
 );
 
-}
 
 }
 
 
 
-/* ===========================
+}
+
+
+
+
+
+
+
+
+/* ==========================
    USER LOCATION
-=========================== */
+========================== */
 
 
-function getUserLocation(){
+function getLocation(){
 
 
-if(!navigator.geolocation)
+if(!navigator.geolocation){
+
+
+getWeather();
+
 return;
+
+}
+
 
 
 navigator.geolocation.getCurrentPosition(
@@ -390,92 +640,149 @@ navigator.geolocation.getCurrentPosition(
 
 
 currentLocation.lat =
+
 position.coords.latitude;
 
 
+
 currentLocation.lon =
+
 position.coords.longitude;
 
 
-getWeather(
-currentLocation.lat,
-currentLocation.lon,
-"My Location"
-);
+
+currentLocation.city=
+
+"My Location";
+
+
+
+getWeather();
+
 
 
 },
 
+
 ()=>{
+
 
 getWeather();
 
+
 }
+
 
 );
 
-}
-
-
-
-
-/* ===========================
-   DARK / LIGHT AUTO MODE
-=========================== */
-
-
-function updateTheme(isDay){
-
-
-document.body.classList.toggle(
-"night-mode",
-!isDay
-);
 
 
 }
 
 
 
-/* ===========================
-   LOADING STATE
-=========================== */
 
 
-function showLoading(){
 
-if($("temperature"))
-$("temperature").textContent="--°";
+
+
+/* ==========================
+   CLOCK
+========================== */
+
+
+function startClock(){
+
+
+setInterval(()=>{
+
+
+if($("currentTime")){
+
+
+$("currentTime").textContent =
+
+new Date()
+
+.toLocaleTimeString();
+
+
+
+}
+
+
+},1000);
+
+
 
 }
 
 
 
-function showError(message){
 
 
-if($("temperature"))
-$("temperature").textContent="--";
 
 
-console.warn(message);
+
+/* ==========================
+   LOADING
+========================== */
+
+
+function setLoading(){
+
+
+$("temperature").textContent=
+
+"--°";
+
+
+$("weatherIcon").textContent=
+
+"🌍";
+
 
 }
 
 
 
 
-/* ===========================
-   SEARCH BUTTON EVENTS
-=========================== */
+
+function showError(){
+
+
+$("temperature").textContent=
+
+"--°";
+
+
+$("weatherIcon").textContent=
+
+"⚠️";
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+   EVENTS
+========================== */
 
 
 document.addEventListener(
+
 "DOMContentLoaded",
+
 ()=>{
 
 
-const searchBtn =
+const button =
 $("searchBtn");
 
 
@@ -484,67 +791,65 @@ $("searchInput");
 
 
 
-if(searchBtn){
+button.addEventListener(
 
-searchBtn.onclick=()=>{
+"click",
 
-if(input.value.trim())
+()=>{
+
+
+if(input.value.trim()){
+
+
 searchCity(
+
 input.value.trim()
+
 );
 
-};
 
 }
 
 
+}
 
-if(input){
+);
+
+
 
 input.addEventListener(
+
 "keypress",
+
 (e)=>{
 
-if(e.key==="Enter")
+
+if(e.key==="Enter"){
+
+
 searchCity(
+
 input.value.trim()
+
 );
 
-});
 
 }
 
 
-
-getUserLocation();
-
-
-
 }
+
 );
 
 
 
-
-/* ===========================
-   CLOCK UPDATE
-=========================== */
+startClock();
 
 
-setInterval(()=>{
+getLocation();
 
 
-const clock =
-$("currentTime");
-
-
-if(clock){
-
-clock.textContent =
-new Date()
-.toLocaleTimeString();
 
 }
 
-
-},1000);
+);
