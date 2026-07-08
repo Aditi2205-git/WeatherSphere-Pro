@@ -2,572 +2,2221 @@
 <html lang="en">
 
 <head>
+    <!-- ==========================================
+         WeatherSphere Pro 4.0
+         Premium Weather Dashboard
+         ========================================== -->
+
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>WeatherSphere Pro 3.1 | Premium Weather Dashboard</title>
+    <title>WeatherSphere Pro 4.0 | Premium Weather Dashboard</title>
 
     <meta name="description"
-        content="Premium responsive weather dashboard inspired by Google Weather and Apple Weather.">
+        content="WeatherSphere Pro 4.0 is a modern premium weather dashboard featuring live weather, hourly forecast, AQI, radar, astronomy, weather maps, charts, favorite cities, and beautiful dynamic themes.">
 
-    <meta name="theme-color" content="#4F9DFF">
+    <meta name="keywords"
+        content="Weather, Weather App, Dashboard, Forecast, AQI, Weather Radar, Open Meteo, JavaScript Weather App">
+
+    <meta name="author" content="Aditi Singh">
+
+    <meta name="theme-color" content="#4F8EF7">
+
+    <!-- Open Graph -->
+
+    <meta property="og:title" content="WeatherSphere Pro 4.0">
+
+    <meta property="og:description"
+        content="Professional Weather Dashboard with Forecast, AQI, Maps and Dynamic Themes.">
+
+    <meta property="og:type" content="website">
+
+    <meta property="og:image" content="assets/images/preview.png">
+
+    <meta property="og:url" content="https://aditi2205-git.github.io/WeatherSphere-Pro/">
+
+    <!-- Favicon -->
+
+    <link rel="icon" href="assets/icons/favicon.png">
 
     <!-- Google Fonts -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
+    <!-- Material Symbols -->
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0">
+
     <!-- Font Awesome -->
+
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-    <!-- Leaflet -->
+    <!-- Leaflet Map -->
+
     <link rel="stylesheet"
         href="https://unpkg.com/leaflet/dist/leaflet.css">
 
-    <!-- CSS -->
+    <!-- AOS Animation -->
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+    <!-- Swiper -->
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <!-- Flatpickr -->
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Main CSS -->
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Animated Background -->
-    <div id="background"></div>
+    <!-- ==========================================
+         LOADING SCREEN
+         ========================================== -->
 
-    <!-- Mobile Menu -->
-    <button class="menu-btn" id="menuBtn">
-        <i class="fa-solid fa-bars"></i>
-    </button>
+    <div id="loader">
 
-    <div class="app">
+        <div class="loader-content">
 
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+            <div class="loader-logo">
 
-            <div class="logo">
-
-                <i class="fa-solid fa-cloud-sun"></i>
-
-                <h1>WeatherSphere</h1>
+                <span class="material-symbols-rounded">
+                    partly_cloudy_day
+                </span>
 
             </div>
 
+            <h1>WeatherSphere Pro</h1>
+
+            <p>Loading live weather...</p>
+
+            <div class="loader-bar">
+
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+         CUSTOM CURSOR
+         ========================================== -->
+
+    <div class="cursor"></div>
+
+    <div class="cursor-blur"></div>
+
+    <!-- ==========================================
+         SCROLL TO TOP
+         ========================================== -->
+
+    <button id="scrollTopBtn" aria-label="Scroll to top">
+
+        <span class="material-symbols-rounded">
+            keyboard_arrow_up
+        </span>
+
+    </button>
+
+    <!-- ==========================================
+         APP CONTAINER
+         ========================================== -->
+
+    <div class="app">
+
+        <!-- ==========================================
+             SIDEBAR
+             ========================================== -->
+
+        <aside class="sidebar">
+
+            <!-- Logo -->
+
+            <div class="sidebar-logo">
+
+                <span class="material-symbols-rounded">
+                    thunderstorm
+                </span>
+
+                <div>
+
+                    <h2>WeatherSphere</h2>
+
+                    <small>Pro 4.0</small>
+
+                </div>
+
+            </div>
+
+            <!-- Navigation -->
+
             <nav>
 
-                <a href="#current">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </a>
+                <ul>
 
-                <a href="#forecast">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    Forecast
-                </a>
+                    <li class="active">
 
-                <a href="#air">
-                    <i class="fa-solid fa-wind"></i>
-                    Air Quality
-                </a>
+                        <a href="#home">
 
-                <a href="#analytics">
-                    <i class="fa-solid fa-chart-line"></i>
-                    Analytics
-                </a>
+                            <span class="material-symbols-rounded">
+                                home
+                            </span>
 
-                <a href="#map">
-                    <i class="fa-solid fa-map-location-dot"></i>
-                    Maps
-                </a>
+                            Home
 
-                <a href="#astronomy">
-                    <i class="fa-solid fa-moon"></i>
-                    Astronomy
-                </a>
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#forecast">
+
+                            <span class="material-symbols-rounded">
+                                calendar_month
+                            </span>
+
+                            Forecast
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#radar">
+
+                            <span class="material-symbols-rounded">
+                                radar
+                            </span>
+
+                            Radar
+
+                        </a>
+
+                    </li>
+                                        <li>
+
+                        <a href="#maps">
+
+                            <span class="material-symbols-rounded">
+                                map
+                            </span>
+
+                            Maps
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#air-quality">
+
+                            <span class="material-symbols-rounded">
+                                air
+                            </span>
+
+                            Air Quality
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#astronomy">
+
+                            <span class="material-symbols-rounded">
+                                nightlight
+                            </span>
+
+                            Astronomy
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#favorites">
+
+                            <span class="material-symbols-rounded">
+                                favorite
+                            </span>
+
+                            Favorites
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#settings">
+
+                            <span class="material-symbols-rounded">
+                                settings
+                            </span>
+
+                            Settings
+
+                        </a>
+
+                    </li>
+
+                </ul>
 
             </nav>
 
-            <div class="favorite-wrapper">
+            <!-- Sidebar Footer -->
 
-                <h3>Favourite Cities</h3>
+            <div class="sidebar-footer">
 
-                <ul id="favoriteCities"></ul>
+                <button id="currentLocationBtn" class="sidebar-btn">
+
+                    <span class="material-symbols-rounded">
+                        my_location
+                    </span>
+
+                    Current Location
+
+                </button>
 
             </div>
 
         </aside>
 
-        <!-- Main -->
-        <main class="main">
+        <!-- ==========================================
+             MAIN CONTENT
+             ========================================== -->
 
-            <!-- Header -->
+        <main class="main-content">
+
+            <!-- ==========================================
+                 TOP HEADER
+                 ========================================== -->
 
             <header class="topbar">
 
-                <div class="search">
+                <!-- Left Section -->
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                <div class="topbar-left">
 
-                    <input
-                        id="cityInput"
-                        type="text"
-                        placeholder="Search city...">
+                    <button id="menuToggle" class="icon-btn">
 
-                    <button id="searchBtn">
-
-                        Search
+                        <span class="material-symbols-rounded">
+                            menu
+                        </span>
 
                     </button>
+
+                    <div class="search-box">
+
+                        <span class="material-symbols-rounded">
+                            search
+                        </span>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search city, country..."
+                            autocomplete="off">
+
+                        <button
+                            id="clearSearch"
+                            class="icon-btn">
+
+                            <span class="material-symbols-rounded">
+                                close
+                            </span>
+
+                        </button>
+
+                        <div id="searchSuggestions"></div>
+
+                    </div>
 
                 </div>
 
-                <div class="top-actions">
+                <!-- Right Section -->
 
-                    <button id="locationBtn">
+                <div class="topbar-right">
 
-                        <i class="fa-solid fa-location-crosshairs"></i>
+                    <button
+                        id="voiceSearchBtn"
+                        class="icon-btn"
+                        title="Voice Search">
+
+                        <span class="material-symbols-rounded">
+                            mic
+                        </span>
 
                     </button>
 
-                    <button id="themeBtn">
+                    <button
+                        id="themeToggle"
+                        class="icon-btn"
+                        title="Toggle Theme">
 
-                        <i class="fa-solid fa-moon"></i>
+                        <span class="material-symbols-rounded">
+                            dark_mode
+                        </span>
 
                     </button>
+
+                    <button
+                        id="unitToggle"
+                        class="icon-btn"
+                        title="Toggle Celsius / Fahrenheit">
+
+                        °C
+
+                    </button>
+
+                    <button
+                        id="refreshWeather"
+                        class="icon-btn"
+                        title="Refresh">
+
+                        <span class="material-symbols-rounded">
+                            refresh
+                        </span>
+
+                    </button>
+
+                    <button
+                        id="notificationBtn"
+                        class="icon-btn">
+
+                        <span class="material-symbols-rounded">
+                            notifications
+                        </span>
+
+                        <span class="notification-dot"></span>
+
+                    </button>
+
+                    <div class="profile-card">
+
+                        <img
+                            src="assets/images/avatar.png"
+                            alt="Profile">
+
+                        <div>
+
+                            <h4>Guest User</h4>
+
+                            <small>Weather Explorer</small>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </header>
 
-            <!-- Hero -->
+            <!-- ==========================================
+                 DASHBOARD
+                 ========================================== -->
 
-            <section class="hero" id="current">
+            <section id="home" class="dashboard">
 
-                <div class="hero-left">
+                <!-- Hero Banner -->
 
-                    <p class="city" id="cityName">
+                <section class="hero-banner">
 
-                        New Delhi
+                    <div class="hero-overlay"></div>
 
-                    </p>
+                    <div class="hero-content">
 
-                    <h2 id="temperature">
+                        <div class="hero-left">
 
-                        31°
+                            <p class="hero-location">
 
-                    </h2>
+                                <span class="material-symbols-rounded">
+                                    location_on
+                                </span>
 
-                    <p id="description">
+                                <span id="currentCity">
 
-                        Partly Cloudy
+                                    Detecting location...
 
-                    </p>
+                                </span>
 
-                    <p id="feelsLike">
+                            </p>
 
-                        Feels like 33°C
+                            <h1 id="currentTemperature">
 
-                    </p>
+                                --°
 
-                    <div class="hero-time">
+                            </h1>
 
-                        <span id="localTime"></span>
+                            <h2 id="weatherCondition">
 
-                        <span id="currentDate"></span>
+                                Loading Weather...
 
-                    </div>
+                            </h2>
 
-                </div>
+                            <p id="weatherDescription">
 
-                <div class="hero-right">
+                                Please wait while we fetch
+                                the latest weather.
 
-                    <img
-                        id="weatherIcon"
-                        alt="Weather Icon">
-
-                </div>
-
-            </section>
-                        <!-- ===========================
-                 Today's Highlights
-            ============================ -->
-
-            <section class="section">
-
-                <div class="section-title">
-                    <h2>Today's Highlights</h2>
-                    <span>Live Weather Conditions</span>
-                </div>
-
-                <div class="highlights-grid">
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-droplet"></i>
-                        <h4>Humidity</h4>
-                        <h3 id="humidity">--%</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-wind"></i>
-                        <h4>Wind</h4>
-                        <h3 id="windSpeed">-- km/h</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-gauge-high"></i>
-                        <h4>Pressure</h4>
-                        <h3 id="pressure">-- hPa</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-eye"></i>
-                        <h4>Visibility</h4>
-                        <h3 id="visibility">-- km</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-sun"></i>
-                        <h4>UV Index</h4>
-                        <h3 id="uv">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-cloud"></i>
-                        <h4>Cloud Cover</h4>
-                        <h3 id="cloudCover">--%</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-temperature-half"></i>
-                        <h4>Dew Point</h4>
-                        <h3 id="dewPoint">--°</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <i class="fa-solid fa-cloud-rain"></i>
-                        <h4>Rain Chance</h4>
-                        <h3 id="rainChance">--%</h3>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- ===========================
-                 Air Quality
-            ============================ -->
-
-            <section class="section" id="air">
-
-                <div class="section-title">
-
-                    <h2>Air Quality</h2>
-
-                    <span>Open-Meteo Air Quality</span>
-
-                </div>
-
-                <div class="aqi-wrapper">
-
-                    <div class="aqi-main">
-
-                        <div class="aqi-circle">
-
-                            <span id="aqiValue">--</span>
+                            </p>
 
                         </div>
 
-                        <h3 id="aqiStatus">
+                        <div class="hero-right">
 
-                            Loading...
+                            <img
+                                id="weatherIcon"
+                                src=""
+                                alt="Weather Icon">
 
-                        </h3>
-
-                    </div>
-
-                    <div class="aqi-grid">
-
-                        <div class="weather-card">
-                            <h4>PM2.5</h4>
-                            <h3 id="pm25">--</h3>
-                        </div>
-
-                        <div class="weather-card">
-                            <h4>PM10</h4>
-                            <h3 id="pm10">--</h3>
-                        </div>
-
-                        <div class="weather-card">
-                            <h4>Carbon Monoxide</h4>
-                            <h3 id="co">--</h3>
-                        </div>
-
-                        <div class="weather-card">
-                            <h4>Nitrogen Dioxide</h4>
-                            <h3 id="no2">--</h3>
-                        </div>
-
-                        <div class="weather-card">
-                            <h4>Ozone</h4>
-                            <h3 id="ozone">--</h3>
                         </div>
 
                     </div>
 
-                </div>
+                </section>
+
+                <!-- Main Dashboard Grid -->
+
+                <section class="dashboard-grid">
+                                    <section class="dashboard-grid">
+
+                    <!-- ==========================================
+                         CURRENT WEATHER SUMMARY CARD
+                         ========================================== -->
+
+                    <div class="weather-summary-card glass-card"
+                         data-aos="fade-up">
+
+                        <div class="card-header">
+
+                            <h3>
+                                Current Weather
+                            </h3>
+
+                            <span class="material-symbols-rounded">
+                                partly_cloudy_day
+                            </span>
+
+                        </div>
+
+
+                        <div class="weather-main-info">
+
+
+                            <div class="temperature-box">
+
+                                <h2 id="mainTemperature">
+                                    --°
+                                </h2>
+
+                                <p id="feelsLike">
+                                    Feels like --°
+                                </p>
+
+                            </div>
+
+
+                            <div class="weather-details">
+
+                                <div class="detail-item">
+
+                                    <span class="material-symbols-rounded">
+                                        humidity_percentage
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Humidity
+                                        </small>
+
+                                        <strong id="humidityValue">
+                                            --%
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="detail-item">
+
+                                    <span class="material-symbols-rounded">
+                                        air
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Wind
+                                        </small>
+
+                                        <strong id="windValue">
+                                            -- km/h
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="detail-item">
+
+                                    <span class="material-symbols-rounded">
+                                        visibility
+                                    </span>
+
+                                    <div>
+
+                                        <small>
+                                            Visibility
+                                        </small>
+
+                                        <strong id="visibilityValue">
+                                            -- km
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="updated-time">
+
+                            <span class="material-symbols-rounded">
+                                update
+                            </span>
+
+                            Updated:
+
+                            <span id="lastUpdated">
+                                --
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ==========================================
+                         TODAY HIGHLIGHTS
+                         ========================================== -->
+
+
+                    <section class="highlights-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+                            <h3>
+                                Today's Highlights
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                insights
+                            </span>
+
+
+                        </div>
+
+
+
+                        <div class="highlights-grid">
+
+
+                            <!-- UV INDEX -->
+
+                            <div class="highlight-card">
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        wb_sunny
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    UV Index
+                                </p>
+
+
+                                <h2 id="uvIndex">
+                                    --
+                                </h2>
+
+
+                                <small id="uvStatus">
+                                    Loading...
+                                </small>
+
+
+                            </div>
+
+
+
+                            <!-- AIR PRESSURE -->
+
+                            <div class="highlight-card">
+
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        speed
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Pressure
+                                </p>
+
+
+                                <h2 id="pressureValue">
+                                    -- hPa
+                                </h2>
+
+
+                                <small>
+                                    Atmospheric Pressure
+                                </small>
+
+
+                            </div>
+
+
+
+
+                            <!-- WIND DIRECTION -->
+
+                            <div class="highlight-card">
+
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        explore
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Wind Direction
+                                </p>
+
+
+                                <h2 id="windDirection">
+                                    --
+                                </h2>
+
+
+                                <small>
+                                    Compass Direction
+                                </small>
+
+
+                            </div>
+
+
+
+
+                            <!-- CLOUD COVER -->
+
+                            <div class="highlight-card">
+
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        cloud
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Cloud Cover
+                                </p>
+
+
+                                <h2 id="cloudCover">
+                                    --%
+                                </h2>
+
+
+                                <small>
+                                    Sky Coverage
+                                </small>
+
+
+                            </div>
+
+
+
+
+                            <!-- DEW POINT -->
+
+                            <div class="highlight-card">
+
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        water_drop
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Dew Point
+                                </p>
+
+
+                                <h2 id="dewPoint">
+                                    --°
+                                </h2>
+
+
+                                <small>
+                                    Moisture Level
+                                </small>
+
+
+                            </div>
+
+
+
+
+                            <!-- RAIN PROBABILITY -->
+
+                            <div class="highlight-card">
+
+
+                                <div class="highlight-icon">
+
+                                    <span class="material-symbols-rounded">
+                                        rainy
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    Rain Chance
+                                </p>
+
+
+                                <h2 id="rainChance">
+                                    --%
+                                </h2>
+
+
+                                <small>
+                                    Precipitation Probability
+                                </small>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </section>
+                                        <!-- ==========================================
+                         HOURLY FORECAST SECTION
+                         ========================================== -->
+
+                    <section id="hourly"
+                             class="forecast-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+                            <h3>
+                                Hourly Forecast
+                            </h3>
+
+
+                            <div class="forecast-actions">
+
+                                <button class="active">
+                                    Today
+                                </button>
+
+                                <button>
+                                    Tomorrow
+                                </button>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- JavaScript will generate hourly cards here -->
+
+                        <div id="hourlyContainer"
+                             class="hourly-container">
+
+
+                            <!-- Dynamic Hourly Forecast Cards -->
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+
+
+                    <!-- ==========================================
+                         10 DAY FORECAST SECTION
+                         ========================================== -->
+
+
+                    <section id="forecast"
+                             class="forecast-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                10 Day Forecast
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                calendar_month
+                            </span>
+
+
+                        </div>
+
+
+
+                        <!-- JavaScript creates forecast cards -->
+
+
+                        <div id="forecastContainer"
+                             class="daily-forecast-container">
+
+
+                            <!-- Dynamic Forecast Cards -->
+
+
+                        </div>
+
+
+
+                    </section>
+
+
+
+
+
+                    <!-- ==========================================
+                         WEATHER CHARTS SECTION
+                         ========================================== -->
+
+
+                    <section id="charts"
+                             class="charts-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Weather Analytics
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                monitoring
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <div class="charts-grid">
+
+
+                            <div class="chart-card">
+
+
+                                <h4>
+                                    Temperature Trend
+                                </h4>
+
+
+                                <canvas id="temperatureChart">
+                                </canvas>
+
+
+                            </div>
+
+
+
+
+                            <div class="chart-card">
+
+
+                                <h4>
+                                    Rain Probability
+                                </h4>
+
+
+                                <canvas id="rainChart">
+                                </canvas>
+
+
+                            </div>
+
+
+
+
+                            <div class="chart-card">
+
+
+                                <h4>
+                                    Wind Speed
+                                </h4>
+
+
+                                <canvas id="windChart">
+                                </canvas>
+
+
+                            </div>
+
+
+
+
+                            <div class="chart-card">
+
+
+                                <h4>
+                                    Humidity
+                                </h4>
+
+
+                                <canvas id="humidityChart">
+                                </canvas>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+
+
+                    <!-- ==========================================
+                         SUN & ASTRONOMY SECTION
+                         ========================================== -->
+
+
+                    <section id="astronomy"
+                             class="astronomy-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Sun & Astronomy
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                nightlight
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <div class="astronomy-grid">
+
+
+
+                            <!-- SUNRISE -->
+
+
+                            <div class="astronomy-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    wb_twilight
+                                </span>
+
+
+                                <div>
+
+                                    <p>
+                                        Sunrise
+                                    </p>
+
+
+                                    <h3 id="sunriseTime">
+                                        --
+                                    </h3>
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+                            <!-- SUNSET -->
+
+
+                            <div class="astronomy-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    wb_twilight
+                                </span>
+
+
+                                <div>
+
+                                    <p>
+                                        Sunset
+                                    </p>
+
+
+                                    <h3 id="sunsetTime">
+                                        --
+                                    </h3>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+                            <!-- DAY LENGTH -->
+
+
+                            <div class="astronomy-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    schedule
+                                </span>
+
+
+                                <div>
+
+
+                                    <p>
+                                        Day Length
+                                    </p>
+
+
+                                    <h3 id="dayLength">
+                                        --
+                                    </h3>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+
+                            <!-- MOON PHASE -->
+
+
+                            <div class="astronomy-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    dark_mode
+                                </span>
+
+
+                                <div>
+
+
+                                    <p>
+                                        Moon Phase
+                                    </p>
+
+
+                                    <h3 id="moonPhase">
+                                        --
+                                    </h3>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+                    </section>
+                                        <!-- ==========================================
+                         AIR QUALITY SECTION
+                         ========================================== -->
+
+
+                    <section id="air-quality"
+                             class="air-quality-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Air Quality Index
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                air
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <div class="aqi-dashboard">
+
+
+                            <div class="aqi-main">
+
+
+                                <div class="aqi-circle">
+
+
+                                    <span id="aqiValue">
+                                        --
+                                    </span>
+
+
+                                    <small>
+                                        AQI
+                                    </small>
+
+
+                                </div>
+
+
+
+                                <div class="aqi-status">
+
+
+                                    <h3 id="aqiStatus">
+                                        Checking Air Quality
+                                    </h3>
+
+
+                                    <p id="aqiDescription">
+                                        Loading environmental data...
+                                    </p>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+
+                            <div class="pollutants-grid">
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        PM2.5
+                                    </span>
+
+                                    <strong id="pm25Value">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        PM10
+                                    </span>
+
+                                    <strong id="pm10Value">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        CO
+                                    </span>
+
+                                    <strong id="coValue">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        NO₂
+                                    </span>
+
+                                    <strong id="no2Value">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        O₃
+                                    </span>
+
+                                    <strong id="o3Value">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+
+                                <div class="pollutant-card">
+
+                                    <span>
+                                        SO₂
+                                    </span>
+
+                                    <strong id="so2Value">
+                                        --
+                                    </strong>
+
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </section>
+
+
+
+
+
+                    <!-- ==========================================
+                         HEALTH & ACTIVITY ADVISOR
+                         ========================================== -->
+
+
+                    <section id="health-advisor"
+                             class="health-section glass-card"
+                             data-aos="fade-up">
+
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Weather Health Advisor
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                health_and_safety
+                            </span>
+
+
+                        </div>
+
+
+
+
+
+                        <div id="healthRecommendations"
+                             class="health-grid">
+
+
+                            <!-- Generated dynamically -->
+
+
+                        </div>
+
+
+
+
+                    </section>
+
+
+
+
+
+
+                    <!-- ==========================================
+                         RADAR & MAP SECTION
+                         ========================================== -->
+
+
+                    <section id="radar"
+                             class="radar-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Live Weather Radar
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                radar
+                            </span>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="map-controls">
+
+
+                            <button class="map-layer active"
+                                    data-layer="temperature">
+
+                                Temperature
+
+                            </button>
+
+
+                            <button class="map-layer"
+                                    data-layer="rain">
+
+                                Rain
+
+                            </button>
+
+
+                            <button class="map-layer"
+                                    data-layer="wind">
+
+                                Wind
+
+                            </button>
+
+
+                            <button class="map-layer"
+                                    data-layer="cloud">
+
+                                Clouds
+
+                            </button>
+
+
+
+                        </div>
+
+
+
+
+
+                        <div id="weatherMap"
+                             class="weather-map">
+
+
+                            <!-- Leaflet map loads here -->
+
+
+                        </div>
+
+
+
+
+                    </section>
+
+
+
+
+
+                    <!-- ==========================================
+                         WEATHER MAP DETAILS
+                         ========================================== -->
+
+
+                    <section id="maps"
+                             class="maps-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Weather Layers
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                layers
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <div class="weather-layer-grid">
+
+
+                            <button class="layer-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    thermostat
+                                </span>
+
+
+                                <p>
+                                    Temperature Map
+                                </p>
+
+
+                            </button>
+
+
+
+
+                            <button class="layer-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    rainy
+                                </span>
+
+
+                                <p>
+                                    Precipitation
+                                </p>
+
+
+                            </button>
+
+
+
+
+                            <button class="layer-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    air
+                                </span>
+
+
+                                <p>
+                                    Wind Map
+                                </p>
+
+
+                            </button>
+
+
+
+
+                            <button class="layer-card">
+
+
+                                <span class="material-symbols-rounded">
+                                    cloud
+                                </span>
+
+
+                                <p>
+                                    Cloud Coverage
+                                </p>
+
+
+                            </button>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                                        <!-- ==========================================
+                         FAVORITE CITIES SECTION
+                         ========================================== -->
+
+
+                    <section id="favorites"
+                             class="favorites-section glass-card"
+                             data-aos="fade-up">
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Favorite Cities
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                favorite
+                            </span>
+
+
+                        </div>
+
+
+
+
+
+                        <div id="favoritesContainer"
+                             class="favorites-grid">
+
+
+                            <!-- Dynamic favorite city cards -->
+
+
+                        </div>
+
+
+
+
+
+                        <button id="addFavoriteBtn"
+                                class="primary-btn">
+
+
+                            <span class="material-symbols-rounded">
+                                add
+                            </span>
+
+
+                            Add City
+
+
+                        </button>
+
+
+
+                    </section>
+
+
+
+
+
+
+
+                    <!-- ==========================================
+                         RECENT SEARCHES
+                         ========================================== -->
+
+
+                    <section class="recent-section glass-card"
+                             data-aos="fade-up">
+
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Recent Searches
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                history
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <div id="recentSearchContainer"
+                             class="recent-search-grid">
+
+
+                            <!-- Generated dynamically -->
+
+
+                        </div>
+
+
+
+                    </section>
+
+
+
+
+
+
+
+
+                    <!-- ==========================================
+                         WEATHER ALERTS
+                         ========================================== -->
+
+
+                    <section id="alerts"
+                             class="alerts-section glass-card"
+                             data-aos="fade-up">
+
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Weather Alerts
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                warning
+                            </span>
+
+
+                        </div>
+
+
+
+
+
+                        <div id="alertContainer"
+                             class="alert-container">
+
+
+
+                            <div class="no-alert">
+
+                                <span class="material-symbols-rounded">
+                                    check_circle
+                                </span>
+
+
+                                <p>
+                                    No active weather alerts
+                                </p>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+                    </section>
+
+
+
+
+
+
+
+
+                    <!-- ==========================================
+                         SETTINGS SECTION
+                         ========================================== -->
+
+
+                    <section id="settings"
+                             class="settings-section glass-card"
+                             data-aos="fade-up">
+
+
+
+                        <div class="section-title">
+
+
+                            <h3>
+                                Dashboard Settings
+                            </h3>
+
+
+                            <span class="material-symbols-rounded">
+                                settings
+                            </span>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="settings-grid">
+
+
+
+                            <div class="setting-card">
+
+
+                                <div>
+
+                                    <h4>
+                                        Theme Mode
+                                    </h4>
+
+
+                                    <p>
+                                        Switch between light and dark appearance
+                                    </p>
+
+                                </div>
+
+
+
+                                <button id="settingsThemeToggle"
+                                        class="toggle-switch">
+
+
+                                    <span></span>
+
+
+                                </button>
+
+
+                            </div>
+
+
+
+
+
+
+                            <div class="setting-card">
+
+
+                                <div>
+
+                                    <h4>
+                                        Temperature Unit
+                                    </h4>
+
+
+                                    <p>
+                                        Celsius or Fahrenheit
+                                    </p>
+
+                                </div>
+
+
+
+                                <button id="settingsUnitToggle"
+                                        class="unit-switch">
+
+
+                                    °C
+
+
+                                </button>
+
+
+                            </div>
+
+
+
+
+
+
+
+                            <div class="setting-card">
+
+
+                                <div>
+
+                                    <h4>
+                                        Auto Location
+                                    </h4>
+
+
+                                    <p>
+                                        Automatically detect your location
+                                    </p>
+
+
+                                </div>
+
+
+
+                                <button id="locationToggle"
+                                        class="toggle-switch">
+
+
+                                    <span></span>
+
+
+                                </button>
+
+
+
+                            </div>
+
+
+
+
+
+                        </div>
+
+
+
+
+                    </section>
+
+
+
+
+                </section>
+                <!-- END DASHBOARD GRID -->
+
+
 
             </section>
+            <!-- END HOME -->
 
-            <!-- ===========================
-                 Hourly Forecast
-            ============================ -->
 
-            <section
-                class="section"
-                id="forecast">
-
-                <div class="section-title">
-
-                    <h2>24 Hour Forecast</h2>
-
-                    <span>Next 24 Hours</span>
-
-                </div>
-
-                <div
-                    id="hourlyForecast"
-                    class="hourly-container">
-
-                </div>
-
-            </section>
-
-            <!-- ===========================
-                 7 Day Forecast
-            ============================ -->
-
-            <section class="section">
-
-                <div class="section-title">
-
-                    <h2>7 Day Forecast</h2>
-
-                    <span>This Week</span>
-
-                </div>
-
-                <div
-                    id="dailyForecast"
-                    class="daily-container">
-
-                </div>
-
-            </section>
-                        <!-- ===========================
-                 Weather Analytics
-            ============================ -->
-
-            <section class="section" id="analytics">
-
-                <div class="section-title">
-                    <h2>Weather Analytics</h2>
-                    <span>Live Charts</span>
-                </div>
-
-                <div class="chart-grid">
-
-                    <div class="chart-card">
-                        <h3>Temperature</h3>
-                        <canvas id="temperatureChart"></canvas>
-                    </div>
-
-                    <div class="chart-card">
-                        <h3>Humidity</h3>
-                        <canvas id="humidityChart"></canvas>
-                    </div>
-
-                    <div class="chart-card">
-                        <h3>Wind Speed</h3>
-                        <canvas id="windChart"></canvas>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- ===========================
-                 Interactive Map
-            ============================ -->
-
-            <section class="section" id="map">
-
-                <div class="section-title">
-                    <h2>Interactive Weather Map</h2>
-                    <span>Leaflet + OpenStreetMap</span>
-                </div>
-
-                <div id="weatherMap"></div>
-
-            </section>
-
-            <!-- ===========================
-                 Rain Radar
-            ============================ -->
-
-            <section class="section">
-
-                <div class="section-title">
-                    <h2>Rain Radar</h2>
-                    <span>RainViewer</span>
-                </div>
-
-                <iframe
-                    id="radarFrame"
-                    loading="lazy"
-                    allowfullscreen>
-                </iframe>
-
-            </section>
-
-            <!-- ===========================
-                 Astronomy
-            ============================ -->
-
-            <section
-                class="section"
-                id="astronomy">
-
-                <div class="section-title">
-                    <h2>Astronomy</h2>
-                    <span>Sun & Moon</span>
-                </div>
-
-                <div class="astro-grid">
-
-                    <div class="weather-card">
-                        <h4>Sunrise</h4>
-                        <h3 id="sunrise">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <h4>Sunset</h4>
-                        <h3 id="sunset">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <h4>Day Length</h4>
-                        <h3 id="dayLength">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <h4>Golden Hour</h4>
-                        <h3 id="goldenHour">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <h4>Solar Noon</h4>
-                        <h3 id="solarNoon">--</h3>
-                    </div>
-
-                    <div class="weather-card">
-                        <h4>Moon Phase</h4>
-                        <h3 id="moonPhase">--</h3>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- ===========================
-                 Health Recommendations
-            ============================ -->
-
-            <section class="section">
-
-                <div class="section-title">
-                    <h2>Health Recommendations</h2>
-                    <span>Based on Current Weather</span>
-                </div>
-
-                <div class="tips-grid">
-
-                    <div class="tip-card">
-                        <i class="fa-solid fa-glass-water"></i>
-                        <h3>Hydration</h3>
-                        <p id="hydrationTip"></p>
-                    </div>
-
-                    <div class="tip-card">
-                        <i class="fa-solid fa-person-walking"></i>
-                        <h3>Exercise</h3>
-                        <p id="exerciseTip"></p>
-                    </div>
-
-                    <div class="tip-card">
-                        <i class="fa-solid fa-shirt"></i>
-                        <h3>Clothing</h3>
-                        <p id="clothingTip"></p>
-                    </div>
-
-                    <div class="tip-card">
-                        <i class="fa-solid fa-car"></i>
-                        <h3>Travel</h3>
-                        <p id="travelTip"></p>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- ===========================
-                 Recent Searches
-            ============================ -->
-
-            <section class="section">
-
-                <div class="section-title">
-                    <h2>Recent Searches</h2>
-                </div>
-
-                <div id="recentSearches"></div>
-
-            </section>
 
         </main>
 
     </div>
 
-    <!-- ===========================
-         Footer
-    ============================ -->
 
-    <footer>
 
-        <div>
-            WeatherSphere Pro 3.1
+
+
+    <!-- ==========================================
+         NOTIFICATION PANEL
+         ========================================== -->
+
+
+    <div id="notificationPanel"
+         class="notification-panel">
+
+
+        <div class="notification-header">
+
+
+            <h3>
+                Notifications
+            </h3>
+
+
+            <button id="closeNotification">
+
+                <span class="material-symbols-rounded">
+                    close
+                </span>
+
+            </button>
+
+
         </div>
 
-        <div>
-            Weather data by Open-Meteo
+
+
+        <div id="notificationContent">
+
+
+            <p>
+                Weather updates will appear here.
+            </p>
+
+
         </div>
 
-        <div>
-            Updated :
-            <span id="footerUpdated">--</span>
+
+
+    </div>
+        <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+
+    <footer class="footer">
+
+
+        <div class="footer-content">
+
+
+            <div class="footer-brand">
+
+
+                <span class="material-symbols-rounded">
+                    thunderstorm
+                </span>
+
+
+                <div>
+
+                    <h2>
+                        WeatherSphere Pro
+                    </h2>
+
+
+                    <p>
+                        Premium real-time weather intelligence dashboard.
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div class="footer-links">
+
+
+                <a href="#home">
+                    Home
+                </a>
+
+
+                <a href="#forecast">
+                    Forecast
+                </a>
+
+
+                <a href="#radar">
+                    Radar
+                </a>
+
+
+                <a href="#air-quality">
+                    Air Quality
+                </a>
+
+
+                <a href="#settings">
+                    Settings
+                </a>
+
+
+            </div>
+
+
+
+
+
+            <div class="footer-social">
+
+
+                <a href="#" aria-label="Github">
+
+                    <i class="fa-brands fa-github"></i>
+
+                </a>
+
+
+                <a href="#" aria-label="LinkedIn">
+
+                    <i class="fa-brands fa-linkedin"></i>
+
+                </a>
+
+
+                <a href="#" aria-label="Twitter">
+
+                    <i class="fa-brands fa-x-twitter"></i>
+
+                </a>
+
+
+
+            </div>
+
+
+
         </div>
+
+
+
+
+
+        <div class="footer-bottom">
+
+
+            <p>
+
+                © 2026 WeatherSphere Pro 4.0.
+                Built with HTML, CSS, JavaScript & Weather APIs.
+
+            </p>
+
+
+        </div>
+
+
 
     </footer>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Leaflet -->
+
+
+
+
+
+
+    <!-- ==========================================
+         THIRD PARTY JAVASCRIPT LIBRARIES
+         ========================================== -->
+
+
+
+    <!-- Leaflet Map -->
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <!-- JavaScript -->
+
+
+    <!-- Chart.js -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <!-- AOS Animation -->
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+
+
+    <!-- Swiper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+
+    <!-- Flatpickr -->
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+
+
+
+    <!-- Main Application Script -->
+
     <script src="script.js"></script>
+
+
 
 </body>
 
