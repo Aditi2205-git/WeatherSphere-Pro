@@ -1,6 +1,7 @@
 /* ===========================================================
 WeatherSphere Pro 4.0
 Premium Weather Dashboard
+
 script.js PART 1/5
 
 Author : Aditi Singh
@@ -22,19 +23,16 @@ let currentLat = 28.6139;
 
 let currentLon = 77.2090;
 
-
 let weatherData = null;
 
-
 let temperatureUnit = "celsius";
-
 
 let map = null;
 
 
 
 /* ===========================================================
-DOM SELECTOR HELPER
+DOM HELPER
 =========================================================== */
 
 
@@ -42,8 +40,9 @@ const $ = id => document.getElementById(id);
 
 
 
+
 /* ===========================================================
-WEATHER CODE DATABASE
+WEATHER DATABASE
 =========================================================== */
 
 
@@ -51,149 +50,149 @@ const weatherCodes = {
 
 
 0:{
-    text:"Clear Sky",
-    day:"☀️",
-    night:"🌙"
+text:"Clear Sky",
+day:"☀️",
+night:"🌙"
 },
 
 
 1:{
-    text:"Mainly Clear",
-    day:"🌤️",
-    night:"🌙"
+text:"Mainly Clear",
+day:"🌤️",
+night:"🌙"
 },
 
 
 2:{
-    text:"Partly Cloudy",
-    day:"⛅",
-    night:"☁️"
+text:"Partly Cloudy",
+day:"⛅",
+night:"☁️"
 },
 
 
 3:{
-    text:"Overcast",
-    day:"☁️",
-    night:"☁️"
+text:"Overcast",
+day:"☁️",
+night:"☁️"
 },
 
 
 45:{
-    text:"Fog",
-    day:"🌫️",
-    night:"🌫️"
+text:"Fog",
+day:"🌫️",
+night:"🌫️"
 },
 
 
 48:{
-    text:"Rime Fog",
-    day:"🌫️",
-    night:"🌫️"
+text:"Rime Fog",
+day:"🌫️",
+night:"🌫️"
 },
 
 
 51:{
-    text:"Light Drizzle",
-    day:"🌦️",
-    night:"🌧️"
+text:"Light Drizzle",
+day:"🌦️",
+night:"🌧️"
 },
 
 
 53:{
-    text:"Drizzle",
-    day:"🌦️",
-    night:"🌧️"
+text:"Drizzle",
+day:"🌦️",
+night:"🌧️"
 },
 
 
 55:{
-    text:"Heavy Drizzle",
-    day:"🌧️",
-    night:"🌧️"
+text:"Heavy Drizzle",
+day:"🌧️",
+night:"🌧️"
 },
 
 
 61:{
-    text:"Light Rain",
-    day:"🌦️",
-    night:"🌧️"
+text:"Light Rain",
+day:"🌦️",
+night:"🌧️"
 },
 
 
 63:{
-    text:"Rain",
-    day:"🌧️",
-    night:"🌧️"
+text:"Rain",
+day:"🌧️",
+night:"🌧️"
 },
 
 
 65:{
-    text:"Heavy Rain",
-    day:"🌧️",
-    night:"🌧️"
+text:"Heavy Rain",
+day:"🌧️",
+night:"🌧️"
 },
 
 
 71:{
-    text:"Snow",
-    day:"❄️",
-    night:"🌨️"
+text:"Snow",
+day:"❄️",
+night:"🌨️"
 },
 
 
 73:{
-    text:"Snowfall",
-    day:"❄️",
-    night:"🌨️"
+text:"Snowfall",
+day:"❄️",
+night:"🌨️"
 },
 
 
 75:{
-    text:"Heavy Snow",
-    day:"❄️",
-    night:"🌨️"
+text:"Heavy Snow",
+day:"❄️",
+night:"🌨️"
 },
 
 
 80:{
-    text:"Rain Showers",
-    day:"🌦️",
-    night:"🌧️"
+text:"Rain Showers",
+day:"🌦️",
+night:"🌧️"
 },
 
 
 81:{
-    text:"Rain Showers",
-    day:"🌧️",
-    night:"🌧️"
+text:"Rain Showers",
+day:"🌧️",
+night:"🌧️"
 },
 
 
 82:{
-    text:"Heavy Showers",
-    day:"⛈️",
-    night:"⛈️"
+text:"Heavy Showers",
+day:"⛈️",
+night:"⛈️"
 },
 
 
 95:{
-    text:"Thunderstorm",
-    day:"⛈️",
-    night:"⛈️"
+text:"Thunderstorm",
+day:"⛈️",
+night:"⛈️"
 },
 
 
 96:{
-    text:"Thunderstorm Hail",
-    day:"⛈️",
-    night:"⛈️"
+text:"Thunderstorm Hail",
+day:"⛈️",
+night:"⛈️"
 },
 
 
 99:{
-    text:"Severe Storm",
-    day:"⛈️",
-    night:"⛈️"
+text:"Severe Storm",
+day:"⛈️",
+night:"⛈️"
 }
 
 
@@ -201,27 +200,25 @@ const weatherCodes = {
 
 
 
+
 /* ===========================================================
-GET WEATHER INFO
+GET WEATHER INFORMATION
 =========================================================== */
 
 
 function getWeatherInfo(code,isDay=true){
 
 
-    let data = weatherCodes[code] || weatherCodes[0];
+let data = weatherCodes[code] || weatherCodes[0];
 
 
-    return {
+return {
 
+text:data.text,
 
-        text:data.text,
+icon:isDay ? data.day : data.night
 
-
-        icon:isDay ? data.day : data.night
-
-
-    };
+};
 
 
 }
@@ -231,25 +228,31 @@ function getWeatherInfo(code,isDay=true){
 
 
 /* ===========================================================
-TEMPERATURE CONVERSION
+TEMPERATURE CONVERTER
 =========================================================== */
 
 
 function convertTemperature(value){
 
 
-    if(value===undefined || value===null)
-        return "--°";
+if(value===undefined || value===null)
+
+return "--°";
 
 
-    if(temperatureUnit==="fahrenheit"){
 
-        return Math.round((value*9/5)+32)+"°F";
-
-    }
+if(temperatureUnit==="fahrenheit"){
 
 
-    return Math.round(value)+"°C";
+return Math.round(
+(value*9/5)+32
+)+"°F";
+
+
+}
+
+
+return Math.round(value)+"°C";
 
 
 }
@@ -259,25 +262,29 @@ function convertTemperature(value){
 
 
 /* ===========================================================
-CHECK DAY OR NIGHT
-USING COUNTRY SUNRISE SUNSET
+DAY NIGHT DETECTION
+COUNTRY BASED SUNRISE SUNSET
 =========================================================== */
 
 
-function isDayTime(current,sunrise,sunset){
-
-
-    let now=new Date(current);
-
-
-    let rise=new Date(sunrise);
-
-
-    let set=new Date(sunset);
+function isDayTime(currentTime,sunrise,sunset){
 
 
 
-    return now>=rise && now<=set;
+let current =
+new Date(currentTime);
+
+
+let rise =
+new Date(sunrise);
+
+
+let set =
+new Date(sunset);
+
+
+
+return current >= rise && current <= set;
 
 
 }
@@ -287,11 +294,12 @@ function isDayTime(current,sunrise,sunset){
 
 
 /* ===========================================================
-FETCH CITY COORDINATES
+CITY GEOLOCATION API
 =========================================================== */
 
 
 async function getCityCoordinates(city){
+
 
 
 try{
@@ -300,35 +308,44 @@ try{
 let response =
 await fetch(
 
-`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`
+`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`
 
 );
 
 
 
-let data = await response.json();
+let data =
+await response.json();
 
 
 
 if(!data.results)
-    throw "City not found";
+
+throw new Error("City not found");
 
 
 
 return {
 
+
 name:data.results[0].name,
+
 
 lat:data.results[0].latitude,
 
+
 lon:data.results[0].longitude,
 
+
 country:data.results[0].country
+
 
 };
 
 
 }
+
+
 
 catch(error){
 
@@ -342,13 +359,15 @@ return null;
 }
 
 
+
 }
 
 
 
 
+
 /* ===========================================================
-MAIN WEATHER FETCH
+MAIN WEATHER API FETCH
 =========================================================== */
 
 
@@ -362,8 +381,39 @@ showLoader();
 
 
 
-let url = 
-`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,cloud_cover,visibility,is_day&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto`;
+let url =
+
+`https://api.open-meteo.com/v1/forecast?
+latitude=${currentLat}
+&longitude=${currentLon}
+&current=
+temperature_2m,
+relative_humidity_2m,
+apparent_temperature,
+weather_code,
+wind_speed_10m,
+pressure_msl,
+cloud_cover,
+visibility,
+is_day
+&hourly=
+temperature_2m,
+relative_humidity_2m,
+wind_speed_10m,
+weather_code
+&daily=
+weather_code,
+temperature_2m_max,
+temperature_2m_min,
+sunrise,
+sunset,
+uv_index_max
+&timezone=auto`;
+
+
+
+url =
+url.replace(/\s+/g,"");
 
 
 
@@ -371,9 +421,23 @@ let response =
 await fetch(url);
 
 
-let data = await response.json();
 
-console.log("WEATHER API DATA:", data);
+if(!response.ok)
+
+throw new Error("API failed");
+
+
+
+let data =
+await response.json();
+
+
+
+console.log(
+"WEATHER DATA:",
+data
+);
+
 
 
 weatherData=data;
@@ -391,23 +455,30 @@ hideLoader();
 }
 
 
+
 catch(error){
+
 
 
 console.error(error);
 
 
-showError("Weather data loading failed");
-
 
 hideLoader();
 
 
+
+showError(
+"Weather data loading failed"
+);
+
+
+
 }
 
 
-}
 
+}
 /* ===========================================================
 UPDATE ALL WEATHER DATA
 =========================================================== */
@@ -416,118 +487,85 @@ UPDATE ALL WEATHER DATA
 function updateAllWeather(data){
 
 
-    const current = data.current;
 
+const current =
+data.current;
 
-    const daily = data.daily;
 
+const daily =
+data.daily;
 
 
-    let sunrise = daily.sunrise[0];
 
-    let sunset  = daily.sunset[0];
+let isDay =
+current.is_day === 1;
 
 
 
-    let isDay = isDayTime(
+let weather =
+getWeatherInfo(
+current.weather_code,
+isDay
+);
 
-        current.time,
 
-        sunrise,
 
-        sunset
+updateHero(
+current,
+weather
+);
 
-    );
 
 
+updateCurrentWeather(
+current,
+weather
+);
 
-    let weather = getWeatherInfo(
 
-        current.weather_code,
 
-        isDay
+updateSunData(
+daily
+);
 
-    );
 
 
+updateHighlights(
+current,
+daily
+);
 
-    updateHero(
 
-        current,
 
-        weather
+updateForecast(
+daily
+);
 
-    );
 
 
+updateHourly(
+data.hourly
+);
 
-    updateCurrentWeather(
 
-        current,
 
-        weather
+updateAdvice(
+current
+);
 
-    );
 
 
+updateTime(
+current.time
+);
 
-    updateSunData(
 
-        daily
 
-    );
+updateWeatherTheme(
+current.weather_code,
+isDay
+);
 
-
-
-    updateHighlights(
-
-        current,
-
-        daily
-
-    );
-
-
-
-    updateForecast(
-
-        daily
-
-    );
-
-
-
-    updateHourly(
-
-        data.hourly
-
-    );
-
-
-
-    updateWeatherTheme(
-
-        current.weather_code,
-
-        isDay
-
-    );
-
-
-
-    updateAdvice(
-
-        current
-
-    );
-
-
-
-    updateTime(
-
-        current.time
-
-    );
 
 
 }
@@ -535,11 +573,8 @@ function updateAllWeather(data){
 
 
 
-
-
-
 /* ===========================================================
-HERO WEATHER UPDATE
+HERO WEATHER CARD
 =========================================================== */
 
 
@@ -547,70 +582,61 @@ function updateHero(current,weather){
 
 
 
-    if($("heroTemp"))
+if($("heroTemp"))
 
-        $("heroTemp").innerText =
-
-        convertTemperature(
-
-            current.temperature_2m
-
-        );
+$("heroTemp").innerText =
+convertTemperature(
+current.temperature_2m
+);
 
 
 
+if($("heroCity"))
 
-
-    if($("heroCity"))
-
-        $("heroCity").innerText = currentCity;
-
-
+$("heroCity").innerText =
+currentCity;
 
 
 
-    if($("heroDescription"))
+if($("heroDescription"))
 
-        $("heroDescription").innerText =
-
-        weather.text;
-
+$("heroDescription").innerText =
+weather.text;
 
 
 
-
-    let icon = document.querySelector(".hero-weather-card .weather-icon");
-
-
-
-    if(icon)
-
-        icon.innerHTML = weather.icon;
+let icon =
+document.querySelector(
+".hero-weather-card .weather-icon"
+);
 
 
 
+if(icon)
 
-
-    if($("heroHumidity"))
-
-        $("heroHumidity").innerText =
-
-        current.relative_humidity_2m+"%";
+icon.innerHTML =
+weather.icon;
 
 
 
+if($("heroHumidity"))
+
+$("heroHumidity").innerText =
+current.relative_humidity_2m+"%";
 
 
-    if($("heroWind"))
 
-        $("heroWind").innerText =
+if($("heroWind"))
 
-        Math.round(current.wind_speed_10m)+" km/h";
+$("heroWind").innerText =
+Math.round(
+current.wind_speed_10m
+)
++" km/h";
+
 
 
 }
-
-
 
 
 
@@ -625,104 +651,68 @@ function updateCurrentWeather(current,weather){
 
 
 
-    if($("weatherEmoji"))
+if($("weatherEmoji"))
 
-        $("weatherEmoji").innerHTML =
-
-        weather.icon;
-
+$("weatherEmoji").innerHTML =
+weather.icon;
 
 
 
+if($("temperature"))
 
-    if($("temperature"))
-
-        $("temperature").innerText =
-
-        convertTemperature(
-
-            current.temperature_2m
-
-        );
+$("temperature").innerText =
+convertTemperature(
+current.temperature_2m
+);
 
 
 
+if($("weatherCondition"))
+
+$("weatherCondition").innerText =
+weather.text;
 
 
-    if($("weatherCondition"))
 
-        $("weatherCondition").innerText =
+if($("cityName"))
 
-        weather.text;
+$("cityName").innerText =
+currentCity;
 
 
 
 
-
-    if($("cityName"))
-
-        $("cityName").innerText =
-
-        currentCity;
+/* FEELS LIKE FIX */
 
 
+if($("feelsLike"))
 
-
-
-
-
-    /*
-       IMPORTANT FIX:
-       Open Meteo sends:
-       apparent_temperature
-
-       Not:
-       feels_like
-    */
+$("feelsLike").innerText =
+convertTemperature(
+current.apparent_temperature
+);
 
 
 
-    if($("feelsLike"))
+if($("windSpeed"))
 
-        $("feelsLike").innerText =
-
-        convertTemperature(
-
-            current.apparent_temperature
-
-        );
+$("windSpeed").innerText =
+Math.round(
+current.wind_speed_10m
+)
++" km/h";
 
 
 
+if($("humidity"))
 
-
-
-
-    if($("windSpeed"))
-
-        $("windSpeed").innerText =
-
-        Math.round(
-
-            current.wind_speed_10m
-
-        )+" km/h";
-
-
-
-
-
-    if($("humidity"))
-
-        $("humidity").innerText =
-
-        current.relative_humidity_2m+"%";
+$("humidity").innerText =
+current.relative_humidity_2m
++"%";
 
 
 
 }
-
-
 
 
 
@@ -738,36 +728,22 @@ function updateSunData(daily){
 
 
 
-    if($("sunrise")){
+if($("sunrise"))
 
-
-        $("sunrise").innerText =
-
-        formatTime(
-
-            daily.sunrise[0]
-
-        );
-
-
-    }
+$("sunrise").innerText =
+formatTime(
+daily.sunrise[0]
+);
 
 
 
+if($("sunset"))
 
-    if($("sunset")){
+$("sunset").innerText =
+formatTime(
+daily.sunset[0]
+);
 
-
-        $("sunset").innerText =
-
-        formatTime(
-
-            daily.sunset[0]
-
-        );
-
-
-    }
 
 
 }
@@ -777,10 +753,8 @@ function updateSunData(daily){
 
 
 
-
-
 /* ===========================================================
-HIGHLIGHTS UPDATE
+WEATHER HIGHLIGHTS
 =========================================================== */
 
 
@@ -788,87 +762,64 @@ function updateHighlights(current,daily){
 
 
 
-    if($("visibility"))
-
-        $("visibility").innerText =
-
-        current.visibility ?
-
-        Math.round(
-
-        current.visibility/1000
-
-        )+" km"
-
-        :
-
-        "--";
+if($("visibility"))
 
 
+$("visibility").innerText =
+current.visibility ?
 
+Math.round(
+current.visibility/1000
+)
++" km"
 
+:
 
-    if($("pressure"))
-
-        $("pressure").innerText =
-
-        Math.round(
-
-        current.pressure_msl
-
-        )+" hPa";
+"--";
 
 
 
 
 
-    if($("clouds"))
+if($("pressure"))
 
-        $("clouds").innerText =
-
-        current.cloud_cover+"%";
-
-
-
-
-
-    if($("dewPoint"))
-
-        $("dewPoint").innerText =
-
-        convertTemperature(
-
-            current.dew_point_2m
-
-        );
+$("pressure").innerText =
+Math.round(
+current.pressure_msl
+)
++" hPa";
 
 
 
 
 
-    if($("maxTemp"))
+if($("clouds"))
 
-        $("maxTemp").innerText =
-
-        convertTemperature(
-
-            daily.temperature_2m_max[0]
-
-        );
+$("clouds").innerText =
+current.cloud_cover+"%";
 
 
 
 
 
-    if($("minTemp"))
+if($("maxTemp"))
 
-        $("minTemp").innerText =
+$("maxTemp").innerText =
+convertTemperature(
+daily.temperature_2m_max[0]
+);
 
-        convertTemperature(
 
-            daily.temperature_2m_min[0]
 
-        );
+
+
+if($("minTemp"))
+
+$("minTemp").innerText =
+convertTemperature(
+daily.temperature_2m_min[0]
+);
+
 
 
 }
@@ -880,7 +831,7 @@ function updateHighlights(current,daily){
 
 
 /* ===========================================================
-WEATHER BACKGROUND CHANGER
+WEATHER BACKGROUND / EFFECTS
 =========================================================== */
 
 
@@ -888,33 +839,48 @@ function updateWeatherTheme(code,isDay){
 
 
 
-let body=document.body;
+let body =
+document.body;
 
 
 
 if(isDay)
 
-    body.classList.add("day");
+body.classList.add("day");
 
 else
 
-    body.classList.remove("day");
+body.classList.remove("day");
 
 
 
 
-let rain=document.querySelector(".rain");
-
-let snow=document.querySelector(".snow");
-
-let lightning=document.querySelector(".lightning");
+let rain =
+document.querySelector(".rain");
 
 
+let snow =
+document.querySelector(".snow");
 
+
+let lightning =
+document.querySelector(".lightning");
+
+
+
+if(rain)
 
 rain.classList.remove("active");
 
+
+
+if(snow)
+
 snow.classList.remove("active");
+
+
+
+if(lightning)
 
 lightning.classList.remove("active");
 
@@ -922,10 +888,60 @@ lightning.classList.remove("active");
 
 
 
-if([51,53,55,61,63,65,80,81,82].includes(code)){
+
+if(
+[
+51,53,55,
+61,63,65,
+80,81,82
+]
+.includes(code)
+){
 
 
-    rain.classList.add("active");
+if(rain)
+
+rain.classList.add("active");
+
+
+}
+
+
+
+
+if(
+[
+71,73,75
+]
+.includes(code)
+){
+
+
+if(snow)
+
+snow.classList.add("active");
+
+
+}
+
+
+
+
+if(
+[
+95,96,99
+]
+.includes(code)
+){
+
+
+if(lightning)
+
+lightning.classList.add("active");
+
+
+}
+
 
 
 }
@@ -934,10 +950,40 @@ if([51,53,55,61,63,65,80,81,82].includes(code)){
 
 
 
-if([71,73,75].includes(code)){
+
+/* ===========================================================
+DATE TIME
+=========================================================== */
 
 
-    snow.classList.add("active");
+function updateTime(time){
+
+
+
+let date =
+new Date(time);
+
+
+
+if($("currentTime"))
+
+$("currentTime").innerText =
+date.toLocaleTimeString();
+
+
+
+if($("currentDate"))
+
+$("currentDate").innerText =
+date.toLocaleDateString(
+[],
+{
+weekday:"long",
+day:"numeric",
+month:"long"
+}
+);
+
 
 
 }
@@ -946,19 +992,27 @@ if([71,73,75].includes(code)){
 
 
 
-if([95,96,99].includes(code)){
+/* ===========================================================
+FORMAT TIME
+=========================================================== */
 
 
-    lightning.classList.add("active");
+function formatTime(date){
+
+
+
+return new Date(date)
+.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
 
 
 }
-
-
-
-}
-
-
 /* ===========================================================
 HOURLY FORECAST UPDATE
 =========================================================== */
@@ -967,91 +1021,103 @@ HOURLY FORECAST UPDATE
 function updateHourly(hourly){
 
 
-    let container = $("hourlyContainer");
 
-
-    if(!container) return;
-
-
-
-    container.innerHTML="";
+let container =
+$("hourlyContainer");
 
 
 
-    for(let i=0;i<24;i++){
+if(!container)
 
-
-        let weather = getWeatherInfo(
-
-            hourly.weather_code[i],
-
-            true
-
-        );
+return;
 
 
 
-        let card=document.createElement("div");
-
-
-        card.className="hour-card";
+container.innerHTML="";
 
 
 
-        let time =
-        new Date(hourly.time[i])
-        .toLocaleTimeString(
-            [],
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
+
+for(let i=0;i<24;i++){
 
 
 
-        card.innerHTML=`
-
-            <h4>${time}</h4>
-
-            <div class="emoji">
-
-                ${weather.icon}
-
-            </div>
-
-            <h3>
-
-                ${convertTemperature(
-                    hourly.temperature_2m[i]
-                )}
-
-            </h3>
-
-
-            <p>
-
-            💧 ${hourly.relative_humidity_2m[i]}%
-
-            </p>
-
-
-            <p>
-
-            🌬️ ${Math.round(
-                hourly.wind_speed_10m[i]
-            )} km/h
-
-            </p>
-
-        `;
+let weather =
+getWeatherInfo(
+hourly.weather_code[i],
+true
+);
 
 
 
-        container.appendChild(card);
+
+let card =
+document.createElement("div");
 
 
-    }
+
+card.className =
+"hour-card";
+
+
+
+
+let time =
+new Date(
+hourly.time[i]
+)
+.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+
+
+
+card.innerHTML = `
+
+<h4>
+${time}
+</h4>
+
+
+<div class="emoji">
+${weather.icon}
+</div>
+
+
+<h3>
+${convertTemperature(
+hourly.temperature_2m[i]
+)}
+</h3>
+
+
+<p>
+💧 ${hourly.relative_humidity_2m[i]}%
+</p>
+
+
+<p>
+🌬️ ${Math.round(
+hourly.wind_speed_10m[i]
+)}
+km/h
+</p>
+
+`;
+
+
+
+container.appendChild(card);
+
+
+
+}
+
 
 
 }
@@ -1062,9 +1128,8 @@ function updateHourly(hourly){
 
 
 
-
 /* ===========================================================
-7 DAY FORECAST UPDATE
+7 DAYS FORECAST
 =========================================================== */
 
 
@@ -1072,16 +1137,18 @@ function updateForecast(daily){
 
 
 
-let container=$("forecastContainer");
+let container =
+$("forecastContainer");
 
 
 
-if(!container) return;
+if(!container)
+
+return;
 
 
 
 container.innerHTML="";
-
 
 
 
@@ -1108,71 +1175,64 @@ weekday:"short"
 
 
 
+let isDay =
+true;
+
+
+
 let weather =
 getWeatherInfo(
 daily.weather_code[i],
-true
+isDay
 );
 
 
 
 
-
-let card=document.createElement("div");
-
-
-
-card.className="forecast-card";
+let card =
+document.createElement("div");
 
 
 
+card.className =
+"forecast-card";
 
 
-card.innerHTML=`
+
+
+
+card.innerHTML = `
 
 <h3>
-
 ${day}
-
 </h3>
 
 
-<div class="emoji">
+<div class="forecast-icon">
 
 ${weather.icon}
 
 </div>
 
 
-
 <p>
-
 ${weather.text}
-
 </p>
 
 
-
 <h2>
-
 ${convertTemperature(
 daily.temperature_2m_max[i]
 )}
-
 </h2>
 
 
-
 <span>
-
 Low:
-
 ${convertTemperature(
 daily.temperature_2m_min[i]
 )}
-
 </span>
-
 
 `;
 
@@ -1185,6 +1245,7 @@ container.appendChild(card);
 }
 
 
+
 }
 
 
@@ -1194,10 +1255,8 @@ container.appendChild(card);
 
 
 
-
-
 /* ===========================================================
-UV INDEX
+UV INDEX UPDATE
 =========================================================== */
 
 
@@ -1206,8 +1265,8 @@ function updateUV(daily){
 
 
 if(!$("uvIndex"))
-return;
 
+return;
 
 
 
@@ -1221,20 +1280,28 @@ Math.round(uv);
 
 
 
-let level="Low";
+
+let level =
+"Low";
 
 
 
 if(uv>=3)
+
 level="Moderate";
 
 
+
 if(uv>=6)
+
 level="High";
 
 
+
 if(uv>=8)
+
 level="Very High";
+
 
 
 
@@ -1252,7 +1319,8 @@ $("uvBar").style.width =
 Math.min(
 uv*10,
 100
-)+"%";
+)
++"%";
 
 
 
@@ -1264,10 +1332,8 @@ uv*10,
 
 
 
-
-
 /* ===========================================================
-AIR QUALITY FETCH
+AIR QUALITY API
 =========================================================== */
 
 
@@ -1279,24 +1345,22 @@ try{
 
 
 
-let url=
+let url =
 
-`
-https://air-quality-api.open-meteo.com/v1/air-quality?
-
+`https://air-quality-api.open-meteo.com/v1/air-quality?
 latitude=${currentLat}
-
 &longitude=${currentLon}
+&current=us_aqi`;
 
-&current=us_aqi
-`;
+
+
+url =
+url.replace(/\s+/g,"");
 
 
 
 let response =
-await fetch(
-url.replace(/\s/g,"")
-);
+await fetch(url);
 
 
 
@@ -1305,17 +1369,17 @@ await response.json();
 
 
 
-
-
 let aqi =
 data.current.us_aqi;
+
 
 
 
 if($("aqiValue"))
 
 $("aqiValue").innerText =
-aqi;
+Math.round(aqi);
+
 
 
 
@@ -1325,15 +1389,22 @@ let status =
 
 
 if(aqi>50)
+
 status="Moderate";
 
 
+
 if(aqi>100)
+
 status="Unhealthy";
 
 
+
 if(aqi>200)
+
 status="Very Unhealthy";
+
+
 
 
 
@@ -1347,7 +1418,9 @@ status;
 }
 
 
+
 catch(error){
+
 
 
 console.log(
@@ -1355,13 +1428,12 @@ console.log(
 );
 
 
-}
-
 
 }
 
 
 
+}
 
 
 
@@ -1393,12 +1465,8 @@ let advice =
 
 
 
-
-
 let health =
 "Air conditions are normal.";
-
-
 
 
 
@@ -1419,18 +1487,10 @@ advice =
 activity =
 "Prefer indoor activities during afternoon.";
 
-}
-
-
-
-if(humidity>80){
-
-
-health =
-"High humidity may cause discomfort.";
-
 
 }
+
+
 
 
 
@@ -1443,6 +1503,20 @@ advice =
 
 activity =
 "Outdoor activities are better during sunny hours.";
+
+
+}
+
+
+
+
+
+if(humidity>80){
+
+
+health =
+"High humidity may cause discomfort.";
+
 
 }
 
@@ -1472,51 +1546,6 @@ $("activityAdvice").innerText =
 activity;
 
 
-}
-
-
-
-
-
-
-
-
-/* ===========================================================
-DATE TIME UPDATE
-=========================================================== */
-
-
-function updateTime(time){
-
-
-
-let date =
-new Date(time);
-
-
-
-if($("currentTime"))
-
-$("currentTime").innerText =
-
-date.toLocaleTimeString();
-
-
-
-if($("currentDate"))
-
-$("currentDate").innerText =
-
-date.toLocaleDateString(
-[],
-{
-weekday:"long",
-day:"numeric",
-month:"long"
-}
-);
-
-
 
 }
 /* ===========================================================
@@ -1527,61 +1556,67 @@ CITY SEARCH
 async function searchCity(){
 
 
-    let input=$("cityInput");
 
-
-    if(!input || !input.value.trim())
-        return;
-
-
-
-    let city=input.value.trim();
+let input =
+$("cityInput");
 
 
 
-    let location =
-    await getCityCoordinates(city);
+if(!input || !input.value.trim())
+
+return;
 
 
 
-    if(!location)
-        return;
+let city =
+input.value.trim();
 
 
 
 
-    currentCity =
-    location.name;
+let location =
+await getCityCoordinates(city);
 
 
 
-    currentLat =
-    location.lat;
+
+if(!location)
+
+return;
 
 
 
-    currentLon =
-    location.lon;
+
+currentCity =
+location.name;
 
 
 
-    saveSearchHistory(
-        currentCity
-    );
+currentLat =
+location.lat;
 
 
 
-    fetchWeather();
+currentLon =
+location.lon;
 
 
-    fetchAQI();
+
+saveSearchHistory(
+currentCity
+);
+
+
+
+fetchWeather();
+
+
+
+fetchAQI();
 
 
 
 }
-
-
-
 
 
 
@@ -1599,12 +1634,13 @@ function getCurrentLocation(){
 if(!navigator.geolocation){
 
 
-    showToast(
-        "Location not supported"
-    );
+showToast(
+"Location not supported"
+);
 
 
-    return;
+return;
+
 
 }
 
@@ -1614,33 +1650,37 @@ if(!navigator.geolocation){
 
 navigator.geolocation.getCurrentPosition(
 
+
+
 (position)=>{
 
 
-    currentLat =
-    position.coords.latitude;
+
+currentLat =
+position.coords.latitude;
 
 
 
-    currentLon =
-    position.coords.longitude;
+currentLon =
+position.coords.longitude;
 
 
 
-
-    currentCity =
-    "Your Location";
-
+currentCity =
+"Your Location";
 
 
-    fetchWeather();
+
+fetchWeather();
 
 
-    fetchAQI();
+
+fetchAQI();
 
 
 
 },
+
 
 
 ()=>{
@@ -1658,9 +1698,8 @@ showToast(
 );
 
 
+
 }
-
-
 
 
 
@@ -1678,13 +1717,14 @@ function startVoiceSearch(){
 
 
 if(
-!"webkitSpeechRecognition" in window
+!("webkitSpeechRecognition" in window)
 ){
 
 
 showToast(
 "Voice search not supported"
 );
+
 
 
 return;
@@ -1694,12 +1734,17 @@ return;
 
 
 
+
+
 let recognition =
 new webkitSpeechRecognition();
 
 
 
-recognition.lang="en-US";
+
+recognition.lang =
+"en-US";
+
 
 
 recognition.start();
@@ -1707,20 +1752,23 @@ recognition.start();
 
 
 
-
 if($("voiceModal"))
 
-$("voiceModal").style.display="flex";
+$("voiceModal").style.display =
+"flex";
 
 
 
 
-recognition.onresult=function(event){
+
+recognition.onresult =
+function(event){
 
 
 
 let city =
 event.results[0][0].transcript;
+
 
 
 
@@ -1740,13 +1788,17 @@ searchCity();
 
 
 
-recognition.onend=function(){
+
+recognition.onend =
+function(){
 
 
 
 if($("voiceModal"))
 
-$("voiceModal").style.display="none";
+$("voiceModal").style.display =
+"none";
+
 
 
 };
@@ -1754,6 +1806,7 @@ $("voiceModal").style.display="none";
 
 
 }
+
 
 
 
@@ -1783,8 +1836,8 @@ localStorage.getItem(
 
 
 
-
 if(!favorites.includes(currentCity)){
+
 
 
 favorites.push(
@@ -1794,13 +1847,10 @@ currentCity
 
 
 localStorage.setItem(
-
 "favorites",
-
 JSON.stringify(
 favorites
 )
-
 );
 
 
@@ -1814,12 +1864,12 @@ showToast(
 );
 
 
-}
-
 
 }
 
 
+
+}
 
 
 
@@ -1837,7 +1887,10 @@ $("favoriteCities");
 
 
 if(!container)
+
 return;
+
+
 
 
 
@@ -1849,6 +1902,7 @@ localStorage.getItem(
 )
 ||
 [];
+
 
 
 
@@ -1870,25 +1924,19 @@ document.createElement(
 
 
 
-card.className=
+card.className =
 "favorite-card";
 
 
 
+card.innerHTML = `
 
-card.innerHTML=`
-
-<h3>
-
+<h4>
 ${city}
-
-</h3>
-
+</h4>
 
 <p>
-
 Click to view weather
-
 </p>
 
 `;
@@ -1896,17 +1944,23 @@ Click to view weather
 
 
 
-card.onclick=function(){
+
+card.onclick =
+function(){
+
 
 
 $("cityInput").value =
 city;
 
 
+
 searchCity();
 
 
+
 };
+
 
 
 
@@ -1927,8 +1981,6 @@ container.appendChild(card);
 
 
 
-
-
 /* ===========================================================
 SEARCH HISTORY
 =========================================================== */
@@ -1940,11 +1992,9 @@ function saveSearchHistory(city){
 
 let history =
 JSON.parse(
-
 localStorage.getItem(
 "history"
 )
-
 )
 ||
 [];
@@ -1960,7 +2010,11 @@ item=>item!==city
 
 
 
-history.unshift(city);
+
+history.unshift(
+city
+);
+
 
 
 
@@ -1972,19 +2026,18 @@ history.slice(
 
 
 
+
 localStorage.setItem(
-
 "history",
-
 JSON.stringify(
 history
 )
-
 );
 
 
 
 renderHistory();
+
 
 
 }
@@ -2005,20 +2058,22 @@ $("searchHistory");
 
 
 if(!box)
+
 return;
+
+
 
 
 
 let history =
 JSON.parse(
-
 localStorage.getItem(
 "history"
 )
-
 )
 ||
 [];
+
 
 
 
@@ -2040,7 +2095,7 @@ document.createElement(
 
 
 
-item.className=
+item.className =
 "history-item";
 
 
@@ -2050,7 +2105,10 @@ city;
 
 
 
-item.onclick=function(){
+
+
+item.onclick =
+function(){
 
 
 
@@ -2064,6 +2122,8 @@ searchCity();
 
 
 };
+
+
 
 
 
@@ -2086,7 +2146,7 @@ box.appendChild(item);
 
 
 /* ===========================================================
-DARK / LIGHT THEME
+DARK / LIGHT MODE
 =========================================================== */
 
 
@@ -2100,10 +2160,14 @@ document.body.classList.toggle(
 
 
 
+
+
 let icon =
 document.querySelector(
 "#themeToggle span"
 );
+
+
 
 
 
@@ -2114,14 +2178,19 @@ document.body.classList.contains(
 ){
 
 
+if(icon)
+
 icon.innerText =
 "light_mode";
+
 
 
 }
 
 else{
 
+
+if(icon)
 
 icon.innerText =
 "dark_mode";
@@ -2149,15 +2218,19 @@ REFRESH WEATHER
 function refreshWeather(){
 
 
+
 fetchWeather();
+
 
 
 fetchAQI();
 
 
+
 showToast(
 "Weather updated"
 );
+
 
 
 }
@@ -2187,8 +2260,8 @@ behavior:"smooth"
 });
 
 
-}
 
+}
 
 
 
@@ -2218,8 +2291,8 @@ menu.classList.add(
 );
 
 
-}
 
+}
 
 
 
@@ -2239,8 +2312,8 @@ menu.classList.remove(
 );
 
 
-}
 
+}
 
 
 
@@ -2263,11 +2336,13 @@ document.addEventListener(
 fetchWeather();
 
 
+
 fetchAQI();
 
 
 
 renderFavorites();
+
 
 
 renderHistory();
@@ -2278,8 +2353,7 @@ renderHistory();
 
 if($("searchBtn"))
 
-$("searchBtn")
-.onclick =
+$("searchBtn").onclick =
 searchCity;
 
 
@@ -2299,6 +2373,7 @@ if(e.key==="Enter")
 searchCity();
 
 
+
 });
 
 
@@ -2307,8 +2382,7 @@ searchCity();
 
 if($("locationBtn"))
 
-$("locationBtn")
-.onclick =
+$("locationBtn").onclick =
 getCurrentLocation;
 
 
@@ -2317,8 +2391,7 @@ getCurrentLocation;
 
 if($("voiceBtn"))
 
-$("voiceBtn")
-.onclick =
+$("voiceBtn").onclick =
 startVoiceSearch;
 
 
@@ -2327,8 +2400,7 @@ startVoiceSearch;
 
 if($("themeToggle"))
 
-$("themeToggle")
-.onclick =
+$("themeToggle").onclick =
 toggleTheme;
 
 
@@ -2337,8 +2409,7 @@ toggleTheme;
 
 if($("refreshBtn"))
 
-$("refreshBtn")
-.onclick =
+$("refreshBtn").onclick =
 refreshWeather;
 
 
@@ -2347,8 +2418,7 @@ refreshWeather;
 
 if($("scrollTopBtn"))
 
-$("scrollTopBtn")
-.onclick =
+$("scrollTopBtn").onclick =
 scrollTop;
 
 
@@ -2357,14 +2427,13 @@ scrollTop;
 
 if($("addFavoriteBtn"))
 
-$("addFavoriteBtn")
-.onclick =
+$("addFavoriteBtn").onclick =
 addFavorite;
 
 
 
-
 });
+
 /* ===========================================================
 LOADER CONTROL
 =========================================================== */
@@ -2373,12 +2442,17 @@ LOADER CONTROL
 function showLoader(){
 
 
-    let loader=$("loader");
+
+let loader =
+$("loader");
 
 
-    if(loader)
 
-        loader.style.display="flex";
+if(loader)
+
+loader.style.display =
+"flex";
+
 
 
 }
@@ -2390,17 +2464,20 @@ function showLoader(){
 function hideLoader(){
 
 
-    let loader=$("loader");
+
+let loader =
+$("loader");
 
 
-    if(loader)
 
-        loader.style.display="none";
+if(loader)
+
+loader.style.display =
+"none";
+
 
 
 }
-
-
 
 
 
@@ -2416,45 +2493,56 @@ TOAST MESSAGE
 function showToast(message){
 
 
-    let toast=$("toast");
 
-
-    let text=$("toastMessage");
-
-
-
-    if(!toast)
-        return;
+let toast =
+$("toast");
 
 
 
-    if(text)
-
-        text.innerText=message;
-
-
-
-    toast.classList.add(
-        "show"
-    );
+let text =
+$("toastMessage");
 
 
 
-    setTimeout(()=>{
+if(!toast)
+
+return;
 
 
-        toast.classList.remove(
-            "show"
-        );
 
 
-    },3000);
+
+if(text)
+
+text.innerText =
+message;
+
+
+
+
+
+toast.classList.add(
+"show"
+);
+
+
+
+
+
+setTimeout(()=>{
+
+
+toast.classList.remove(
+"show"
+);
+
+
+
+},3000);
 
 
 
 }
-
-
 
 
 
@@ -2471,28 +2559,35 @@ function showError(message){
 
 
 
-let modal=$("errorModal");
-
-
-let errorText=$("errorText");
+let modal =
+$("errorModal");
 
 
 
-if(errorText)
+let text =
+$("errorText");
 
-errorText.innerText=message;
+
+
+
+
+if(text)
+
+text.innerText =
+message;
+
+
 
 
 
 if(modal)
 
-modal.style.display="flex";
+modal.style.display =
+"flex";
 
 
 
 }
-
-
 
 
 
@@ -2502,55 +2597,19 @@ function closeError(){
 
 
 
-let modal=$("errorModal");
+let modal =
+$("errorModal");
 
 
 
 if(modal)
 
-modal.style.display="none";
-
-
-}
-
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-FORMAT TIME
-=========================================================== */
-
-
-function formatTime(date){
-
-
-
-return new Date(date)
-
-.toLocaleTimeString(
-
-[],
-
-{
-
-hour:"2-digit",
-
-minute:"2-digit"
-
-}
-
-);
+modal.style.display =
+"none";
 
 
 
 }
-
 
 
 
@@ -2569,12 +2628,9 @@ function createCharts(hourly){
 
 
 
-if(
-typeof Chart==="undefined"
-)
+if(typeof Chart==="undefined")
 
 return;
-
 
 
 
@@ -2636,51 +2692,34 @@ hourly.wind_speed_10m[i]
 
 
 
-
 createChart(
-
 "temperatureChart",
-
 labels,
-
 temp,
-
 "Temperature"
-
 );
 
 
 
 createChart(
-
 "humidityChart",
-
 labels,
-
 humidity,
-
 "Humidity"
-
 );
 
 
 
 createChart(
-
 "windChart",
-
 labels,
-
 wind,
-
 "Wind Speed"
-
 );
 
 
 
 }
-
 
 
 
@@ -2698,7 +2737,8 @@ label
 
 
 
-let canvas=$(id);
+let canvas =
+$(id);
 
 
 
@@ -2709,11 +2749,11 @@ return;
 
 
 
+
 new Chart(
-
 canvas,
-
 {
+
 
 type:"line",
 
@@ -2725,6 +2765,7 @@ labels:labels,
 
 
 datasets:[{
+
 
 label:label,
 
@@ -2738,7 +2779,10 @@ borderWidth:2,
 tension:.4
 
 
+
 }]
+
+
 
 },
 
@@ -2761,13 +2805,19 @@ display:true
 
 }
 
-}
 
 
 }
 
 
+
 }
+
+
+
+}
+
+
 
 );
 
@@ -2783,8 +2833,9 @@ display:true
 
 
 
+
 /* ===========================================================
-LEAFLET WEATHER MAP
+LEAFLET MAP
 =========================================================== */
 
 
@@ -2792,9 +2843,7 @@ function initMap(){
 
 
 
-if(
-typeof L==="undefined"
-)
+if(typeof L==="undefined")
 
 return;
 
@@ -2807,20 +2856,17 @@ return;
 
 
 
+
 map =
 L.map(
 "weatherMap"
 )
-
 .setView(
-
 [
 currentLat,
 currentLon
 ],
-
 10
-
 );
 
 
@@ -2833,7 +2879,9 @@ L.tileLayer(
 
 {
 
+
 maxZoom:19
+
 
 }
 
@@ -2846,20 +2894,16 @@ maxZoom:19
 
 
 L.marker(
-
 [
 currentLat,
 currentLon
 ]
-
 )
 
 .addTo(map)
 
 .bindPopup(
-
 currentCity
-
 )
 
 .openPopup();
@@ -2867,8 +2911,6 @@ currentCity
 
 
 }
-
-
 
 
 
@@ -2887,6 +2929,7 @@ return;
 
 
 
+
 map.setView(
 
 [
@@ -2897,6 +2940,8 @@ currentLon
 10
 
 );
+
+
 
 
 
@@ -2936,7 +2981,8 @@ function checkOnlineStatus(){
 
 
 
-let banner=$("offlineBanner");
+let banner =
+$("offlineBanner");
 
 
 
@@ -2946,14 +2992,16 @@ return;
 
 
 
-if(
-navigator.onLine
-){
+
+
+if(navigator.onLine){
+
 
 
 banner.classList.remove(
 "show"
 );
+
 
 
 }
@@ -2966,7 +3014,9 @@ banner.classList.add(
 );
 
 
+
 }
+
 
 
 }
@@ -2976,21 +3026,15 @@ banner.classList.add(
 
 
 window.addEventListener(
-
 "online",
-
 checkOnlineStatus
-
 );
 
 
 
 window.addEventListener(
-
 "offline",
-
 checkOnlineStatus
-
 );
 
 
@@ -3007,10 +3051,9 @@ ERROR MODAL EVENTS
 
 
 document.addEventListener(
-
 "click",
-
 (e)=>{
+
 
 
 if(
@@ -3023,13 +3066,15 @@ e.target.classList.contains(
 closeError();
 
 
-}
-
-
 
 }
 
-);
+
+
+});
+
+
+
 
 
 
@@ -3038,11 +3083,14 @@ closeError();
 if($("retryBtn")){
 
 
-$("retryBtn").onclick=function(){
+
+$("retryBtn").onclick =
+function(){
 
 
 
 closeError();
+
 
 
 fetchWeather();
@@ -3065,24 +3113,26 @@ fetchWeather();
 
 
 /* ===========================================================
-INITIAL APP START
+FINAL APP START
 =========================================================== */
 
 
 window.addEventListener(
-
 "load",
-
 ()=>{
+
 
 
 hideLoader();
 
 
+
 initMap();
 
 
+
 checkOnlineStatus();
+
 
 
 });
@@ -3096,21 +3146,21 @@ checkOnlineStatus();
 
 
 /* ===========================================================
-PATCH FETCH WEATHER
-(Connect Charts + Map)
+CONNECT EXTRA FEATURES
 =========================================================== */
 
 
-const oldUpdateAllWeather =
+const originalUpdateAllWeather =
 updateAllWeather;
 
 
 
-updateAllWeather=function(data){
+updateAllWeather =
+function(data){
 
 
 
-oldUpdateAllWeather(data);
+originalUpdateAllWeather(data);
 
 
 
