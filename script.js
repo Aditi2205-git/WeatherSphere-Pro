@@ -320,37 +320,13 @@ async function fetchWeather(){
 try{
 
 
-const url=
-
-
+const url = 
 `https://api.open-meteo.com/v1/forecast?
 latitude=${currentLat}
 &longitude=${currentLon}
-&current=
-temperature_2m,
-relative_humidity_2m,
-apparent_temperature,
-precipitation,
-weather_code,
-surface_pressure,
-cloud_cover,
-wind_speed_10m,
-wind_direction_10m
-&hourly=
-temperature_2m,
-relative_humidity_2m,
-precipitation_probability,
-wind_speed_10m,
-surface_pressure,
-dew_point_2m
-&daily=
-weather_code,
-temperature_2m_max,
-temperature_2m_min,
-sunrise,
-sunset,
-uv_index_max,
-precipitation_sum
+&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
+&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,visibility
+&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
 
 
