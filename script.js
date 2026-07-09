@@ -1,784 +1,254 @@
-/*=========================================================
-    WeatherSphere Pro 4.0
-    Open-Meteo Edition
-    No API Key Required
-=========================================================*/
+/* ===========================================================
+   WeatherSphere Pro 4.0
+   script.js PART 1/5
+   Open-Meteo API (No API Key Required)
+   Author: Aditi Singh
+=========================================================== */
 
-"use strict";
 
+/* ===========================================================
+   GLOBAL VARIABLES
+=========================================================== */
 
-/*=========================================================
-    CONFIGURATION
-=========================================================*/
+let currentCity = "New Delhi";
+let currentLat = 28.6139;
+let currentLon = 77.2090;
 
+let temperatureUnit = "celsius";
 
-const CONFIG = {
+let weatherData = null;
 
-    WEATHER_API:
-    "https://api.open-meteo.com/v1/forecast",
+let temperatureChart;
+let humidityChart;
+let windChart;
+let pressureChart;
 
-    GEO_API:
-    "https://geocoding-api.open-meteo.com/v1/search",
+let map;
 
-    AIR_API:
-    "https://air-quality-api.open-meteo.com/v1/air-quality",
 
-    DEFAULT_CITY:
-    "New Delhi"
+/* ===========================================================
+   DOM HELPER
+=========================================================== */
 
-};
+const $ = (id) => document.getElementById(id);
 
 
+/* ===========================================================
+   TOAST MESSAGE
+=========================================================== */
 
-/*=========================================================
-    APPLICATION STATE
-=========================================================*/
+function showToast(message){
 
+    const toast = $("toast");
+    const toastMessage = $("toastMessage");
 
-const appState = {
+    if(!toast || !toastMessage) return;
 
+    toastMessage.innerText = message;
 
-    city:
-    CONFIG.DEFAULT_CITY,
-
-
-    latitude:
-    null,
-
-
-    longitude:
-    null,
-
-
-    weather:
-    null,
-
-
-    forecast:
-    null,
-
-
-    air:
-    null,
-
-
-    favorites:
-    [],
-
-
-    history:
-    [],
-
-
-    charts:
-    {},
-
-
-    map:
-    null,
-
-
-    marker:
-    null,
-
-
-    theme:
-    "dark"
-
-
-};
-
-
-
-
-
-/*=========================================================
-    DOM HELPER FUNCTIONS
-=========================================================*/
-
-
-const get = (id) =>
-
-document.getElementById(id);
-
-
-
-const query = (selector)=>
-
-document.querySelector(selector);
-
-
-
-
-
-function setText(id,value){
-
-
-    const element=get(id);
-
-
-    if(element){
-
-        element.textContent=value;
-
-    }
-
-}
-
-
-
-
-
-function setHTML(id,value){
-
-
-    const element=get(id);
-
-
-    if(element){
-
-        element.innerHTML=value;
-
-    }
-
-}
-
-
-
-
-
-function show(element){
-
-
-    if(element){
-
-        element.style.display="flex";
-
-    }
-
-}
-
-
-
-
-
-function hide(element){
-
-
-    if(element){
-
-        element.style.display="none";
-
-    }
-
-}
-
-
-
-
-
-/*=========================================================
-    DOM REFERENCES
-=========================================================*/
-
-
-const DOM={
-
-
-    searchInput:
-    get("cityInput"),
-
-
-    searchBtn:
-    get("searchBtn"),
-
-
-    locationBtn:
-    get("locationBtn"),
-
-
-    voiceBtn:
-    get("voiceBtn"),
-
-
-    refreshBtn:
-    get("refreshBtn"),
-
-
-    themeBtn:
-    get("themeToggle"),
-
-
-    toast:
-    get("toast"),
-
-
-    toastMessage:
-    get("toastMessage"),
-
-
-    loader:
-    get("loader")
-
-
-};
-
-
-
-
-
-/*=========================================================
-    TOAST MESSAGE
-=========================================================*/
-
-
-function toast(message){
-
-
-    if(!DOM.toast)
-    return;
-
-
-
-    if(DOM.toastMessage)
-
-    DOM.toastMessage.textContent=message;
-
-
-
-    DOM.toast.classList.add("show");
-
-
+    toast.classList.add("show");
 
     setTimeout(()=>{
-
-
-        DOM.toast.classList.remove("show");
-
-
+        toast.classList.remove("show");
     },3000);
 
-
 }
 
 
 
+/* ===========================================================
+   LOADER
+=========================================================== */
 
-
-/*=========================================================
-    LOADING
-=========================================================*/
-
-
-function hideLoader(){
-
-
-    if(!DOM.loader)
-    return;
-
-
-
-    DOM.loader.style.opacity="0";
-
+window.addEventListener("load",()=>{
 
     setTimeout(()=>{
 
-
-        DOM.loader.style.display="none";
-
-
-    },500);
-
-
-}
-
-
-
-
-
-/*=========================================================
-    LOCAL STORAGE
-=========================================================*/
-
-
-function loadStorage(){
-
-
-    appState.favorites =
-
-    JSON.parse(
-
-        localStorage.getItem(
-            "weatherFavorites"
-        )
-
-    ) || [];
-
-
-
-    appState.history =
-
-    JSON.parse(
-
-        localStorage.getItem(
-            "weatherHistory"
-        )
-
-    ) || [];
-
-
-
-    appState.theme =
-
-    localStorage.getItem(
-        "weatherTheme"
-    )
-
-    || "dark";
-
-
-}
-
-
-
-
-
-function saveStorage(){
-
-
-    localStorage.setItem(
-
-        "weatherFavorites",
-
-        JSON.stringify(
-
-            appState.favorites
-
-        )
-
-    );
-
-
-
-    localStorage.setItem(
-
-        "weatherHistory",
-
-        JSON.stringify(
-
-            appState.history
-
-        )
-
-    );
-
-
-
-    localStorage.setItem(
-
-        "weatherTheme",
-
-        appState.theme
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    HISTORY
-=========================================================*/
-
-
-function addHistory(city){
-
-
-    if(!city)
-    return;
-
-
-
-    appState.history =
-
-    appState.history.filter(
-
-        item=>item!==city
-
-    );
-
-
-
-    appState.history.unshift(city);
-
-
-
-    appState.history =
-
-    appState.history.slice(0,10);
-
-
-
-    saveStorage();
-
-
-}
-
-
-
-
-
-/*=========================================================
-    FAVORITES
-=========================================================*/
-
-
-function addFavorite(city){
-
-
-    if(
-
-        !city ||
-
-        appState.favorites.includes(city)
-
-    )
-
-    return;
-
-
-
-    appState.favorites.push(city);
-
-
-
-    saveStorage();
-
-
-
-    toast(
-
-        "Added to favorites ❤️"
-
-    );
-
-
-}
-
-
-
-
-
-function removeFavorite(city){
-
-
-    appState.favorites =
-
-    appState.favorites.filter(
-
-        item=>item!==city
-
-    );
-
-
-
-    saveStorage();
-
-
-}
-
-
-
-
-
-/*=========================================================
-    FORMATTERS
-=========================================================*/
-
-
-function temperature(value){
-
-
-    return Math.round(value)+"°";
-
-
-}
-
-
-
-
-
-function time(timestamp){
-
-
-    return new Date(timestamp)
-
-    .toLocaleTimeString(
-
-        "en-US",
-
-        {
-
-            hour:"2-digit",
-
-            minute:"2-digit"
-
+        const loader=$("loader");
+
+        if(loader){
+            loader.style.opacity="0";
+            setTimeout(()=>{
+                loader.style.display="none";
+            },500);
         }
 
-    );
+    },1200);
 
-
-}
-
-
+});
 
 
 
-function date(value){
+/* ===========================================================
+   WEATHER CODE TO EMOJI + DESCRIPTION
+=========================================================== */
 
 
-    return new Date(value)
+function getWeatherInfo(code){
 
-    .toLocaleDateString(
 
-        "en-US",
+    const weather={
 
-        {
+        0:{
+            emoji:"☀️",
+            text:"Clear Sky"
+        },
 
-            weekday:"long",
+        1:{
+            emoji:"🌤️",
+            text:"Mainly Clear"
+        },
 
-            month:"short",
+        2:{
+            emoji:"⛅",
+            text:"Partly Cloudy"
+        },
 
-            day:"numeric"
+        3:{
+            emoji:"☁️",
+            text:"Overcast"
+        },
 
+        45:{
+            emoji:"🌫️",
+            text:"Fog"
+        },
+
+        48:{
+            emoji:"🌫️",
+            text:"Depositing Rime Fog"
+        },
+
+        51:{
+            emoji:"🌦️",
+            text:"Light Drizzle"
+        },
+
+        53:{
+            emoji:"🌧️",
+            text:"Moderate Drizzle"
+        },
+
+        55:{
+            emoji:"🌧️",
+            text:"Heavy Drizzle"
+        },
+
+        61:{
+            emoji:"🌧️",
+            text:"Rain"
+        },
+
+        63:{
+            emoji:"🌧️",
+            text:"Moderate Rain"
+        },
+
+        65:{
+            emoji:"⛈️",
+            text:"Heavy Rain"
+        },
+
+        71:{
+            emoji:"❄️",
+            text:"Snow"
+        },
+
+        80:{
+            emoji:"🌦️",
+            text:"Rain Showers"
+        },
+
+        81:{
+            emoji:"🌧️",
+            text:"Heavy Showers"
+        },
+
+        95:{
+            emoji:"⛈️",
+            text:"Thunderstorm"
+        },
+
+        96:{
+            emoji:"⛈️",
+            text:"Thunderstorm + Hail"
+        },
+
+        99:{
+            emoji:"⛈️",
+            text:"Severe Thunderstorm"
         }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    WEATHER ICON SYSTEM
-=========================================================*/
-
-
-function weatherEmoji(code){
-
-
-    const map={
-
-
-        0:"☀️",
-
-        1:"🌤️",
-
-        2:"⛅",
-
-        3:"☁️",
-
-        45:"🌫️",
-
-        48:"🌫️",
-
-        51:"🌦️",
-
-        53:"🌦️",
-
-        55:"🌧️",
-
-        61:"🌧️",
-
-        63:"🌧️",
-
-        65:"🌧️",
-
-        71:"❄️",
-
-        73:"❄️",
-
-        75:"❄️",
-
-        80:"🌦️",
-
-        81:"🌧️",
-
-        82:"⛈️",
-
-        95:"⛈️",
-
-        96:"⚡",
-
-        99:"⚡"
-
 
     };
 
 
-    return map[code] || "🌍";
+    return weather[code] || {
 
+        emoji:"🌍",
+        text:"Unknown"
+
+    };
+
+}
+
+
+
+/* ===========================================================
+   WIND DEGREE TO DIRECTION
+=========================================================== */
+
+
+function getWindDirection(degree){
+
+
+    const directions=[
+
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+
+    ];
+
+
+    const index=Math.round(degree/45)%8;
+
+
+    return `${directions[index]} (${Math.round(degree)}°)`;
 
 }
 
 
 
+/* ===========================================================
+   CELSIUS / FAHRENHEIT
+=========================================================== */
 
 
-/*=========================================================
-    INITIAL SETUP
-=========================================================*/
+function convertTemperature(temp){
 
 
-document.addEventListener(
+    if(temperatureUnit==="fahrenheit"){
 
-"DOMContentLoaded",
-
-()=>{
-
-
-    loadStorage();
-
-
-    hideLoader();
-
-
-    console.log(
-
-        "🌦️ WeatherSphere Pro 4.0 Ready"
-
-    );
-
-
-}
-
-);
-/*=========================================================
-    CITY GEOCODING
-=========================================================*/
-
-
-async function getCoordinates(city){
-
-
-    const url =
-
-    `${CONFIG.GEO_API}?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
-
-
-
-    const response = await fetch(url);
-
-
-    const data = await response.json();
-
-
-
-    if(!data.results || data.results.length===0){
-
-        throw new Error(
-            "City not found"
-        );
+        return Math.round((temp*9)/5+32)+"°F";
 
     }
 
 
-
-    return data.results[0];
-
-}
-
-
-
-
-
-/*=========================================================
-    FETCH WEATHER DATA
-=========================================================*/
-
-
-async function fetchWeather(lat,lon){
-
-
-    const url =
-
-    `${CONFIG.WEATHER_API}?
-
-latitude=${lat}
-
-&longitude=${lon}
-
-&current=
-
-temperature_2m,
-
-relative_humidity_2m,
-
-apparent_temperature,
-
-is_day,
-
-precipitation,
-
-weather_code,
-
-wind_speed_10m,
-
-surface_pressure
-
-&hourly=
-
-temperature_2m,
-
-relative_humidity_2m,
-
-wind_speed_10m,
-
-precipitation_probability
-
-&daily=
-
-weather_code,
-
-temperature_2m_max,
-
-temperature_2m_min,
-
-sunrise,
-
-sunset,
-
-uv_index_max
-
-&timezone=auto`;
-
-
-
-    const response = await fetch(
-
-        url.replace(/\s+/g,"")
-
-    );
-
-
-    return await response.json();
+    return Math.round(temp)+"°C";
 
 
 }
 
 
 
-
-
-/*=========================================================
-    SEARCH WEATHER BY CITY
-=========================================================*/
+/* ===========================================================
+   GEOCODING API
+=========================================================== */
 
 
 async function searchCity(city){
@@ -787,75 +257,39 @@ async function searchCity(city){
     try{
 
 
-        toast(
+        const url=
 
-            "Fetching weather..."
-
-        );
+        `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`;
 
 
 
-        const location =
-
-        await getCoordinates(city);
+        const response=await fetch(url);
 
 
-
-        const weather =
-
-        await fetchWeather(
-
-            location.latitude,
-
-            location.longitude
-
-        );
+        const data=await response.json();
 
 
 
-        appState.city =
+        if(!data.results){
 
-        location.name;
+            throw new Error("City not found");
 
-
-
-        appState.latitude =
-
-        location.latitude;
+        }
 
 
 
-        appState.longitude =
-
-        location.longitude;
+        const place=data.results[0];
 
 
+        currentCity=place.name;
 
-        appState.weather = weather;
+        currentLat=place.latitude;
 
-
-
-        addHistory(
-
-            location.name
-
-        );
+        currentLon=place.longitude;
 
 
 
-        renderCurrentWeather();
-
-
-
-        renderHourlyForecast();
-
-
-
-        renderDailyForecast();
-
-
-
-        updateMap();
+        await fetchWeather();
 
 
 
@@ -864,18 +298,10 @@ async function searchCity(city){
 
     catch(error){
 
+        showToast("Unable to find city");
 
         console.error(error);
 
-
-
-        toast(
-
-            "Unable to find city"
-
-        );
-
-
     }
 
 
@@ -883,1414 +309,213 @@ async function searchCity(city){
 
 
 
+/* ===========================================================
+   MAIN WEATHER API
+=========================================================== */
 
 
-/*=========================================================
-    CURRENT LOCATION
-=========================================================*/
+async function fetchWeather(){
 
 
-function getUserLocation(){
+try{
 
 
-    if(!navigator.geolocation){
+const url=
 
 
-        toast(
-
-            "Location not supported"
-
-        );
-
-
-        return;
-
-    }
-
-
-
-    navigator.geolocation.getCurrentPosition(
-
-        async(position)=>{
-
-
-            try{
-
-
-                const lat =
-
-                position.coords.latitude;
-
-
-
-                const lon =
-
-                position.coords.longitude;
-
-
-
-                const weather =
-
-                await fetchWeather(
-
-                    lat,
-
-                    lon
-
-                );
-
-
-
-                appState.latitude=lat;
-
-                appState.longitude=lon;
-
-                appState.weather=weather;
-
-
-
-                appState.city="Your Location";
-
-
-
-                renderCurrentWeather();
-
-
-                renderHourlyForecast();
-
-
-                renderDailyForecast();
-
-
-                updateMap();
-
-
-
-            }
-
-            catch(error){
-
-
-                toast(
-
-                    "Location weather failed"
-
-                );
-
-            }
-
-
-        },
-
-        ()=>{
-
-
-            toast(
-
-                "Location permission denied"
-
-            );
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    CURRENT WEATHER RENDER
-=========================================================*/
-
-
-function renderCurrentWeather(){
-
-
-    const data =
-
-    appState.weather;
-
-
-
-    if(!data)
-    return;
-
-
-
-    const current =
-
-    data.current;
-
-
-
-    const daily =
-
-    data.daily;
-
-
-
-    setText(
-
-        "cityName",
-
-        appState.city
-
-    );
-
-
-
-    setText(
-
-        "heroCity",
-
-        appState.city
-
-    );
-
-
-
-    setText(
-
-        "temperature",
-
-        temperature(
-
-            current.temperature_2m
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "heroTemp",
-
-        temperature(
-
-            current.temperature_2m
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "feelsLike",
-
-        temperature(
-
-            current.apparent_temperature
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "humidity",
-
-        current.relative_humidity_2m+"%"
-
-    );
-
-
-
-    setText(
-
-        "windSpeed",
-
-        current.wind_speed_10m+" km/h"
-
-    );
-
-
-
-    setText(
-
-        "pressure",
-
-        current.surface_pressure+" hPa"
-
-    );
-
-
-
-    setText(
-
-        "weatherEmoji",
-
-        weatherEmoji(
-
-            current.weather_code
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "weatherIcon",
-
-        weatherEmoji(
-
-            current.weather_code
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "sunrise",
-
-        time(
-
-            new Date(
-
-                daily.sunrise[0]
-
-            )
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "sunset",
-
-        time(
-
-            new Date(
-
-                daily.sunset[0]
-
-            )
-
-        )
-
-    );
-
-
-
-    setText(
-
-        "uvIndex",
-
-        daily.uv_index_max[0]
-
-    );
-
-
-
-}
-
-
-
-
-
-/*=========================================================
-    SEARCH EVENTS
-=========================================================*/
-
-
-DOM.searchBtn
-
-?.addEventListener(
-
-    "click",
-
-    ()=>{
-
-
-        const city =
-
-        DOM.searchInput.value.trim();
-
-
-
-        if(city)
-
-        searchCity(city);
-
-
-    }
-
-);
-
-
-
-
-
-DOM.searchInput
-
-?.addEventListener(
-
-    "keydown",
-
-    (event)=>{
-
-
-        if(event.key==="Enter"){
-
-
-            searchCity(
-
-                DOM.searchInput.value
-
-            );
-
-
-        }
-
-
-    }
-
-);
-
-
-
-
-
-DOM.locationBtn
-
-?.addEventListener(
-
-    "click",
-
-    getUserLocation
-
-);
-
-
-
-
-
-DOM.refreshBtn
-
-?.addEventListener(
-
-    "click",
-
-    ()=>{
-
-
-        if(
-
-            appState.latitude &&
-
-            appState.longitude
-
-        ){
-
-
-            fetchWeather(
-
-                appState.latitude,
-
-                appState.longitude
-
-            )
-
-            .then(data=>{
-
-
-                appState.weather=data;
-
-
-                renderCurrentWeather();
-
-
-                renderHourlyForecast();
-
-
-                renderDailyForecast();
-
-
-            });
-
-
-        }
-
-
-    }
-
-);
-/*=========================================================
-    WEATHER DESCRIPTION
-=========================================================*/
-
-
-function weatherDescription(code){
-
-
-    const descriptions={
-
-
-        0:"Clear Sky",
-
-        1:"Mainly Clear",
-
-        2:"Partly Cloudy",
-
-        3:"Overcast",
-
-        45:"Fog",
-
-        48:"Depositing Rime Fog",
-
-        51:"Light Drizzle",
-
-        53:"Moderate Drizzle",
-
-        55:"Heavy Drizzle",
-
-        61:"Light Rain",
-
-        63:"Moderate Rain",
-
-        65:"Heavy Rain",
-
-        71:"Light Snow",
-
-        73:"Moderate Snow",
-
-        75:"Heavy Snow",
-
-        80:"Rain Showers",
-
-        81:"Heavy Showers",
-
-        82:"Violent Showers",
-
-        95:"Thunderstorm",
-
-        96:"Thunderstorm With Hail",
-
-        99:"Thunderstorm With Heavy Hail"
-
-
-    };
-
-
-    return descriptions[code] || "Unknown";
-
-}
-
-
-
-
-
-/*=========================================================
-    HOURLY FORECAST
-=========================================================*/
-
-
-function renderHourlyForecast(){
-
-
-    const container =
-
-    get("hourlyContainer")
-
-    ||
-
-    get("hourlyForecast");
-
-
-
-    if(!container)
-
-    return;
-
-
-
-    const hourly =
-
-    appState.weather?.hourly;
-
-
-
-    if(!hourly)
-
-    return;
-
-
-
-    container.innerHTML="";
-
-
-
-    for(let i=0;i<12;i++){
-
-
-        const card=document.createElement("div");
-
-
-
-        card.className=
-
-        "hour-card";
-
-
-
-        card.innerHTML=`
-
-            <h4>
-
-            ${new Date(
-
-                hourly.time[i]
-
-            )
-
-            .toLocaleTimeString(
-
-                "en-US",
-
-                {
-
-                    hour:"numeric"
-
-                }
-
-            )}
-
-            </h4>
-
-
-            <div class="forecast-icon">
-
-            ${weatherEmoji(
-
-                appState.weather.hourly.weather_code
-
-                ?
-
-                appState.weather.hourly.weather_code[i]
-
-                :
-
-                0
-
-            )}
-
-            </div>
-
-
-            <h3>
-
-            ${temperature(
-
-                hourly.temperature_2m[i]
-
-            )}
-
-            </h3>
-
-
-            <p>
-
-            💧 ${hourly.relative_humidity_2m[i]}%
-
-            </p>
-
-
-        `;
-
-
-
-        container.appendChild(card);
-
-
-
-    }
-
-
-}
-
-
-
-
-
-/*=========================================================
-    DAILY FORECAST
-=========================================================*/
-
-
-function renderDailyForecast(){
-
-
-    const container =
-
-    get("forecastContainer")
-
-    ||
-
-    get("dailyForecast");
-
-
-
-    if(!container)
-
-    return;
-
-
-
-    const daily =
-
-    appState.weather?.daily;
-
-
-
-    if(!daily)
-
-    return;
-
-
-
-    container.innerHTML="";
-
-
-
-    for(let i=0;i<7;i++){
-
-
-
-        const card=document.createElement("div");
-
-
-
-        card.className=
-
-        "forecast-card";
-
-
-
-        const day =
-
-        new Date(
-
-            daily.time[i]
-
-        )
-
-        .toLocaleDateString(
-
-            "en-US",
-
-            {
-
-                weekday:"short"
-
-            }
-
-        );
-
-
-
-        card.innerHTML=`
-
-            <h3>
-
-            ${day}
-
-            </h3>
-
-
-            <div class="forecast-icon">
-
-            ${weatherEmoji(
-
-                daily.weather_code[i]
-
-            )}
-
-            </div>
-
-
-            <h2>
-
-            ${temperature(
-
-                daily.temperature_2m_max[i]
-
-            )}
-
-            </h2>
-
-
-            <p>
-
-            Low:
-
-            ${temperature(
-
-                daily.temperature_2m_min[i]
-
-            )}
-
-            </p>
-
-
-            <span>
-
-            ${weatherDescription(
-
-                daily.weather_code[i]
-
-            )}
-
-            </span>
-
-
-        `;
-
-
-
-        container.appendChild(card);
-
-
-    }
-
-
-}
-
-
-
-
-
-/*=========================================================
-    WEATHER BACKGROUND EFFECT
-=========================================================*/
-
-
-function updateWeatherBackground(){
-
-
-    const code =
-
-    appState.weather
-
-    ?.current
-
-    ?.weather_code;
-
-
-
-    const body=document.body;
-
-
-
-    if(!body)
-
-    return;
-
-
-
-    body.classList.remove(
-
-        "clear",
-
-        "rain",
-
-        "storm",
-
-        "cloud"
-
-    );
-
-
-
-    if(code===0 || code===1){
-
-
-        body.classList.add(
-
-            "clear"
-
-        );
-
-
-    }
-
-
-    else if(
-
-        code>=51 &&
-
-        code<=82
-
-    ){
-
-
-        body.classList.add(
-
-            "rain"
-
-        );
-
-
-    }
-
-
-    else if(code>=95){
-
-
-        body.classList.add(
-
-            "storm"
-
-        );
-
-
-    }
-
-
-    else{
-
-
-        body.classList.add(
-
-            "cloud"
-
-        );
-
-
-    }
-
-
-}
-
-
-
-
-
-/*=========================================================
-    CONNECT WEATHER UPDATE
-=========================================================*/
-
-
-const oldWeatherRender =
-
-renderCurrentWeather;
-
-
-
-renderCurrentWeather=function(){
-
-
-    oldWeatherRender();
-
-
-    renderHourlyForecast();
-
-
-    renderDailyForecast();
-
-
-    updateWeatherBackground();
-
-
-};
-
-/*=========================================================
-    AIR QUALITY FETCH (OPEN-METEO)
-=========================================================*/
-
-
-async function fetchAirQuality(lat, lon){
-
-
-    try{
-
-
-        const url =
-
-        `${CONFIG.AIR_API}?
-
-latitude=${lat}
-
-&longitude=${lon}
-
+`https://api.open-meteo.com/v1/forecast?
+latitude=${currentLat}
+&longitude=${currentLon}
 &current=
-
-us_aqi,
-
-pm10,
-
-pm2_5,
-
-carbon_monoxide,
-
-nitrogen_dioxide,
-
-ozone
-
+temperature_2m,
+relative_humidity_2m,
+apparent_temperature,
+precipitation,
+weather_code,
+surface_pressure,
+cloud_cover,
+wind_speed_10m,
+wind_direction_10m
+&hourly=
+temperature_2m,
+relative_humidity_2m,
+precipitation_probability,
+wind_speed_10m,
+surface_pressure,
+dew_point_2m
+&daily=
+weather_code,
+temperature_2m_max,
+temperature_2m_min,
+sunrise,
+sunset,
+uv_index_max,
+precipitation_sum
 &timezone=auto`;
 
 
-
-        const response = await fetch(
-
-            url.replace(/\s+/g,"")
-
-        );
+const cleanURL=url.replace(/\s+/g,"");
 
 
 
-        const data = await response.json();
+const response=await fetch(cleanURL);
+
+
+const data=await response.json();
 
 
 
-        appState.air=data;
+weatherData=data;
 
 
 
-        renderAQI();
+updateCurrentWeather(data);
 
 
-
-    }
-
-
-    catch(error){
+}
 
 
-        console.error(
+catch(error){
 
-            "AQI Error",
+console.error(error);
 
-            error
+showToast(
+"Weather data loading failed"
+);
 
-        );
 
-
-    }
+}
 
 
 }
 
 
 
+/* ===========================================================
+   UPDATE CURRENT WEATHER CARD
+=========================================================== */
 
 
-/*=========================================================
-    AQI RENDER
-=========================================================*/
+function updateCurrentWeather(data){
 
 
-function renderAQI(){
+const current=data.current;
 
 
-    const air =
+const info=getWeatherInfo(
+current.weather_code
+);
 
-    appState.air;
 
 
+/* Hero */
 
-    if(!air || !air.current)
 
-    return;
+if($("heroTemp"))
+$("heroTemp").innerText=
+convertTemperature(current.temperature_2m);
 
 
 
-    const current=
+if($("heroCity"))
+$("heroCity").innerText=currentCity;
 
-    air.current;
 
 
+if($("heroDescription"))
+$("heroDescription").innerText=info.text;
 
-    setText(
 
-        "aqiValue",
 
-        Math.round(
+if($("heroHumidity"))
+$("heroHumidity").innerText=
+current.relative_humidity_2m+"%";
 
-            current.us_aqi
 
-        )
 
-    );
+if($("heroWind"))
+$("heroWind").innerText=
+Math.round(current.wind_speed_10m)+" km/h";
 
 
 
-    setText(
+/* Main Weather */
 
-        "pm25",
 
-        `${current.pm2_5} μg/m³`
+$("weatherEmoji").innerText=
+info.emoji;
 
-    );
 
 
+$("temperature").innerText=
+convertTemperature(current.temperature_2m);
 
-    setText(
 
-        "pm10",
 
-        `${current.pm10} μg/m³`
+$("weatherCondition").innerText=
+info.text;
 
-    );
 
 
+$("cityName").innerText=
+`${currentCity}`;
 
-    setText(
 
-        "co",
 
-        `${current.carbon_monoxide} μg/m³`
+$("feelsLike").innerText=
+convertTemperature(
+current.apparent_temperature
+);
 
-    );
 
 
+$("windSpeed").innerText=
+Math.round(
+current.wind_speed_10m
+)+" km/h";
 
-    setText(
 
-        "no2",
 
-        `${current.nitrogen_dioxide} μg/m³`
+$("humidity").innerText=
+current.relative_humidity_2m+"%";
 
-    );
 
 
+$("pressure").innerText=
+Math.round(
+current.surface_pressure
+)+" hPa";
 
-    setText(
 
-        "ozone",
 
-        `${current.ozone} μg/m³`
+$("clouds").innerText=
+current.cloud_cover+"%";
 
-    );
 
 
+$("precipitation").innerText=
+current.precipitation+" mm";
 
-    setText(
 
-        "aqiStatus",
 
-        getAQIStatus(
+$("windDirection").innerText=
+getWindDirection(
+current.wind_direction_10m
+);
 
-            current.us_aqi
 
-        )
 
-    );
+/* Time */
 
 
-}
+$("lastUpdated").innerText=
+"Updated just now";
 
 
 
-
-
-/*=========================================================
-    AQI STATUS
-=========================================================*/
-
-
-function getAQIStatus(value){
-
-
-    if(value<=50)
-
-        return "Good 🟢";
-
-
-    if(value<=100)
-
-        return "Moderate 🟡";
-
-
-    if(value<=150)
-
-        return "Unhealthy for Sensitive Groups 🟠";
-
-
-    if(value<=200)
-
-        return "Unhealthy 🔴";
-
-
-    if(value<=300)
-
-        return "Very Unhealthy 🟣";
-
-
-    return "Hazardous ⚫";
-
-
-}
-
-
-
-
-
-/*=========================================================
-    UV ANALYSIS
-=========================================================*/
-
-
-function renderUV(){
-
-
-    const uv =
-
-    appState.weather
-
-    ?.daily
-
-    ?.uv_index_max[0];
-
-
-
-    if(uv===undefined)
-
-    return;
-
-
-
-    setText(
-
-        "uvIndex",
-
-        uv
-
-    );
-
-
-
-    setText(
-
-        "uvStatus",
-
-        getUVStatus(uv)
-
-    );
-
-
-}
-
-
-
-
-
-function getUVStatus(value){
-
-
-    if(value<=2)
-
-        return "Low";
-
-
-    if(value<=5)
-
-        return "Moderate";
-
-
-    if(value<=7)
-
-        return "High";
-
-
-    if(value<=10)
-
-        return "Very High";
-
-
-    return "Extreme";
-
-
-}
-
-
-
-
-
-/*=========================================================
-    WEATHER INSIGHTS
-=========================================================*/
-
-
-function generateInsights(){
-
-
-    const box =
-
-    get("tipsContainer")
-
-    ||
-
-    get("weatherTips");
-
-
-
-    if(!box)
-
-    return;
-
-
-
-    const current=
-
-    appState.weather?.current;
-
-
-
-    if(!current)
-
-    return;
-
-
-
-    let tips=[];
-
-
-
-    const temp=
-
-    current.temperature_2m;
-
-
-
-    const humidity=
-
-    current.relative_humidity_2m;
-
-
-
-    const code=
-
-    current.weather_code;
-
-
-
-    if(temp>35){
-
-
-        tips.push(
-
-            "🥤 Stay hydrated. Temperature is high."
-
-        );
-
-
-    }
-
-
-
-    if(temp<10){
-
-
-        tips.push(
-
-            "🧥 Wear warm clothes. Cold weather detected."
-
-        );
-
-
-    }
-
-
-
-    if(humidity>70){
-
-
-        tips.push(
-
-            "💧 High humidity. Keep yourself comfortable."
-
-        );
-
-
-    }
-
-
-
-    if(code>=51 && code<=82){
-
-
-        tips.push(
-
-            "☔ Rain expected. Carry an umbrella."
-
-        );
-
-
-    }
-
-
-
-    if(code>=95){
-
-
-        tips.push(
-
-            "⚡ Thunderstorm possible. Stay alert."
-
-        );
-
-
-    }
-
-
-
-    if(tips.length===0){
-
-
-        tips.push(
-
-            "🌍 Weather conditions are pleasant today."
-
-        );
-
-
-    }
-
-
-
-    box.innerHTML="";
-
-
-
-    tips.forEach(text=>{
-
-
-        const item=document.createElement("div");
-
-
-        item.className=
-
-        "tip-card";
-
-
-
-        item.textContent=text;
-
-
-
-        box.appendChild(item);
-
-
-
-    });
+updateBackground(
+current.weather_code
+);
 
 
 
@@ -2298,393 +523,187 @@ function generateInsights(){
 
 
 
+/* ===========================================================
+   WEATHER BACKGROUND EFFECTS
+=========================================================== */
 
 
-/*=========================================================
-    WEATHER ALERTS
-=========================================================*/
+function updateBackground(code){
 
 
-function generateAlerts(){
-
-
-    const alertBox=
-
-    get("alertContainer")
-
-    ||
-
-    get("weatherAlert");
+const rain=$(".rain");
+const snow=$(".snow");
+const lightning=$(".lightning");
 
 
 
-    if(!alertBox)
+[rain,snow,lightning].forEach(el=>{
 
-    return;
+    if(el)
+    el.classList.remove("active");
 
-
-
-    const code=
-
-    appState.weather
-
-    ?.current
-
-    ?.weather_code;
+});
 
 
 
-    let message=
+if([51,53,55,61,63,65,80,81].includes(code)){
 
-    "✅ No severe weather alerts";
+    rain?.classList.add("active");
 
-
-
-    if(code>=95){
+}
 
 
-        message=
+if([71].includes(code)){
 
-        "⚡ Thunderstorm warning. Stay safe.";
+    snow?.classList.add("active");
 
-
-    }
-
-
-    else if(code>=61 && code<=82){
+}
 
 
-        message=
+if([95,96,99].includes(code)){
 
-        "🌧 Rain expected. Plan accordingly.";
-
-
-    }
-
-
-
-    alertBox.innerHTML=
-
-    `
-
-    <h3>
-
-    Weather Alert
-
-    </h3>
-
-
-    <p>
-
-    ${message}
-
-    </p>
-
-    `;
-
+    lightning?.classList.add("active");
 
 }
 
 
 
-
-
-/*=========================================================
-    UPDATE INTELLIGENCE
-=========================================================*/
-
-
-function updateWeatherIntelligence(){
-
-
-    renderUV();
-
-
-    generateInsights();
-
-
-    generateAlerts();
-
-
 }
+ /* ===========================================================
+    PART 2/5
+    Forecast + Highlights Rendering
+=========================================================== */
 
 
+/* ===========================================================
+   UPDATE DAILY HIGHLIGHTS
+=========================================================== */
+
+function updateDailyHighlights(data){
 
 
-
-/*=========================================================
-    CONNECT WITH WEATHER DATA
-=========================================================*/
+    const daily=data.daily;
+    const hourly=data.hourly;
 
 
-const oldRender = renderCurrentWeather;
+    /* Maximum Temperature */
 
+    if($("maxTemp")){
 
-
-renderCurrentWeather=function(){
-
-
-    oldRender();
-
-
-    updateWeatherIntelligence();
-
-
-    if(
-
-        appState.latitude &&
-
-        appState.longitude
-
-    ){
-
-        fetchAirQuality(
-
-            appState.latitude,
-
-            appState.longitude
-
+        $("maxTemp").innerText =
+        convertTemperature(
+            daily.temperature_2m_max[0]
         );
 
     }
 
 
-};
 
-/*=========================================================
-    CHART.JS ANALYTICS SYSTEM
-=========================================================*/
+    /* Minimum Temperature */
 
+    if($("minTemp")){
 
-function renderCharts(){
-
-
-    if(!appState.weather)
-
-    return;
-
-
-
-    createTemperatureChart();
-
-
-    createHumidityChart();
-
-
-    createWindChart();
-
-
-    createRainChart();
-
-
-}
-
-
-
-
-
-/*=========================================================
-    DESTROY OLD CHART
-=========================================================*/
-
-
-function destroyChart(name){
-
-
-    if(appState.charts[name]){
-
-
-        appState.charts[name].destroy();
-
-
-        delete appState.charts[name];
-
+        $("minTemp").innerText =
+        convertTemperature(
+            daily.temperature_2m_min[0]
+        );
 
     }
 
 
-}
 
+    /* Sunrise */
 
+    if($("sunrise")){
 
+        const sunriseTime =
+        new Date(
+            daily.sunrise[0]
+        );
 
 
-/*=========================================================
-    CHART DATA PREPARATION
-=========================================================*/
+        $("sunrise").innerText =
+        sunriseTime.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
 
+    }
 
-function getChartData(){
 
 
-    const hourly =
 
-    appState.weather.hourly;
+    /* Sunset */
 
+    if($("sunset")){
 
 
-    if(!hourly)
+        const sunsetTime =
+        new Date(
+            daily.sunset[0]
+        );
 
-    return null;
 
+        $("sunset").innerText =
+        sunsetTime.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
 
+    }
 
-    return {
 
 
-        labels:
 
-        hourly.time
+    /* UV Index */
 
-        .slice(0,12)
 
-        .map(time=>
+    if($("uvIndex")){
 
 
-            new Date(time)
+        const uv =
+        daily.uv_index_max[0];
 
-            .toLocaleTimeString(
 
-                "en-US",
+        $("uvIndex").innerText =
+        Math.round(uv);
 
-                {
 
-                    hour:"numeric"
 
-                }
+        if($("uvLevel")){
 
-            )
 
+            if(uv<=2){
 
-        ),
-
-
-
-        temperature:
-
-        hourly.temperature_2m
-
-        .slice(0,12),
-
-
-
-        humidity:
-
-        hourly.relative_humidity_2m
-
-        .slice(0,12),
-
-
-
-        wind:
-
-        hourly.wind_speed_10m
-
-        .slice(0,12),
-
-
-
-        rain:
-
-        hourly.precipitation_probability
-
-        .slice(0,12)
-
-
-
-    };
-
-
-}
-
-
-
-
-
-/*=========================================================
-    COMMON OPTIONS
-=========================================================*/
-
-
-function chartOptions(title){
-
-
-    return {
-
-
-        responsive:true,
-
-
-        maintainAspectRatio:false,
-
-
-
-        plugins:{
-
-
-            legend:{
-
-
-                labels:{
-
-
-                    color:"#ffffff"
-
-
-                }
-
-
-            },
-
-
-
-            title:{
-
-
-                display:true,
-
-
-                text:title,
-
-
-                color:"#ffffff"
-
+                $("uvLevel").innerText=
+                "Low";
 
             }
 
+            else if(uv<=5){
 
-        },
+                $("uvLevel").innerText=
+                "Moderate";
 
+            }
 
+            else if(uv<=7){
 
-        scales:{
+                $("uvLevel").innerText=
+                "High";
 
+            }
 
-            x:{
+            else{
 
-
-                ticks:{
-
-
-                    color:"#aaa"
-
-
-                }
-
-            },
-
-
-
-            y:{
-
-
-                ticks:{
-
-
-                    color:"#aaa"
-
-
-                }
+                $("uvLevel").innerText=
+                "Extreme";
 
             }
 
@@ -2692,707 +711,222 @@ function chartOptions(title){
         }
 
 
-    };
 
 
-}
+        if($("uvBar")){
 
-
-
-
-
-/*=========================================================
-    TEMPERATURE CHART
-=========================================================*/
-
-
-function createTemperatureChart(){
-
-
-    const canvas=
-
-    get("temperatureChart");
-
-
-
-    if(!canvas)
-
-    return;
-
-
-
-    destroyChart(
-
-        "temperature"
-
-    );
-
-
-
-    const data=getChartData();
-
-
-
-    if(!data)
-
-    return;
-
-
-
-    appState.charts.temperature =
-
-    new Chart(
-
-        canvas,
-
-        {
-
-
-            type:"line",
-
-
-            data:{
-
-
-                labels:data.labels,
-
-
-
-                datasets:[{
-
-
-                    label:"Temperature °C",
-
-
-                    data:data.temperature,
-
-
-                    tension:.4,
-
-
-                    fill:true,
-
-
-                    borderColor:"#60a5fa"
-
-
-                }]
-
-
-            },
-
-
-
-            options:
-
-            chartOptions(
-
-                "Temperature Forecast"
-
-            )
-
+            $("uvBar").style.width=
+            Math.min(
+                uv*10,
+                100
+            )+"%";
 
         }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    HUMIDITY CHART
-=========================================================*/
-
-
-function createHumidityChart(){
-
-
-    const canvas=
-
-    get("humidityChart");
-
-
-
-    if(!canvas)
-
-    return;
-
-
-
-    destroyChart(
-
-        "humidity"
-
-    );
-
-
-
-    const data=getChartData();
-
-
-
-    if(!data)
-
-    return;
-
-
-
-    appState.charts.humidity =
-
-    new Chart(
-
-        canvas,
-
-        {
-
-
-            type:"bar",
-
-
-            data:{
-
-
-                labels:data.labels,
-
-
-
-                datasets:[{
-
-
-                    label:"Humidity %",
-
-
-                    data:data.humidity,
-
-
-                    backgroundColor:
-
-                    "#8b5cf6"
-
-
-                }]
-
-
-            },
-
-
-            options:
-
-            chartOptions(
-
-                "Humidity Forecast"
-
-            )
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    WIND CHART
-=========================================================*/
-
-
-function createWindChart(){
-
-
-    const canvas=
-
-    get("windChart");
-
-
-
-    if(!canvas)
-
-    return;
-
-
-
-    destroyChart(
-
-        "wind"
-
-    );
-
-
-
-    const data=getChartData();
-
-
-
-    if(!data)
-
-    return;
-
-
-
-    appState.charts.wind =
-
-    new Chart(
-
-        canvas,
-
-        {
-
-
-            type:"line",
-
-
-            data:{
-
-
-                labels:data.labels,
-
-
-
-                datasets:[{
-
-
-                    label:"Wind km/h",
-
-
-                    data:data.wind,
-
-
-                    tension:.4,
-
-
-                    borderColor:"#22c55e"
-
-
-                }]
-
-
-            },
-
-
-
-            options:
-
-            chartOptions(
-
-                "Wind Speed"
-
-            )
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    RAIN CHART
-=========================================================*/
-
-
-function createRainChart(){
-
-
-    const canvas=
-
-    get("rainChart");
-
-
-
-    if(!canvas)
-
-    return;
-
-
-
-    destroyChart(
-
-        "rain"
-
-    );
-
-
-
-    const data=getChartData();
-
-
-
-    if(!data)
-
-    return;
-
-
-
-    appState.charts.rain =
-
-    new Chart(
-
-        canvas,
-
-        {
-
-
-            type:"line",
-
-
-            data:{
-
-
-                labels:data.labels,
-
-
-
-                datasets:[{
-
-
-                    label:"Rain Probability %",
-
-
-                    data:data.rain,
-
-
-                    tension:.4,
-
-
-                    borderColor:"#38bdf8"
-
-
-                }]
-
-
-            },
-
-
-
-            options:
-
-            chartOptions(
-
-                "Rain Probability"
-
-            )
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    UPDATE CHARTS AFTER WEATHER LOAD
-=========================================================*/
-
-
-const oldRenderWeatherCharts =
-
-renderCurrentWeather;
-
-
-
-renderCurrentWeather=function(){
-
-
-    oldRenderWeatherCharts();
-
-
-
-    setTimeout(()=>{
-
-
-        renderCharts();
-
-
-    },300);
-
-
-};
-/*=========================================================
-    LEAFLET WEATHER MAP SYSTEM
-=========================================================*/
-
-
-function initializeMap(){
-
-
-    const mapElement =
-
-    get("weatherMap");
-
-
-
-    if(!mapElement)
-
-    return;
-
-
-
-    if(appState.map){
-
-        return;
-
-    }
-
-
-
-    appState.map =
-
-    L.map(
-
-        "weatherMap",
-
-        {
-
-            zoomControl:true
-
-        }
-
-    )
-
-    .setView(
-
-        [
-
-            appState.latitude || 28.6139,
-
-            appState.longitude || 77.2090
-
-        ],
-
-        10
-
-    );
-
-
-
-    L.tileLayer(
-
-        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-        {
-
-
-            maxZoom:19,
-
-
-            attribution:
-
-            "© OpenStreetMap"
-
-
-        }
-
-    )
-
-    .addTo(
-
-        appState.map
-
-    );
-
-
-}
-
-
-
-
-
-/*=========================================================
-    UPDATE MAP LOCATION
-=========================================================*/
-
-
-function updateMap(){
-
-
-    if(
-
-        !appState.latitude ||
-
-        !appState.longitude
-
-    )
-
-    return;
-
-
-
-    initializeMap();
-
-
-
-    if(!appState.map)
-
-    return;
-
-
-
-    const position=[
-
-
-        appState.latitude,
-
-
-        appState.longitude
-
-
-    ];
-
-
-
-    appState.map.setView(
-
-        position,
-
-        10
-
-    );
-
-
-
-    updateMarker(position);
-
-
-}
-
-
-
-
-
-/*=========================================================
-    MAP MARKER
-=========================================================*/
-
-
-function updateMarker(position){
-
-
-
-    if(
-
-        appState.marker
-
-    ){
-
-
-        appState.map.removeLayer(
-
-            appState.marker
-
-        );
 
 
     }
 
 
 
-    const current=
 
-    appState.weather?.current;
-
+    /* Precipitation */
 
 
-    const popup =
+    if($("precipitation")){
 
-    `
 
-    <div class="map-popup">
+        $("precipitation").innerText =
+
+        daily.precipitation_sum[0]
+        +" mm";
+
+
+    }
+
+
+
+
+    /* Rain Probability */
+
+
+    if($("rainChance")){
+
+
+        let probability =
+        hourly.precipitation_probability[0];
+
+
+        $("rainChance").innerText =
+        probability+"%";
+
+
+    }
+
+
+
+    /* Visibility */
+
+    if($("visibility")){
+
+
+        let visibility =
+        hourly.visibility ?
+        hourly.visibility[0]/1000 :
+        10;
+
+
+
+        $("visibility").innerText =
+        visibility.toFixed(1)
+        +" km";
+
+    }
+
+
+
+}
+
+
+
+/* ===========================================================
+   UPDATE DEW POINT
+=========================================================== */
+
+
+function updateDewPoint(data){
+
+
+    const dew =
+    data.hourly.dew_point_2m[0];
+
+
+    if($("dewPoint")){
+
+
+        $("dewPoint").innerText =
+        convertTemperature(dew);
+
+    }
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   HOURLY FORECAST
+=========================================================== */
+
+
+function renderHourlyForecast(data){
+
+
+const container =
+$("hourlyContainer");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+const hourly=data.hourly;
+
+
+
+for(let i=0;i<24;i++){
+
+
+
+    const time =
+    new Date(
+        hourly.time[i]
+    );
+
+
+
+    const info =
+    getWeatherInfo(
+        hourly.weather_code
+        ?
+        hourly.weather_code[i]
+        :
+        data.current.weather_code
+    );
+
+
+
+    const card=document.createElement("div");
+
+
+
+    card.className="hour-card";
+
+
+
+    card.innerHTML=`
+
+        <h4>
+
+        ${time.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit"
+            }
+        )}
+
+        </h4>
+
+
+        <div class="emoji">
+
+            ${info.emoji}
+
+        </div>
 
 
         <h3>
 
-        ${appState.city}
+        ${convertTemperature(
+            hourly.temperature_2m[i]
+        )}
 
         </h3>
-
-
-
-        <h1>
-
-        ${weatherEmoji(
-
-            current?.weather_code
-
-        )}
-
-        </h1>
-
-
-
-        <h2>
-
-        ${temperature(
-
-            current?.temperature_2m || 0
-
-        )}
-
-        </h2>
-
-
-
-        <p>
-
-        ${weatherDescription(
-
-            current?.weather_code
-
-        )}
-
-        </p>
 
 
         <p>
 
         💧
-
-        ${current?.relative_humidity_2m || 0}%
+        ${hourly.relative_humidity_2m[i]}%
 
         </p>
 
 
-    </div>
+        <p>
+
+        🌧️
+        ${hourly.precipitation_probability[i]}%
+
+        </p>
+
 
     `;
 
 
+    container.appendChild(card);
 
-    appState.marker =
 
-    L.marker(position)
 
-    .addTo(
-
-        appState.map
-
-    )
-
-    .bindPopup(
-
-        popup
-
-    )
-
-    .openPopup();
+}
 
 
 
@@ -3402,27 +936,125 @@ function updateMarker(position){
 
 
 
-/*=========================================================
-    MAP RESIZE FIX
-=========================================================*/
 
 
-function refreshMap(){
+/* ===========================================================
+   7 DAY FORECAST
+=========================================================== */
 
 
-    if(appState.map){
+function renderForecast(data){
 
 
-        setTimeout(()=>{
+
+const container =
+$("forecastContainer");
 
 
-            appState.map.invalidateSize();
+
+if(!container)
+return;
 
 
-        },300);
+
+container.innerHTML="";
 
 
-    }
+
+const daily=data.daily;
+
+
+
+for(let i=0;i<7;i++){
+
+
+
+const date =
+new Date(
+daily.time[i]
+);
+
+
+
+const info =
+getWeatherInfo(
+daily.weather_code[i]
+);
+
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className=
+"forecast-card";
+
+
+
+card.innerHTML=`
+
+<h3>
+
+${date.toLocaleDateString(
+"en-US",
+{
+weekday:"short"
+}
+)}
+
+</h3>
+
+
+
+<div class="emoji">
+
+${info.emoji}
+
+</div>
+
+
+
+<p>
+
+${info.text}
+
+</p>
+
+
+
+<h2>
+
+${convertTemperature(
+daily.temperature_2m_max[i]
+)}
+
+</h2>
+
+
+<span>
+
+↓
+
+${convertTemperature(
+daily.temperature_2m_min[i]
+)}
+
+</span>
+
+
+
+`;
+
+
+
+container.appendChild(card);
+
+
+
+}
+
 
 
 }
@@ -3431,25 +1063,186 @@ function refreshMap(){
 
 
 
-/*=========================================================
-    WEATHER LAYER CONTROL
-=========================================================*/
 
 
-function addWeatherOverlay(){
+/* ===========================================================
+   UPDATE ALL FORECAST DATA
+=========================================================== */
 
 
-    if(!appState.map)
-
-    return;
+function updateForecastSections(data){
 
 
+    updateDailyHighlights(data);
 
-    toast(
 
-        "Weather overlay available with Open-Meteo compatible layers."
+    updateDewPoint(data);
 
-    );
+
+    renderHourlyForecast(data);
+
+
+    renderForecast(data);
+
+
+}
+ /* ===========================================================
+    PART 3/5
+    AQI + CHARTS + MAP
+=========================================================== */
+
+
+
+/* ===========================================================
+   AIR QUALITY API
+=========================================================== */
+
+
+async function fetchAirQuality(){
+
+
+try{
+
+
+const url=
+
+`https://air-quality-api.open-meteo.com/v1/air-quality?
+latitude=${currentLat}
+&longitude=${currentLon}
+&current=
+us_aqi,
+pm10,
+pm2_5,
+carbon_monoxide,
+nitrogen_dioxide
+&timezone=auto`;
+
+
+
+const response =
+await fetch(
+url.replace(/\s+/g,"")
+);
+
+
+
+const data =
+await response.json();
+
+
+
+updateAQI(data);
+
+
+
+}
+
+catch(error){
+
+console.error(
+"AQI Error",
+error
+);
+
+
+}
+
+
+
+}
+
+
+
+
+/* ===========================================================
+   UPDATE AQI CARD
+=========================================================== */
+
+
+function updateAQI(data){
+
+
+
+if(!data.current)
+return;
+
+
+
+const aqi =
+data.current.us_aqi;
+
+
+
+if($("aqiValue")){
+
+
+$("aqiValue").innerText =
+Math.round(aqi);
+
+
+}
+
+
+
+let status="";
+
+
+
+if(aqi<=50){
+
+status="Good";
+
+}
+
+else if(aqi<=100){
+
+status="Moderate";
+
+}
+
+else if(aqi<=150){
+
+status="Unhealthy for Sensitive Groups";
+
+}
+
+else if(aqi<=200){
+
+status="Unhealthy";
+
+}
+
+else{
+
+status="Hazardous";
+
+}
+
+
+
+if($("aqiStatus")){
+
+$("aqiStatus").innerText=status;
+
+}
+
+
+
+if($("aqiCircle")){
+
+
+const offset =
+314 -
+(314*(aqi/300));
+
+
+$("aqiCircle").style.strokeDashoffset =
+offset;
+
+
+}
+
+
 
 
 }
@@ -3458,820 +1251,70 @@ function addWeatherOverlay(){
 
 
 
-/*=========================================================
-    MAP BUTTONS
-=========================================================*/
+/* ===========================================================
+   CHART GENERATOR
+=========================================================== */
 
 
-const mapRefresh =
-
-get("mapRefreshBtn");
+function createCharts(data){
 
 
 
-mapRefresh
+const hourly =
+data.hourly;
 
-?.addEventListener(
 
-    "click",
 
-    refreshMap
+const labels=[];
+
+
+
+for(let i=0;i<24;i++){
+
+
+const time =
+new Date(
+hourly.time[i]
+);
+
+
+
+labels.push(
+
+time.toLocaleTimeString(
+[],
+{
+hour:"2-digit"
+}
+
+)
 
 );
 
 
 
-/*=========================================================
-    CONNECT MAP WITH WEATHER UPDATE
-=========================================================*/
-
-
-const oldUpdateMap =
-
-updateMap;
-
-
-
-updateMap=function(){
-
-
-    oldUpdateMap();
-
-
-    refreshMap();
-
-
-};
-/*=========================================================
-    FAVORITES UI SYSTEM
-=========================================================*/
-
-
-function renderFavorites(){
-
-
-    const container =
-
-    get("favoriteCities")
-
-    ||
-
-    get("favoritesContainer");
-
-
-
-    if(!container)
-
-    return;
-
-
-
-    container.innerHTML="";
-
-
-
-    if(appState.favorites.length===0){
-
-
-        container.innerHTML=
-
-        `
-
-        <p>
-
-        No favorite cities yet ❤️
-
-        </p>
-
-        `;
-
-
-        return;
-
-    }
-
-
-
-    appState.favorites.forEach(city=>{
-
-
-        const card=
-
-        document.createElement("div");
-
-
-
-        card.className=
-
-        "favorite-card";
-
-
-
-        card.innerHTML=
-
-        `
-
-        <span>
-
-        📍 ${city}
-
-        </span>
-
-
-        <button class="open-fav">
-
-        View
-
-        </button>
-
-
-        <button class="remove-fav">
-
-        ✖
-
-        </button>
-
-        `;
-
-
-
-        card
-
-        .querySelector(".open-fav")
-
-        .onclick=()=>{
-
-
-            searchCity(city);
-
-
-        };
-
-
-
-        card
-
-        .querySelector(".remove-fav")
-
-        .onclick=()=>{
-
-
-            removeFavorite(city);
-
-
-            renderFavorites();
-
-
-            toast(
-
-                "Removed from favorites"
-
-            );
-
-
-        };
-
-
-
-        container.appendChild(card);
-
-
-
-    });
-
-
 }
 
 
 
 
-
-/*=========================================================
-    HISTORY UI SYSTEM
-=========================================================*/
+/* Destroy old charts */
 
 
-function renderHistory(){
+[
+temperatureChart,
+humidityChart,
+windChart,
+pressureChart
+
+].forEach(chart=>{
 
 
-    const container =
+if(chart){
 
-    get("searchHistory")
-
-    ||
-
-    get("historyContainer");
-
-
-
-    if(!container)
-
-    return;
-
-
-
-    container.innerHTML="";
-
-
-
-    appState.history.forEach(city=>{
-
-
-        const button=
-
-        document.createElement("button");
-
-
-
-        button.className=
-
-        "history-item";
-
-
-
-        button.textContent=
-
-        "🔍 "+city;
-
-
-
-        button.onclick=()=>{
-
-
-            searchCity(city);
-
-
-        };
-
-
-
-        container.appendChild(button);
-
-
-    });
-
-
+chart.destroy();
 
 }
-
-
-
-
-
-/*=========================================================
-    FAVORITE CURRENT CITY BUTTON
-=========================================================*/
-
-
-function favoriteCurrentCity(){
-
-
-    if(!appState.city){
-
-
-        toast(
-
-            "No city selected"
-
-        );
-
-
-        return;
-
-    }
-
-
-
-    addFavorite(
-
-        appState.city
-
-    );
-
-
-
-    renderFavorites();
-
-
-}
-
-
-
-
-
-const favoriteBtn=
-
-get("favoriteBtn")
-
-||
-
-get("addFavoriteBtn");
-
-
-
-favoriteBtn
-
-?.addEventListener(
-
-    "click",
-
-    favoriteCurrentCity
-
-);
-
-
-
-
-
-/*=========================================================
-    CLEAR HISTORY
-=========================================================*/
-
-
-function clearHistory(){
-
-
-    appState.history=[];
-
-
-    saveStorage();
-
-
-    renderHistory();
-
-
-
-    toast(
-
-        "History cleared"
-
-    );
-
-
-}
-
-
-
-
-
-get("clearHistoryBtn")
-
-?.addEventListener(
-
-    "click",
-
-    clearHistory
-
-);
-
-
-
-
-
-/*=========================================================
-    CLEAR FAVORITES
-=========================================================*/
-
-
-function clearFavorites(){
-
-
-    appState.favorites=[];
-
-
-    saveStorage();
-
-
-    renderFavorites();
-
-
-
-    toast(
-
-        "Favorites cleared"
-
-    );
-
-
-}
-
-
-
-
-
-get("clearFavoritesBtn")
-
-?.addEventListener(
-
-    "click",
-
-    clearFavorites
-
-);
-
-
-
-
-
-/*=========================================================
-    EXPORT WEATHER REPORT
-=========================================================*/
-
-
-function exportWeatherReport(){
-
-
-    if(!appState.weather){
-
-
-        toast(
-
-            "No weather data"
-
-        );
-
-
-        return;
-
-    }
-
-
-
-    const report={
-
-
-        city:
-
-        appState.city,
-
-
-        generated:
-
-        new Date().toLocaleString(),
-
-
-
-        temperature:
-
-        appState.weather.current.temperature_2m,
-
-
-
-        humidity:
-
-        appState.weather.current.relative_humidity_2m,
-
-
-
-        wind:
-
-        appState.weather.current.wind_speed_10m,
-
-
-
-        pressure:
-
-        appState.weather.current.surface_pressure,
-
-
-
-        condition:
-
-        weatherDescription(
-
-            appState.weather.current.weather_code
-
-        )
-
-
-    };
-
-
-
-    const blob=
-
-    new Blob(
-
-        [
-
-            JSON.stringify(
-
-                report,
-
-                null,
-
-                2
-
-            )
-
-        ],
-
-        {
-
-            type:"application/json"
-
-        }
-
-    );
-
-
-
-    const url=
-
-    URL.createObjectURL(blob);
-
-
-
-    const link=
-
-    document.createElement("a");
-
-
-
-    link.href=url;
-
-
-    link.download=
-
-    "WeatherSphere_Report.json";
-
-
-
-    link.click();
-
-
-
-    URL.revokeObjectURL(url);
-
-
-
-    toast(
-
-        "Report exported 📄"
-
-    );
-
-
-}
-
-
-
-
-
-get("exportBtn")
-
-?.addEventListener(
-
-    "click",
-
-    exportWeatherReport
-
-);
-
-
-
-
-
-/*=========================================================
-    UPDATE STORAGE UI AFTER LOAD
-=========================================================*/
-
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-
-    renderFavorites();
-
-
-    renderHistory();
-
-
-}
-
-);
-/*=========================================================
-    VOICE SEARCH SYSTEM
-=========================================================*/
-
-
-function startVoiceSearch(){
-
-
-    const SpeechRecognition =
-
-    window.SpeechRecognition ||
-
-    window.webkitSpeechRecognition;
-
-
-
-    if(!SpeechRecognition){
-
-
-        toast(
-
-            "Voice search not supported"
-
-        );
-
-
-        return;
-
-    }
-
-
-
-    const recognition=
-
-    new SpeechRecognition();
-
-
-
-    recognition.lang=
-
-    "en-US";
-
-
-
-    recognition.start();
-
-
-
-    toast(
-
-        "Listening 🎤"
-
-    );
-
-
-
-    recognition.onresult=(event)=>{
-
-
-        const text=
-
-        event.results[0][0].transcript;
-
-
-
-        if(DOM.searchInput){
-
-
-            DOM.searchInput.value=text;
-
-
-        }
-
-
-
-        searchCity(text);
-
-
-    };
-
-
-
-    recognition.onerror=()=>{
-
-
-        toast(
-
-            "Voice search failed"
-
-        );
-
-
-    };
-
-
-}
-
-
-
-
-
-DOM.voiceBtn
-
-?.addEventListener(
-
-    "click",
-
-    startVoiceSearch
-
-);
-
-
-
-
-
-/*=========================================================
-    DARK / LIGHT THEME
-=========================================================*/
-
-
-function applyTheme(){
-
-
-    document.body
-
-    .classList
-
-    .toggle(
-
-        "light",
-
-        appState.theme==="light"
-
-    );
-
-
-}
-
-
-
-
-
-function toggleTheme(){
-
-
-    appState.theme =
-
-    appState.theme==="dark"
-
-    ?
-
-    "light"
-
-    :
-
-    "dark";
-
-
-
-    saveStorage();
-
-
-
-    applyTheme();
-
-
-
-    toast(
-
-        appState.theme==="dark"
-
-        ?
-
-        "Dark Mode 🌙"
-
-        :
-
-        "Light Mode ☀️"
-
-    );
-
-
-}
-
-
-
-
-
-DOM.themeBtn
-
-?.addEventListener(
-
-    "click",
-
-    toggleTheme
-
-);
-
-
-
-
-
-/*=========================================================
-    NETWORK STATUS
-=========================================================*/
-
-
-window.addEventListener(
-
-"offline",
-
-()=>{
-
-
-    toast(
-
-        "You are offline ⚠️"
-
-    );
 
 
 });
@@ -4280,95 +1323,81 @@ window.addEventListener(
 
 
 
-window.addEventListener(
 
-"online",
-
-()=>{
+/* Temperature */
 
 
-    toast(
-
-        "Connection restored ✅"
-
-    );
+if($("temperatureChart")){
 
 
+temperatureChart =
+new Chart(
 
-    refreshWeather();
+$("temperatureChart"),
 
-
-});
-
-
-
+{
 
 
-/*=========================================================
-    REFRESH WEATHER FUNCTION
-=========================================================*/
+type:"line",
 
 
-async function refreshWeather(){
+data:{
 
 
-    if(
-
-        !appState.latitude ||
-
-        !appState.longitude
-
-    )
-
-    return;
+labels:labels,
 
 
+datasets:[{
 
-    try{
+label:"Temperature °C",
+
+data:
+hourly.temperature_2m.slice(
+0,
+24
+),
 
 
-        const data=
+tension:.4
 
-        await fetchWeather(
 
-            appState.latitude,
+}]
 
-            appState.longitude
 
-        );
+},
 
 
 
-        appState.weather=data;
+options:{
+
+
+responsive:true,
+
+
+plugins:{
+
+
+legend:{
+
+
+display:true
+
+
+}
+
+
+}
 
 
 
-        renderCurrentWeather();
-
-
-        renderHourlyForecast();
-
-
-        renderDailyForecast();
-
-
-        updateMap();
+}
 
 
 
-    }
+}
 
-    catch(error){
+);
 
-
-        toast(
-
-            "Refresh failed"
-
-        );
-
-
-    }
 
 
 }
@@ -4377,163 +1406,129 @@ async function refreshWeather(){
 
 
 
-/*=========================================================
-    KEYBOARD SHORTCUTS
-=========================================================*/
 
 
-document.addEventListener(
-
-"keydown",
-
-(event)=>{
+/* Humidity */
 
 
-    // Ctrl + K search
-
-    if(
-
-        event.ctrlKey &&
-
-        event.key==="k"
-
-    ){
+if($("humidityChart")){
 
 
-        event.preventDefault();
+humidityChart =
+new Chart(
+
+$("humidityChart"),
+
+{
+
+
+type:"line",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+label:"Humidity %",
+
+data:
+hourly.relative_humidity_2m.slice(
+0,
+24
+),
+
+
+tension:.4
+
+
+}]
+
+
+},
+
+
+options:{
+
+
+responsive:true
+
+}
+
+
+}
+
+);
 
 
 
-        DOM.searchInput?.focus();
-
-
-    }
-
-
-
-    // R refresh
-
-    if(
-
-        event.key==="r"
-
-    ){
-
-
-        refreshWeather();
-
-
-    }
-
-
-
-    // Escape close
-
-    if(
-
-        event.key==="Escape"
-
-    ){
-
-
-        document.activeElement.blur();
-
-
-    }
-
-
-});
+}
 
 
 
 
 
-/*=========================================================
-    AUTO REFRESH
-=========================================================*/
 
 
-setInterval(
 
-()=>{
-
-
-    if(
-
-        navigator.onLine
-
-    ){
+/* Wind */
 
 
-        refreshWeather();
+if($("windChart")){
 
 
-    }
+windChart =
+new Chart(
+
+$("windChart"),
+
+{
+
+
+type:"bar",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+
+label:"Wind km/h",
+
+
+data:
+hourly.wind_speed_10m.slice(
+0,
+24
+)
+
+
+
+}]
 
 
 
 },
 
-15*60*1000
+
+options:{
+
+
+responsive:true
+
+}
+
+
+}
 
 );
-
-
-
-
-
-/*=========================================================
-    INITIAL APPLICATION LOAD
-=========================================================*/
-
-
-async function initWeatherSphere(){
-
-
-    loadStorage();
-
-
-    applyTheme();
-
-
-
-    renderFavorites();
-
-
-    renderHistory();
-
-
-
-    try{
-
-
-        await searchCity(
-
-            CONFIG.DEFAULT_CITY
-
-        );
-
-
-    }
-
-
-    catch(error){
-
-
-        console.error(error);
-
-
-    }
-
-
-
-    setTimeout(()=>{
-
-
-        initializeMap();
-
-
-    },500);
 
 
 
@@ -4543,47 +1538,1721 @@ async function initWeatherSphere(){
 
 
 
+
+
+
+
+/* Pressure */
+
+
+if($("pressureChart")){
+
+
+pressureChart =
+new Chart(
+
+$("pressureChart"),
+
+{
+
+
+type:"line",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+
+label:"Pressure hPa",
+
+
+data:
+hourly.surface_pressure.slice(
+0,
+24
+),
+
+
+tension:.4
+
+
+}]
+
+
+
+},
+
+
+options:{
+
+
+responsive:true
+
+
+}
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   LEAFLET MAP
+=========================================================== */
+
+
+function initializeMap(){
+
+
+
+if(!$("weatherMap"))
+return;
+
+
+
+map =
+L.map(
+"weatherMap"
+);
+
+
+
+L.tileLayer(
+
+"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+{
+
+
+maxZoom:18,
+
+
+attribution:
+"© OpenStreetMap"
+
+
+}
+
+).addTo(map);
+
+
+
+updateMap();
+
+
+}
+
+
+
+
+
+
+
+function updateMap(){
+
+
+
+if(!map)
+return;
+
+
+
+map.setView(
+
+[
+currentLat,
+currentLon
+
+],
+
+10
+
+);
+
+
+
+
+L.marker(
+
+[
+currentLat,
+currentLon
+
+]
+
+)
+
+.addTo(map)
+
+.bindPopup(
+
+`
+
+<h3>
+${currentCity}
+</h3>
+
+<p>
+Live Weather Location
+</p>
+
+`
+
+)
+
+.openPopup();
+
+
+
+}
+
+
+
+
+
+
+/* ===========================================================
+   EXTEND WEATHER LOADING
+=========================================================== */
+
+
+const oldFetchWeather =
+fetchWeather;
+
+
+
+fetchWeather = async function(){
+
+
+
+await oldFetchWeather();
+
+
+
+if(weatherData){
+
+
+updateForecastSections(
+weatherData
+);
+
+
+
+fetchAirQuality();
+
+
+
+createCharts(
+weatherData
+);
+
+
+
+updateMap();
+
+
+
+}
+
+
+};
+
+ /* ===========================================================
+    PART 4/5
+    UI CONTROLS + USER FEATURES
+=========================================================== */
+
+
+
+/* ===========================================================
+   SEARCH CITY BUTTON
+=========================================================== */
+
+
+if($("searchBtn")){
+
+
+$("searchBtn").addEventListener(
+"click",
+()=>{
+
+
+const city =
+$("cityInput").value.trim();
+
+
+
+if(city){
+
+addSearchHistory(city);
+
+searchCity(city);
+
+
+}
+
+
+
+});
+
+
+}
+
+
+
+
+
+/* ENTER KEY SEARCH */
+
+
+if($("cityInput")){
+
+
+$("cityInput")
+.addEventListener(
+"keypress",
+(e)=>{
+
+
+if(e.key==="Enter"){
+
+
+const city =
+$("cityInput").value.trim();
+
+
+
+if(city){
+
+addSearchHistory(city);
+
+searchCity(city);
+
+}
+
+
+}
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   CURRENT LOCATION
+=========================================================== */
+
+
+if($("locationBtn")){
+
+
+$("locationBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+if(
+navigator.geolocation
+){
+
+
+
+navigator.geolocation.getCurrentPosition(
+
+async(position)=>{
+
+
+currentLat =
+position.coords.latitude;
+
+
+currentLon =
+position.coords.longitude;
+
+
+
+await reverseLocation();
+
+
+fetchWeather();
+
+
+
+},
+
+
+()=>{
+
+
+showToast(
+"Location permission denied"
+);
+
+
+}
+
+
+
+);
+
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   REVERSE GEOCODING
+=========================================================== */
+
+
+async function reverseLocation(){
+
+
+try{
+
+
+const url =
+
+`https://geocoding-api.open-meteo.com/v1/reverse?
+latitude=${currentLat}
+&longitude=${currentLon}
+&count=1`;
+
+
+
+const response =
+await fetch(
+url.replace(/\s+/g,"")
+);
+
+
+
+const data =
+await response.json();
+
+
+
+if(data.results){
+
+
+currentCity =
+data.results[0].name;
+
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   VOICE SEARCH
+=========================================================== */
+
+
+if($("voiceBtn")){
+
+
+$("voiceBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+
+
+if(!SpeechRecognition){
+
+
+showToast(
+"Voice search not supported"
+);
+
+
+return;
+
+
+}
+
+
+
+const recognition =
+new SpeechRecognition();
+
+
+
+recognition.lang="en-US";
+
+
+
+const modal =
+$("voiceModal");
+
+
+
+modal.style.display="flex";
+
+
+
+recognition.start();
+
+
+
+recognition.onresult=
+(event)=>{
+
+
+const text =
+event.results[0][0].transcript;
+
+
+
+$("cityInput").value=text;
+
+
+
+modal.style.display="none";
+
+
+
+searchCity(text);
+
+
+
+};
+
+
+
+recognition.onerror=
+()=>{
+
+
+modal.style.display="none";
+
+
+};
+
+
+
+recognition.onend=
+()=>{
+
+
+modal.style.display="none";
+
+
+};
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   SEARCH HISTORY
+=========================================================== */
+
+
+function addSearchHistory(city){
+
+
+
+let history =
+JSON.parse(
+localStorage.getItem(
+"weatherHistory"
+)
+)
+|| [];
+
+
+
+history =
+history.filter(
+(item)=>item!==city
+);
+
+
+
+history.unshift(city);
+
+
+
+history =
+history.slice(
+0,
+8
+);
+
+
+
+localStorage.setItem(
+"weatherHistory",
+JSON.stringify(history)
+);
+
+
+
+renderHistory();
+
+
+}
+
+
+
+
+
+
+
+function renderHistory(){
+
+
+
+const container =
+$("searchHistory");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+const history =
+JSON.parse(
+localStorage.getItem(
+"weatherHistory"
+)
+)
+|| [];
+
+
+
+history.forEach(city=>{
+
+
+const item =
+document.createElement("div");
+
+
+
+item.className =
+"history-item";
+
+
+
+item.innerText=city;
+
+
+
+item.onclick=
+()=>searchCity(city);
+
+
+
+container.appendChild(item);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   FAVORITE CITIES
+=========================================================== */
+
+
+if($("addFavoriteBtn")){
+
+
+$("addFavoriteBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+let favorites =
+JSON.parse(
+localStorage.getItem(
+"favorites"
+)
+)
+|| [];
+
+
+
+if(
+!favorites.includes(currentCity)
+){
+
+
+favorites.push(currentCity);
+
+
+localStorage.setItem(
+"favorites",
+JSON.stringify(favorites)
+);
+
+
+showToast(
+"Added to favorites"
+);
+
+
+
+renderFavorites();
+
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+function renderFavorites(){
+
+
+
+const container =
+$("favoriteCities");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+let favorites =
+JSON.parse(
+localStorage.getItem(
+"favorites"
+)
+)
+|| [];
+
+
+
+favorites.forEach(city=>{
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className =
+"favorite-card";
+
+
+
+card.innerHTML=`
+
+<h3>
+
+❤️ ${city}
+
+</h3>
+
+
+<p>
+Click to view weather
+</p>
+
+
+`;
+
+
+
+card.onclick=
+()=>searchCity(city);
+
+
+
+container.appendChild(card);
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   TEMPERATURE SWITCH
+=========================================================== */
+
+
+if($("celsiusBtn")){
+
+
+$("celsiusBtn")
+.onclick=()=>{
+
+
+temperatureUnit="celsius";
+
+
+$("celsiusBtn")
+.classList.add("active");
+
+
+$("fahrenheitBtn")
+.classList.remove("active");
+
+
+if(weatherData)
+updateCurrentWeather(weatherData);
+
+
+};
+
+
+
+}
+
+
+
+
+if($("fahrenheitBtn")){
+
+
+$("fahrenheitBtn")
+.onclick=()=>{
+
+
+temperatureUnit="fahrenheit";
+
+
+$("fahrenheitBtn")
+.classList.add("active");
+
+
+$("celsiusBtn")
+.classList.remove("active");
+
+
+if(weatherData)
+updateCurrentWeather(weatherData);
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   DARK / LIGHT THEME
+=========================================================== */
+
+
+if($("themeToggle")){
+
+
+$("themeToggle")
+.onclick=()=>{
+
+
+document.body.classList.toggle(
+"day"
+);
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   REFRESH WEATHER
+=========================================================== */
+
+
+if($("refreshBtn")){
+
+
+$("refreshBtn")
+.onclick=()=>{
+
+
+fetchWeather();
+
+
+showToast(
+"Weather refreshed"
+);
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   SCROLL TOP
+=========================================================== */
+
+
+if($("scrollTopBtn")){
+
+
+$("scrollTopBtn")
+.onclick=()=>{
+
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   MOBILE MENU
+=========================================================== */
+
+
+if($("menuBtn")){
+
+
+$("menuBtn")
+.onclick=()=>{
+
+
+$("mobileMenu")
+.classList.add(
+"active"
+);
+
+
+};
+
+
+}
+
+
+
+
+if($("closeMenu")){
+
+
+$("closeMenu")
+.onclick=()=>{
+
+
+$("mobileMenu")
+.classList.remove(
+"active"
+);
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   INTERNET STATUS
+=========================================================== */
+
+
 window.addEventListener(
+"offline",
+()=>{
 
-"load",
 
-initWeatherSphere
+$("offlineBanner")
+?.classList.add(
+"show"
+);
+
+
+
+});
+
+
+
+window.addEventListener(
+"online",
+()=>{
+
+
+$("offlineBanner")
+?.classList.remove(
+"show"
+);
+
+
+
+showToast(
+"Internet restored"
+);
+
+
+});
+
+ /* ===========================================================
+    PART 5/5
+    FINAL INITIALIZATION
+=========================================================== */
+
+
+
+
+
+/* ===========================================================
+   LIVE CLOCK
+=========================================================== */
+
+
+function updateClock(){
+
+
+const now =
+new Date();
+
+
+
+if($("currentTime")){
+
+
+$("currentTime").innerText =
+
+now.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+}
 
 );
 
 
 
+}
 
 
-/*=========================================================
-    FINAL STATUS
-=========================================================*/
+
+if($("currentDate")){
 
 
-console.log(
+$("currentDate").innerText =
 
-`
+now.toLocaleDateString(
+"en-US",
+{
 
-🌦️ WeatherSphere Pro 4.0
+weekday:"long",
 
-Open-Meteo Edition
+day:"numeric",
 
-====================
+month:"long"
 
-✅ No API Key Required
-✅ Live Weather
-✅ Forecast
-✅ AQI
-✅ Charts
-✅ Maps
-✅ Favorites
-✅ History
-✅ Voice Search
-✅ Themes
-✅ Offline Support
-
-Application Loaded Successfully 🚀
-
-`
+}
 
 );
+
+
+
+}
+
+
+
+}
+
+
+
+setInterval(
+updateClock,
+1000
+);
+
+
+updateClock();
+
+
+
+
+
+
+
+
+/* ===========================================================
+   WEATHER INSIGHTS
+=========================================================== */
+
+
+function updateWeatherAdvice(){
+
+
+
+if(!weatherData)
+return;
+
+
+
+const temp =
+weatherData.current.temperature_2m;
+
+
+const rain =
+weatherData.current.precipitation;
+
+
+
+let advice =
+"";
+
+
+let activity =
+"";
+
+
+let health =
+"";
+
+
+
+
+
+if(temp>35){
+
+
+advice=
+"Very hot today. Stay hydrated and avoid direct sunlight.";
+
+
+activity=
+"Indoor activities are recommended.";
+
+
+health=
+"High temperature may cause heat stress.";
+
+
+}
+
+
+else if(rain>0){
+
+
+advice=
+"Rain expected. Carry an umbrella before going outside.";
+
+
+activity=
+"Enjoy indoor activities or short outdoor trips.";
+
+
+health=
+"Humidity may feel higher. Stay comfortable.";
+
+
+}
+
+
+else{
+
+
+advice=
+"Weather looks pleasant. Good day for outdoor activities.";
+
+
+activity=
+"Perfect time for walking or outdoor plans.";
+
+
+health=
+"Weather conditions are comfortable.";
+
+
+}
+
+
+
+
+
+
+if($("weatherAdvice"))
+
+$("weatherAdvice").innerText=
+advice;
+
+
+
+
+if($("activityAdvice"))
+
+$("activityAdvice").innerText=
+activity;
+
+
+
+
+if($("healthAdvice"))
+
+$("healthAdvice").innerText=
+health;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   WORLD WEATHER
+=========================================================== */
+
+
+const worldCities=[
+
+
+{
+name:"London",
+lat:51.5072,
+lon:-0.1276
+},
+
+
+{
+name:"Tokyo",
+lat:35.6762,
+lon:139.6503
+},
+
+
+{
+name:"New York",
+lat:40.7128,
+lon:-74.0060
+},
+
+
+{
+name:"Paris",
+lat:48.8566,
+lon:2.3522
+},
+
+
+{
+name:"Dubai",
+lat:25.2048,
+lon:55.2708
+}
+
+
+];
+
+
+
+
+
+
+async function loadWorldWeather(){
+
+
+
+const container =
+$("worldCities");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+for(
+const city of worldCities
+){
+
+
+
+try{
+
+
+const response =
+await fetch(
+
+`https://api.open-meteo.com/v1/forecast?
+latitude=${city.lat}
+&longitude=${city.lon}
+&current=
+temperature_2m,
+weather_code`
+.replace(/\s+/g,"")
+
+);
+
+
+
+const data =
+await response.json();
+
+
+
+const info =
+getWeatherInfo(
+data.current.weather_code
+);
+
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className=
+"world-card";
+
+
+
+card.innerHTML=`
+
+<h3>
+
+${city.name}
+
+</h3>
+
+
+<div class="emoji">
+
+${info.emoji}
+
+</div>
+
+
+<h2>
+
+${Math.round(
+data.current.temperature_2m
+)}°C
+
+</h2>
+
+
+<p>
+
+${info.text}
+
+</p>
+
+
+`;
+
+
+
+container.appendChild(card);
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   ERROR MODAL
+=========================================================== */
+
+
+function showError(message){
+
+
+
+if($("errorModal")){
+
+
+$("errorText").innerText=
+message;
+
+
+$("errorModal").style.display=
+"flex";
+
+
+}
+
+
+
+}
+
+
+
+
+if(document.querySelector(".close-modal")){
+
+
+document
+.querySelector(".close-modal")
+.onclick=()=>{
+
+
+$("errorModal")
+.style.display="none";
+
+
+};
+
+
+}
+
+
+
+
+
+if($("retryBtn")){
+
+
+$("retryBtn")
+.onclick=()=>{
+
+
+$("errorModal")
+.style.display="none";
+
+
+fetchWeather();
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   ANIMATION TOGGLE
+=========================================================== */
+
+
+if($("animationToggle")){
+
+
+$("animationToggle")
+.onchange=function(){
+
+
+
+if(this.checked){
+
+
+document.body.style.animationPlayState=
+"running";
+
+
+}
+
+
+else{
+
+
+document.body.style.animationPlayState=
+"paused";
+
+
+}
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   INITIAL APP START
+=========================================================== */
+
+
+async function initializeApp(){
+
+
+
+try{
+
+
+initializeMap();
+
+
+
+renderHistory();
+
+
+
+renderFavorites();
+
+
+
+await fetchWeather();
+
+
+
+loadWorldWeather();
+
+
+
+setTimeout(()=>{
+
+
+updateWeatherAdvice();
+
+
+
+},1500);
+
+
+
+}
+
+
+catch(error){
+
+
+console.error(error);
+
+
+showError(
+"Unable to load weather information"
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+initializeApp();
+
+
+
+});
+
+
+
+/* ===========================================================
+   END OF WEATHERSPHERE PRO 4.0 JS
+=========================================================== */
