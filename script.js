@@ -362,36 +362,18 @@ showLoader();
 
 
 
-let url = `https://api.open-meteo.com/v1/forecast?
-
-
-latitude=${currentLat}
-
-
-&longitude=${currentLon}
-
-
-&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,cloud_cover,visibility,is_day
-
-
-&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code
-
-
-&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max
-
-
-&timezone=auto`;
+let url = 
+`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,cloud_cover,visibility,is_day&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto`;
 
 
 
 let response =
-await fetch(url.replace(/\s/g,""));
+await fetch(url);
 
 
+let data = await response.json();
 
-let data =
-await response.json();
-
+console.log("WEATHER API DATA:", data);
 
 
 weatherData=data;
