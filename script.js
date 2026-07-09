@@ -326,7 +326,7 @@ latitude=${currentLat}
 &longitude=${currentLon}
 &current=temperature_2m,relative_humidity_2m,precipitation,weather_code,is_day,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
 &hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,is_day,visibility
-&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
+&daily=weather_code,is_day,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
 
 
