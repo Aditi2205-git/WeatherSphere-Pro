@@ -84,8 +84,7 @@ window.addEventListener("load",()=>{
 =========================================================== */
 
 
-function getWeatherInfo(code){
-
+function getWeatherInfo(code,isDay=true){
 
     const weather={
 
@@ -182,12 +181,26 @@ function getWeatherInfo(code){
     };
 
 
-    return weather[code] || {
+    let data = weather[code] || {
 
-        emoji:"🌍",
-        text:"Unknown"
+    emoji:"🌍",
+    text:"Unknown"
 
-    };
+};
+
+
+if(!isDay){
+
+    if(data.text==="Clear Sky")
+        data.emoji="🌙";
+
+    if(data.text==="Mainly Clear")
+        data.emoji="🌙";
+
+}
+
+
+return data;
 
 }
 
@@ -324,7 +337,7 @@ const url =
 `https://api.open-meteo.com/v1/forecast?
 latitude=${currentLat}
 &longitude=${currentLon}
-&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
+&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m,is_day
 &hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,visibility
 &daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
@@ -379,9 +392,9 @@ const current=data.current;
 
 
 const info=getWeatherInfo(
-current.weather_code
+current.weather_code,
+current.is_day===1
 );
-
 
 
 /* Hero */
