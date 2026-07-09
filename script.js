@@ -325,7 +325,7 @@ const url =
 latitude=${currentLat}
 &longitude=${currentLon}
 &current=temperature_2m,relative_humidity_2m,precipitation,weather_code,is_day,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
-&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,visibility
+&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,is_day,visibility
 &daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
 
@@ -823,14 +823,20 @@ for(let i=0;i<24;i++){
 
 
 
-    const info =
-    getWeatherInfo(
-        hourly.weather_code
-        ?
-        hourly.weather_code[i]
-        :
-        data.current.weather_code
-    );
+   const info =
+getWeatherInfo(
+    hourly.weather_code
+    ?
+    hourly.weather_code[i]
+    :
+    data.current.weather_code,
+
+    hourly.is_day
+    ?
+    hourly.is_day[i]
+    :
+    data.current.is_day
+);
 
 
 
@@ -945,11 +951,24 @@ daily.time[i]
 
 
 
+const sunrise =
+new Date(daily.sunrise[i]);
+
+const sunset =
+new Date(daily.sunset[i]);
+
+const now =
+new Date();
+
+const isDay =
+now >= sunrise && now <= sunset ? 1 : 0;
+
+
 const info =
 getWeatherInfo(
-daily.weather_code[i]
+daily.weather_code[i],
+isDay
 );
-
 
 
 const card =
@@ -2936,7 +2955,8 @@ await response.json();
 
 const info =
 getWeatherInfo(
-data.current.weather_code
+data.current.weather_code,
+data.current.is_day
 );
 
 
