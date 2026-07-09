@@ -462,10 +462,12 @@ $("cityName").innerText=
 
 
 
-$("feelsLike").innerText=
-convertTemperature(
-current.apparent_temperature
-);
+$("feelsLike").innerText =
+current.apparent_temperature !== undefined
+?
+convertTemperature(current.apparent_temperature)
+:
+convertTemperature(current.temperature_2m);
 
 
 
