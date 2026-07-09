@@ -437,32 +437,6 @@ $("cityName").innerText=
 `${currentCity}`;
 
 
-
-/* Feels Like Temperature Fix */
-
-if($("feelsLike")){
-
-    let feels =
-    current.apparent_temperature;
-
-    if(
-        feels === undefined ||
-        feels === null ||
-        isNaN(feels)
-    ){
-
-        feels =
-        current.temperature_2m;
-
-    }
-
-
-    $("feelsLike").innerText =
-    convertTemperature(feels);
-
-}
-
-
 $("windSpeed").innerText=
 Math.round(
 current.wind_speed_10m
