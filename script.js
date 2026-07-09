@@ -438,13 +438,29 @@ $("cityName").innerText=
 
 
 
-$("feelsLike").innerText =
-current.apparent_temperature !== undefined
-?
-convertTemperature(current.apparent_temperature)
-:
-convertTemperature(current.temperature_2m);
+/* Feels Like Temperature Fix */
 
+if($("feelsLike")){
+
+    let feels =
+    current.apparent_temperature;
+
+    if(
+        feels === undefined ||
+        feels === null ||
+        isNaN(feels)
+    ){
+
+        feels =
+        current.temperature_2m;
+
+    }
+
+
+    $("feelsLike").innerText =
+    convertTemperature(feels);
+
+}
 
 
 $("windSpeed").innerText=
