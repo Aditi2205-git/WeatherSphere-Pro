@@ -1,373 +1,316 @@
 /* ===========================================================
-WeatherSphere Pro 4.0
-Premium Weather Dashboard
-
-script.js PART 1/5
-
-Author : Aditi Singh
-
-API:
-Open-Meteo
-No API Key Required
+   WeatherSphere Pro 4.0
+   script.js PART 1/5
+   Open-Meteo API (No API Key Required)
+   Author: Aditi Singh
 =========================================================== */
 
 
 /* ===========================================================
-GLOBAL VARIABLES
+   GLOBAL VARIABLES
 =========================================================== */
 
-
 let currentCity = "New Delhi";
-
 let currentLat = 28.6139;
-
 let currentLon = 77.2090;
-
-let weatherData = null;
 
 let temperatureUnit = "celsius";
 
-let map = null;
+let weatherData = null;
+
+let temperatureChart;
+let humidityChart;
+let windChart;
+let pressureChart;
+
+let map;
+
+
+/* ===========================================================
+   DOM HELPER
+=========================================================== */
+
+const $ = (id) => document.getElementById(id);
+
+
+/* ===========================================================
+   TOAST MESSAGE
+=========================================================== */
+
+function showToast(message){
+
+    const toast = $("toast");
+    const toastMessage = $("toastMessage");
+
+    if(!toast || !toastMessage) return;
+
+    toastMessage.innerText = message;
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    },3000);
+
+}
 
 
 
 /* ===========================================================
-DOM HELPER
+   LOADER
+=========================================================== */
+
+window.addEventListener("load",()=>{
+
+    setTimeout(()=>{
+
+        const loader=$("loader");
+
+        if(loader){
+            loader.style.opacity="0";
+            setTimeout(()=>{
+                loader.style.display="none";
+            },500);
+        }
+
+    },1200);
+
+});
+
+
+
+/* ===========================================================
+   WEATHER CODE TO EMOJI + DESCRIPTION
 =========================================================== */
 
 
-const $ = id => document.getElementById(id);
+function getWeatherInfo(code){
 
+
+    const weather={
+
+        0:{
+            emoji:"☀️",
+            text:"Clear Sky"
+        },
+
+        1:{
+            emoji:"🌤️",
+            text:"Mainly Clear"
+        },
+
+        2:{
+            emoji:"⛅",
+            text:"Partly Cloudy"
+        },
+
+        3:{
+            emoji:"☁️",
+            text:"Overcast"
+        },
+
+        45:{
+            emoji:"🌫️",
+            text:"Fog"
+        },
+
+        48:{
+            emoji:"🌫️",
+            text:"Depositing Rime Fog"
+        },
+
+        51:{
+            emoji:"🌦️",
+            text:"Light Drizzle"
+        },
+
+        53:{
+            emoji:"🌧️",
+            text:"Moderate Drizzle"
+        },
+
+        55:{
+            emoji:"🌧️",
+            text:"Heavy Drizzle"
+        },
+
+        61:{
+            emoji:"🌧️",
+            text:"Rain"
+        },
+
+        63:{
+            emoji:"🌧️",
+            text:"Moderate Rain"
+        },
+
+        65:{
+            emoji:"⛈️",
+            text:"Heavy Rain"
+        },
+
+        71:{
+            emoji:"❄️",
+            text:"Snow"
+        },
+
+        80:{
+            emoji:"🌦️",
+            text:"Rain Showers"
+        },
+
+        81:{
+            emoji:"🌧️",
+            text:"Heavy Showers"
+        },
+
+        95:{
+            emoji:"⛈️",
+            text:"Thunderstorm"
+        },
+
+        96:{
+            emoji:"⛈️",
+            text:"Thunderstorm + Hail"
+        },
+
+        99:{
+            emoji:"⛈️",
+            text:"Severe Thunderstorm"
+        }
+
+    };
+
+
+    return weather[code] || {
+
+        emoji:"🌍",
+        text:"Unknown"
+
+    };
+
+}
 
 
 
 /* ===========================================================
-WEATHER DATABASE
+   WIND DEGREE TO DIRECTION
 =========================================================== */
 
 
-const weatherCodes = {
+function getWindDirection(degree){
 
 
-0:{
-text:"Clear Sky",
-day:"☀️",
-night:"🌙"
-},
+    const directions=[
+
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+
+    ];
 
 
-1:{
-text:"Mainly Clear",
-day:"🌤️",
-night:"🌙"
-},
+    const index=Math.round(degree/45)%8;
 
 
-2:{
-text:"Partly Cloudy",
-day:"⛅",
-night:"☁️"
-},
+    return `${directions[index]} (${Math.round(degree)}°)`;
 
-
-3:{
-text:"Overcast",
-day:"☁️",
-night:"☁️"
-},
-
-
-45:{
-text:"Fog",
-day:"🌫️",
-night:"🌫️"
-},
-
-
-48:{
-text:"Rime Fog",
-day:"🌫️",
-night:"🌫️"
-},
-
-
-51:{
-text:"Light Drizzle",
-day:"🌦️",
-night:"🌧️"
-},
-
-
-53:{
-text:"Drizzle",
-day:"🌦️",
-night:"🌧️"
-},
-
-
-55:{
-text:"Heavy Drizzle",
-day:"🌧️",
-night:"🌧️"
-},
-
-
-61:{
-text:"Light Rain",
-day:"🌦️",
-night:"🌧️"
-},
-
-
-63:{
-text:"Rain",
-day:"🌧️",
-night:"🌧️"
-},
-
-
-65:{
-text:"Heavy Rain",
-day:"🌧️",
-night:"🌧️"
-},
-
-
-71:{
-text:"Snow",
-day:"❄️",
-night:"🌨️"
-},
-
-
-73:{
-text:"Snowfall",
-day:"❄️",
-night:"🌨️"
-},
-
-
-75:{
-text:"Heavy Snow",
-day:"❄️",
-night:"🌨️"
-},
-
-
-80:{
-text:"Rain Showers",
-day:"🌦️",
-night:"🌧️"
-},
-
-
-81:{
-text:"Rain Showers",
-day:"🌧️",
-night:"🌧️"
-},
-
-
-82:{
-text:"Heavy Showers",
-day:"⛈️",
-night:"⛈️"
-},
-
-
-95:{
-text:"Thunderstorm",
-day:"⛈️",
-night:"⛈️"
-},
-
-
-96:{
-text:"Thunderstorm Hail",
-day:"⛈️",
-night:"⛈️"
-},
-
-
-99:{
-text:"Severe Storm",
-day:"⛈️",
-night:"⛈️"
 }
-
-
-};
-
 
 
 
 /* ===========================================================
-GET WEATHER INFORMATION
+   CELSIUS / FAHRENHEIT
 =========================================================== */
 
 
-function getWeatherInfo(code,isDay=true){
+function convertTemperature(temp){
 
 
-let data = weatherCodes[code] || weatherCodes[0];
+    if(temperatureUnit==="fahrenheit"){
+
+        return Math.round((temp*9)/5+32)+"°F";
+
+    }
 
 
-return {
-
-text:data.text,
-
-icon:isDay ? data.day : data.night
-
-};
+    return Math.round(temp)+"°C";
 
 
 }
 
 
 
-
-
 /* ===========================================================
-TEMPERATURE CONVERTER
+   GEOCODING API
 =========================================================== */
 
 
-function convertTemperature(value){
+async function searchCity(city){
 
 
-if(value===undefined || value===null)
-
-return "--°";
+    try{
 
 
+        const url=
 
-if(temperatureUnit==="fahrenheit"){
+        `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`;
 
 
-return Math.round(
-(value*9/5)+32
-)+"°F";
+
+        const response=await fetch(url);
+
+
+        const data=await response.json();
+
+
+
+        if(!data.results){
+
+            throw new Error("City not found");
+
+        }
+
+
+
+        const place=data.results[0];
+
+
+        currentCity=place.name;
+
+        currentLat=place.latitude;
+
+        currentLon=place.longitude;
+
+
+
+        await fetchWeather();
+
+
+
+    }
+
+
+    catch(error){
+
+        showToast("Unable to find city");
+
+        console.error(error);
+
+    }
 
 
 }
-
-
-return Math.round(value)+"°C";
-
-
-}
-
-
 
 
 
 /* ===========================================================
-DAY NIGHT DETECTION
-COUNTRY BASED SUNRISE SUNSET
-=========================================================== */
-
-
-function isDayTime(currentTime,sunrise,sunset){
-
-
-
-let current =
-new Date(currentTime);
-
-
-let rise =
-new Date(sunrise);
-
-
-let set =
-new Date(sunset);
-
-
-
-return current >= rise && current <= set;
-
-
-}
-
-
-
-
-
-/* ===========================================================
-CITY GEOLOCATION API
-=========================================================== */
-
-
-async function getCityCoordinates(city){
-
-
-
-try{
-
-
-let response =
-await fetch(
-
-`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`
-
-);
-
-
-
-let data =
-await response.json();
-
-
-
-if(!data.results)
-
-throw new Error("City not found");
-
-
-
-return {
-
-
-name:data.results[0].name,
-
-
-lat:data.results[0].latitude,
-
-
-lon:data.results[0].longitude,
-
-
-country:data.results[0].country
-
-
-};
-
-
-}
-
-
-
-catch(error){
-
-
-showToast("City not found");
-
-
-return null;
-
-
-}
-
-
-
-}
-
-
-
-
-
-/* ===========================================================
-MAIN WEATHER API FETCH
+   MAIN WEATHER API
 =========================================================== */
 
 
@@ -377,66 +320,24 @@ async function fetchWeather(){
 try{
 
 
-showLoader();
-
-
-
-let url =
-
+const url = 
 `https://api.open-meteo.com/v1/forecast?
 latitude=${currentLat}
 &longitude=${currentLon}
-&current=
-temperature_2m,
-relative_humidity_2m,
-apparent_temperature,
-weather_code,
-wind_speed_10m,
-pressure_msl,
-cloud_cover,
-visibility,
-is_day
-&hourly=
-temperature_2m,
-relative_humidity_2m,
-wind_speed_10m,
-weather_code
-&daily=
-weather_code,
-temperature_2m_max,
-temperature_2m_min,
-sunrise,
-sunset,
-uv_index_max
+&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
+&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,visibility
+&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
 
 
-
-url =
-url.replace(/\s+/g,"");
+const cleanURL=url.replace(/\s+/g,"");
 
 
 
-let response =
-await fetch(url);
+const response=await fetch(cleanURL);
 
 
-
-if(!response.ok)
-
-throw new Error("API failed");
-
-
-
-let data =
-await response.json();
-
-
-
-console.log(
-"WEATHER DATA:",
-data
-);
+const data=await response.json();
 
 
 
@@ -444,382 +345,446 @@ weatherData=data;
 
 
 
-updateAllWeather(data);
-
-
-
-hideLoader();
-
+updateCurrentWeather(data);
 
 
 }
-
 
 
 catch(error){
 
-
-
 console.error(error);
 
-
-
-hideLoader();
-
-
-
-showError(
+showToast(
 "Weather data loading failed"
 );
 
 
-
 }
 
 
-
 }
-/* ===========================================================
-UPDATE ALL WEATHER DATA
-=========================================================== */
-
-
-function updateAllWeather(data){
-
-
-
-const current =
-data.current;
-
-
-const daily =
-data.daily;
-
-
-
-let isDay =
-current.is_day === 1;
-
-
-
-let weather =
-getWeatherInfo(
-current.weather_code,
-isDay
-);
-
-
-
-updateHero(
-current,
-weather
-);
-
-
-
-updateCurrentWeather(
-current,
-weather
-);
-
-
-
-updateSunData(
-daily
-);
-
-
-
-updateHighlights(
-current,
-daily
-);
-
-
-
-updateForecast(
-daily
-);
-
-
-
-updateHourly(
-data.hourly
-);
-
-
-
-updateAdvice(
-current
-);
-
-
-
-updateTime(
-current.time
-);
-
-
-
-updateWeatherTheme(
-current.weather_code,
-isDay
-);
-
-
-
-}
-
 
 
 
 /* ===========================================================
-HERO WEATHER CARD
+   UPDATE CURRENT WEATHER CARD
 =========================================================== */
 
 
-function updateHero(current,weather){
+function updateCurrentWeather(data){
 
+
+const current=data.current;
+
+
+const info=getWeatherInfo(
+current.weather_code
+);
+
+
+
+/* Hero */
 
 
 if($("heroTemp"))
-
-$("heroTemp").innerText =
-convertTemperature(
-current.temperature_2m
-);
+$("heroTemp").innerText=
+convertTemperature(current.temperature_2m);
 
 
 
 if($("heroCity"))
-
-$("heroCity").innerText =
-currentCity;
+$("heroCity").innerText=currentCity;
 
 
 
 if($("heroDescription"))
-
-$("heroDescription").innerText =
-weather.text;
-
-
-
-let icon =
-document.querySelector(
-".hero-weather-card .weather-icon"
-);
-
-
-
-if(icon)
-
-icon.innerHTML =
-weather.icon;
+$("heroDescription").innerText=info.text;
 
 
 
 if($("heroHumidity"))
-
-$("heroHumidity").innerText =
+$("heroHumidity").innerText=
 current.relative_humidity_2m+"%";
 
 
 
 if($("heroWind"))
-
-$("heroWind").innerText =
-Math.round(
-current.wind_speed_10m
-)
-+" km/h";
+$("heroWind").innerText=
+Math.round(current.wind_speed_10m)+" km/h";
 
 
 
-}
+/* Main Weather */
+
+
+$("weatherEmoji").innerText=
+info.emoji;
 
 
 
-
-
-/* ===========================================================
-CURRENT WEATHER CARD
-=========================================================== */
-
-
-function updateCurrentWeather(current,weather){
+$("temperature").innerText=
+convertTemperature(current.temperature_2m);
 
 
 
-if($("weatherEmoji"))
-
-$("weatherEmoji").innerHTML =
-weather.icon;
+$("weatherCondition").innerText=
+info.text;
 
 
 
-if($("temperature"))
-
-$("temperature").innerText =
-convertTemperature(
-current.temperature_2m
-);
+$("cityName").innerText=
+`${currentCity}`;
 
 
-
-if($("weatherCondition"))
-
-$("weatherCondition").innerText =
-weather.text;
-
-
-
-if($("cityName"))
-
-$("cityName").innerText =
-currentCity;
-
-
-
-
-/* FEELS LIKE FIX */
-
-
-if($("feelsLike"))
 
 $("feelsLike").innerText =
-convertTemperature(
-current.apparent_temperature
-);
+current.apparent_temperature !== undefined
+?
+convertTemperature(current.apparent_temperature)
+:
+convertTemperature(current.temperature_2m);
 
 
 
-if($("windSpeed"))
-
-$("windSpeed").innerText =
+$("windSpeed").innerText=
 Math.round(
 current.wind_speed_10m
-)
-+" km/h";
+)+" km/h";
 
 
 
-if($("humidity"))
-
-$("humidity").innerText =
-current.relative_humidity_2m
-+"%";
+$("humidity").innerText=
+current.relative_humidity_2m+"%";
 
 
 
-}
-
-
-
-
-
-
-/* ===========================================================
-SUNRISE SUNSET
-=========================================================== */
-
-
-function updateSunData(daily){
-
-
-
-if($("sunrise"))
-
-$("sunrise").innerText =
-formatTime(
-daily.sunrise[0]
-);
-
-
-
-if($("sunset"))
-
-$("sunset").innerText =
-formatTime(
-daily.sunset[0]
-);
-
-
-
-}
-
-
-
-
-
-
-/* ===========================================================
-WEATHER HIGHLIGHTS
-=========================================================== */
-
-
-function updateHighlights(current,daily){
-
-
-
-if($("visibility"))
-
-
-$("visibility").innerText =
-current.visibility ?
-
+$("pressure").innerText=
 Math.round(
-current.visibility/1000
-)
-+" km"
-
-:
-
-"--";
+current.surface_pressure
+)+" hPa";
 
 
 
-
-
-if($("pressure"))
-
-$("pressure").innerText =
-Math.round(
-current.pressure_msl
-)
-+" hPa";
-
-
-
-
-
-if($("clouds"))
-
-$("clouds").innerText =
+$("clouds").innerText=
 current.cloud_cover+"%";
 
 
 
+$("precipitation").innerText=
+current.precipitation+" mm";
 
 
-if($("maxTemp"))
 
-$("maxTemp").innerText =
-convertTemperature(
-daily.temperature_2m_max[0]
+$("windDirection").innerText=
+getWindDirection(
+current.wind_direction_10m
 );
 
 
 
+/* Time */
 
 
-if($("minTemp"))
+$("lastUpdated").innerText=
+"Updated just now";
 
-$("minTemp").innerText =
-convertTemperature(
-daily.temperature_2m_min[0]
+
+
+updateBackground(
+current.weather_code
 );
 
+
+
+}
+
+
+
+/* ===========================================================
+   WEATHER BACKGROUND EFFECTS
+=========================================================== */
+
+
+function updateBackground(code){
+
+
+const rain=$(".rain");
+const snow=$(".snow");
+const lightning=$(".lightning");
+
+
+
+[rain,snow,lightning].forEach(el=>{
+
+    if(el)
+    el.classList.remove("active");
+
+});
+
+
+
+if([51,53,55,61,63,65,80,81].includes(code)){
+
+    rain?.classList.add("active");
+
+}
+
+
+if([71].includes(code)){
+
+    snow?.classList.add("active");
+
+}
+
+
+if([95,96,99].includes(code)){
+
+    lightning?.classList.add("active");
+
+}
+
+
+
+}
+ /* ===========================================================
+    PART 2/5
+    Forecast + Highlights Rendering
+=========================================================== */
+
+
+/* ===========================================================
+   UPDATE DAILY HIGHLIGHTS
+=========================================================== */
+
+function updateDailyHighlights(data){
+
+
+    const daily=data.daily;
+    const hourly=data.hourly;
+
+
+    /* Maximum Temperature */
+
+    if($("maxTemp")){
+
+        $("maxTemp").innerText =
+        convertTemperature(
+            daily.temperature_2m_max[0]
+        );
+
+    }
+
+
+
+    /* Minimum Temperature */
+
+    if($("minTemp")){
+
+        $("minTemp").innerText =
+        convertTemperature(
+            daily.temperature_2m_min[0]
+        );
+
+    }
+
+
+
+    /* Sunrise */
+
+    if($("sunrise")){
+
+        const sunriseTime =
+        new Date(
+            daily.sunrise[0]
+        );
+
+
+        $("sunrise").innerText =
+        sunriseTime.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+    }
+
+
+
+
+    /* Sunset */
+
+    if($("sunset")){
+
+
+        const sunsetTime =
+        new Date(
+            daily.sunset[0]
+        );
+
+
+        $("sunset").innerText =
+        sunsetTime.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+    }
+
+
+
+
+    /* UV Index */
+
+
+    if($("uvIndex")){
+
+
+        const uv =
+        daily.uv_index_max[0];
+
+
+        $("uvIndex").innerText =
+        Math.round(uv);
+
+
+
+        if($("uvLevel")){
+
+
+            if(uv<=2){
+
+                $("uvLevel").innerText=
+                "Low";
+
+            }
+
+            else if(uv<=5){
+
+                $("uvLevel").innerText=
+                "Moderate";
+
+            }
+
+            else if(uv<=7){
+
+                $("uvLevel").innerText=
+                "High";
+
+            }
+
+            else{
+
+                $("uvLevel").innerText=
+                "Extreme";
+
+            }
+
+
+        }
+
+
+
+
+        if($("uvBar")){
+
+            $("uvBar").style.width=
+            Math.min(
+                uv*10,
+                100
+            )+"%";
+
+        }
+
+
+    }
+
+
+
+
+    /* Precipitation */
+
+
+    if($("precipitation")){
+
+
+        $("precipitation").innerText =
+
+        daily.precipitation_sum[0]
+        +" mm";
+
+
+    }
+
+
+
+
+    /* Rain Probability */
+
+
+    if($("rainChance")){
+
+
+        let probability =
+        hourly.precipitation_probability[0];
+
+
+        $("rainChance").innerText =
+        probability+"%";
+
+
+    }
+
+
+
+    /* Visibility */
+
+    if($("visibility")){
+
+
+        let visibility =
+        hourly.visibility ?
+        hourly.visibility[0]/1000 :
+        10;
+
+
+
+        $("visibility").innerText =
+        visibility.toFixed(1)
+        +" km";
+
+    }
+
+
+
+}
+
+
+
+/* ===========================================================
+   UPDATE DEW POINT
+=========================================================== */
+
+
+function updateDewPoint(data){
+
+
+    const dew =
+    data.hourly.dew_point_2m[0];
+
+
+    if($("dewPoint")){
+
+
+        $("dewPoint").innerText =
+        convertTemperature(dew);
+
+    }
 
 
 }
@@ -831,210 +796,28 @@ daily.temperature_2m_min[0]
 
 
 /* ===========================================================
-WEATHER BACKGROUND / EFFECTS
+   HOURLY FORECAST
 =========================================================== */
 
 
-function updateWeatherTheme(code,isDay){
+function renderHourlyForecast(data){
 
 
-
-let body =
-document.body;
-
-
-
-if(isDay)
-
-body.classList.add("day");
-
-else
-
-body.classList.remove("day");
-
-
-
-
-let rain =
-document.querySelector(".rain");
-
-
-let snow =
-document.querySelector(".snow");
-
-
-let lightning =
-document.querySelector(".lightning");
-
-
-
-if(rain)
-
-rain.classList.remove("active");
-
-
-
-if(snow)
-
-snow.classList.remove("active");
-
-
-
-if(lightning)
-
-lightning.classList.remove("active");
-
-
-
-
-
-
-if(
-[
-51,53,55,
-61,63,65,
-80,81,82
-]
-.includes(code)
-){
-
-
-if(rain)
-
-rain.classList.add("active");
-
-
-}
-
-
-
-
-if(
-[
-71,73,75
-]
-.includes(code)
-){
-
-
-if(snow)
-
-snow.classList.add("active");
-
-
-}
-
-
-
-
-if(
-[
-95,96,99
-]
-.includes(code)
-){
-
-
-if(lightning)
-
-lightning.classList.add("active");
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-/* ===========================================================
-DATE TIME
-=========================================================== */
-
-
-function updateTime(time){
-
-
-
-let date =
-new Date(time);
-
-
-
-if($("currentTime"))
-
-$("currentTime").innerText =
-date.toLocaleTimeString();
-
-
-
-if($("currentDate"))
-
-$("currentDate").innerText =
-date.toLocaleDateString(
-[],
-{
-weekday:"long",
-day:"numeric",
-month:"long"
-}
-);
-
-
-
-}
-
-
-
-
-
-/* ===========================================================
-FORMAT TIME
-=========================================================== */
-
-
-function formatTime(date){
-
-
-
-return new Date(date)
-.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-);
-
-
-
-}
-/* ===========================================================
-HOURLY FORECAST UPDATE
-=========================================================== */
-
-
-function updateHourly(hourly){
-
-
-
-let container =
+const container =
 $("hourlyContainer");
 
 
 
 if(!container)
-
 return;
 
 
 
 container.innerHTML="";
 
+
+
+const hourly=data.hourly;
 
 
 
@@ -1042,77 +825,82 @@ for(let i=0;i<24;i++){
 
 
 
-let weather =
-getWeatherInfo(
-hourly.weather_code[i],
-true
-);
+    const time =
+    new Date(
+        hourly.time[i]
+    );
 
 
 
-
-let card =
-document.createElement("div");
-
-
-
-card.className =
-"hour-card";
-
-
-
-
-let time =
-new Date(
-hourly.time[i]
-)
-.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-);
+    const info =
+    getWeatherInfo(
+        hourly.weather_code
+        ?
+        hourly.weather_code[i]
+        :
+        data.current.weather_code
+    );
 
 
 
-
-card.innerHTML = `
-
-<h4>
-${time}
-</h4>
-
-
-<div class="emoji">
-${weather.icon}
-</div>
-
-
-<h3>
-${convertTemperature(
-hourly.temperature_2m[i]
-)}
-</h3>
-
-
-<p>
-💧 ${hourly.relative_humidity_2m[i]}%
-</p>
-
-
-<p>
-🌬️ ${Math.round(
-hourly.wind_speed_10m[i]
-)}
-km/h
-</p>
-
-`;
+    const card=document.createElement("div");
 
 
 
-container.appendChild(card);
+    card.className="hour-card";
+
+
+
+    card.innerHTML=`
+
+        <h4>
+
+        ${time.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit"
+            }
+        )}
+
+        </h4>
+
+
+        <div class="emoji">
+
+            ${info.emoji}
+
+        </div>
+
+
+        <h3>
+
+        ${convertTemperature(
+            hourly.temperature_2m[i]
+        )}
+
+        </h3>
+
+
+        <p>
+
+        💧
+        ${hourly.relative_humidity_2m[i]}%
+
+        </p>
+
+
+        <p>
+
+        🌧️
+        ${hourly.precipitation_probability[i]}%
+
+        </p>
+
+
+    `;
+
+
+    container.appendChild(card);
 
 
 
@@ -1129,27 +917,29 @@ container.appendChild(card);
 
 
 /* ===========================================================
-7 DAYS FORECAST
+   7 DAY FORECAST
 =========================================================== */
 
 
-function updateForecast(daily){
+function renderForecast(data){
 
 
 
-let container =
+const container =
 $("forecastContainer");
 
 
 
 if(!container)
-
 return;
 
 
 
 container.innerHTML="";
 
+
+
+const daily=data.daily;
 
 
 
@@ -1157,82 +947,81 @@ for(let i=0;i<7;i++){
 
 
 
-let date =
+const date =
 new Date(
 daily.time[i]
 );
 
 
 
-let day =
-date.toLocaleDateString(
-[],
-{
-weekday:"short"
-}
-);
-
-
-
-
-let isDay =
-true;
-
-
-
-let weather =
+const info =
 getWeatherInfo(
-daily.weather_code[i],
-isDay
+daily.weather_code[i]
 );
 
 
 
-
-let card =
+const card =
 document.createElement("div");
 
 
 
-card.className =
+card.className=
 "forecast-card";
 
 
 
-
-
-card.innerHTML = `
+card.innerHTML=`
 
 <h3>
-${day}
+
+${date.toLocaleDateString(
+"en-US",
+{
+weekday:"short"
+}
+)}
+
 </h3>
 
 
-<div class="forecast-icon">
 
-${weather.icon}
+<div class="emoji">
+
+${info.emoji}
 
 </div>
 
 
+
 <p>
-${weather.text}
+
+${info.text}
+
 </p>
 
 
+
 <h2>
+
 ${convertTemperature(
 daily.temperature_2m_max[i]
 )}
+
 </h2>
 
 
 <span>
-Low:
+
+↓
+
 ${convertTemperature(
 daily.temperature_2m_min[i]
 )}
+
 </span>
+
+
 
 `;
 
@@ -1254,1412 +1043,226 @@ container.appendChild(card);
 
 
 
-
 /* ===========================================================
-UV INDEX UPDATE
+   UPDATE ALL FORECAST DATA
 =========================================================== */
 
 
-function updateUV(daily){
+function updateForecastSections(data){
 
 
-
-if(!$("uvIndex"))
-
-return;
+    updateDailyHighlights(data);
 
 
-
-let uv =
-daily.uv_index_max[0];
+    updateDewPoint(data);
 
 
-
-$("uvIndex").innerText =
-Math.round(uv);
+    renderHourlyForecast(data);
 
 
-
-
-let level =
-"Low";
-
-
-
-if(uv>=3)
-
-level="Moderate";
-
-
-
-if(uv>=6)
-
-level="High";
-
-
-
-if(uv>=8)
-
-level="Very High";
-
-
-
-
-if($("uvLevel"))
-
-$("uvLevel").innerText =
-level;
-
-
-
-
-if($("uvBar"))
-
-$("uvBar").style.width =
-Math.min(
-uv*10,
-100
-)
-+"%";
-
+    renderForecast(data);
 
 
 }
-
-
-
-
+ /* ===========================================================
+    PART 3/5
+    AQI + CHARTS + MAP
+=========================================================== */
 
 
 
 /* ===========================================================
-AIR QUALITY API
+   AIR QUALITY API
 =========================================================== */
 
 
-async function fetchAQI(){
-
+async function fetchAirQuality(){
 
 
 try{
 
 
-
-let url =
+const url=
 
 `https://air-quality-api.open-meteo.com/v1/air-quality?
 latitude=${currentLat}
 &longitude=${currentLon}
-&current=us_aqi`;
+&current=
+us_aqi,
+pm10,
+pm2_5,
+carbon_monoxide,
+nitrogen_dioxide
+&timezone=auto`;
 
 
 
-url =
-url.replace(/\s+/g,"");
+const response =
+await fetch(
+url.replace(/\s+/g,"")
+);
 
 
 
-let response =
-await fetch(url);
-
-
-
-let data =
+const data =
 await response.json();
 
 
 
-let aqi =
+updateAQI(data);
+
+
+
+}
+
+catch(error){
+
+console.error(
+"AQI Error",
+error
+);
+
+
+}
+
+
+
+}
+
+
+
+
+/* ===========================================================
+   UPDATE AQI CARD
+=========================================================== */
+
+
+function updateAQI(data){
+
+
+
+if(!data.current)
+return;
+
+
+
+const aqi =
 data.current.us_aqi;
 
 
 
+if($("aqiValue")){
 
-if($("aqiValue"))
 
 $("aqiValue").innerText =
 Math.round(aqi);
 
 
-
-
-let status =
-"Good";
+}
 
 
 
-if(aqi>50)
+let status="";
+
+
+
+if(aqi<=50){
+
+status="Good";
+
+}
+
+else if(aqi<=100){
 
 status="Moderate";
 
+}
 
+else if(aqi<=150){
 
-if(aqi>100)
+status="Unhealthy for Sensitive Groups";
+
+}
+
+else if(aqi<=200){
 
 status="Unhealthy";
-
-
-
-if(aqi>200)
-
-status="Very Unhealthy";
-
-
-
-
-
-if($("aqiStatus"))
-
-$("aqiStatus").innerText =
-status;
-
-
-
-}
-
-
-
-catch(error){
-
-
-
-console.log(
-"AQI unavailable"
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-/* ===========================================================
-SMART WEATHER ADVICE
-=========================================================== */
-
-
-function updateAdvice(current){
-
-
-
-let temp =
-current.temperature_2m;
-
-
-
-let humidity =
-current.relative_humidity_2m;
-
-
-
-let advice =
-"Weather conditions are comfortable today.";
-
-
-
-let health =
-"Air conditions are normal.";
-
-
-
-let activity =
-"Good time for outdoor activities.";
-
-
-
-
-
-if(temp>35){
-
-
-advice =
-"Stay hydrated and avoid intense outdoor activities.";
-
-
-activity =
-"Prefer indoor activities during afternoon.";
-
-
-}
-
-
-
-
-
-if(temp<10){
-
-
-advice =
-"Wear warm clothes and protect yourself from cold.";
-
-
-activity =
-"Outdoor activities are better during sunny hours.";
-
-
-}
-
-
-
-
-
-if(humidity>80){
-
-
-health =
-"High humidity may cause discomfort.";
-
-
-}
-
-
-
-
-
-if($("weatherAdvice"))
-
-$("weatherAdvice").innerText =
-advice;
-
-
-
-
-if($("healthAdvice"))
-
-$("healthAdvice").innerText =
-health;
-
-
-
-
-if($("activityAdvice"))
-
-$("activityAdvice").innerText =
-activity;
-
-
-
-}
-/* ===========================================================
-CITY SEARCH
-=========================================================== */
-
-
-async function searchCity(){
-
-
-
-let input =
-$("cityInput");
-
-
-
-if(!input || !input.value.trim())
-
-return;
-
-
-
-let city =
-input.value.trim();
-
-
-
-
-let location =
-await getCityCoordinates(city);
-
-
-
-
-if(!location)
-
-return;
-
-
-
-
-currentCity =
-location.name;
-
-
-
-currentLat =
-location.lat;
-
-
-
-currentLon =
-location.lon;
-
-
-
-saveSearchHistory(
-currentCity
-);
-
-
-
-fetchWeather();
-
-
-
-fetchAQI();
-
-
-
-}
-
-
-
-
-
-/* ===========================================================
-CURRENT LOCATION
-=========================================================== */
-
-
-function getCurrentLocation(){
-
-
-
-if(!navigator.geolocation){
-
-
-showToast(
-"Location not supported"
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-navigator.geolocation.getCurrentPosition(
-
-
-
-(position)=>{
-
-
-
-currentLat =
-position.coords.latitude;
-
-
-
-currentLon =
-position.coords.longitude;
-
-
-
-currentCity =
-"Your Location";
-
-
-
-fetchWeather();
-
-
-
-fetchAQI();
-
-
-
-},
-
-
-
-()=>{
-
-
-showToast(
-"Location permission denied"
-);
-
-
-}
-
-
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-/* ===========================================================
-VOICE SEARCH
-=========================================================== */
-
-
-function startVoiceSearch(){
-
-
-
-if(
-!("webkitSpeechRecognition" in window)
-){
-
-
-showToast(
-"Voice search not supported"
-);
-
-
-
-return;
-
-
-}
-
-
-
-
-
-let recognition =
-new webkitSpeechRecognition();
-
-
-
-
-recognition.lang =
-"en-US";
-
-
-
-recognition.start();
-
-
-
-
-if($("voiceModal"))
-
-$("voiceModal").style.display =
-"flex";
-
-
-
-
-
-recognition.onresult =
-function(event){
-
-
-
-let city =
-event.results[0][0].transcript;
-
-
-
-
-if($("cityInput"))
-
-$("cityInput").value =
-city;
-
-
-
-searchCity();
-
-
-
-};
-
-
-
-
-
-recognition.onend =
-function(){
-
-
-
-if($("voiceModal"))
-
-$("voiceModal").style.display =
-"none";
-
-
-
-};
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-FAVORITE CITIES
-=========================================================== */
-
-
-function addFavorite(){
-
-
-
-let favorites =
-JSON.parse(
-localStorage.getItem(
-"favorites"
-)
-)
-||
-[];
-
-
-
-
-if(!favorites.includes(currentCity)){
-
-
-
-favorites.push(
-currentCity
-);
-
-
-
-localStorage.setItem(
-"favorites",
-JSON.stringify(
-favorites
-)
-);
-
-
-
-renderFavorites();
-
-
-
-showToast(
-"Added to favorites"
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-function renderFavorites(){
-
-
-
-let container =
-$("favoriteCities");
-
-
-
-if(!container)
-
-return;
-
-
-
-
-
-let favorites =
-JSON.parse(
-localStorage.getItem(
-"favorites"
-)
-)
-||
-[];
-
-
-
-
-
-container.innerHTML="";
-
-
-
-
-
-favorites.forEach(city=>{
-
-
-
-let card =
-document.createElement(
-"div"
-);
-
-
-
-card.className =
-"favorite-card";
-
-
-
-card.innerHTML = `
-
-<h4>
-${city}
-</h4>
-
-<p>
-Click to view weather
-</p>
-
-`;
-
-
-
-
-
-card.onclick =
-function(){
-
-
-
-$("cityInput").value =
-city;
-
-
-
-searchCity();
-
-
-
-};
-
-
-
-
-container.appendChild(card);
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-/* ===========================================================
-SEARCH HISTORY
-=========================================================== */
-
-
-function saveSearchHistory(city){
-
-
-
-let history =
-JSON.parse(
-localStorage.getItem(
-"history"
-)
-)
-||
-[];
-
-
-
-
-
-history =
-history.filter(
-item=>item!==city
-);
-
-
-
-
-history.unshift(
-city
-);
-
-
-
-
-history =
-history.slice(
-0,
-8
-);
-
-
-
-
-localStorage.setItem(
-"history",
-JSON.stringify(
-history
-)
-);
-
-
-
-renderHistory();
-
-
-
-}
-
-
-
-
-
-
-
-function renderHistory(){
-
-
-
-let box =
-$("searchHistory");
-
-
-
-if(!box)
-
-return;
-
-
-
-
-
-let history =
-JSON.parse(
-localStorage.getItem(
-"history"
-)
-)
-||
-[];
-
-
-
-
-
-box.innerHTML="";
-
-
-
-
-
-history.forEach(city=>{
-
-
-
-let item =
-document.createElement(
-"div"
-);
-
-
-
-item.className =
-"history-item";
-
-
-
-item.innerText =
-city;
-
-
-
-
-
-item.onclick =
-function(){
-
-
-
-$("cityInput").value =
-city;
-
-
-
-searchCity();
-
-
-
-};
-
-
-
-
-
-box.appendChild(item);
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-DARK / LIGHT MODE
-=========================================================== */
-
-
-function toggleTheme(){
-
-
-
-document.body.classList.toggle(
-"day"
-);
-
-
-
-
-
-let icon =
-document.querySelector(
-"#themeToggle span"
-);
-
-
-
-
-
-if(
-document.body.classList.contains(
-"day"
-)
-){
-
-
-if(icon)
-
-icon.innerText =
-"light_mode";
-
-
 
 }
 
 else{
 
+status="Hazardous";
 
-if(icon)
+}
 
-icon.innerText =
-"dark_mode";
+
+
+if($("aqiStatus")){
+
+$("aqiStatus").innerText=status;
+
+}
+
+
+
+if($("aqiCircle")){
+
+
+const offset =
+314 -
+(314*(aqi/300));
+
+
+$("aqiCircle").style.strokeDashoffset =
+offset;
 
 
 }
 
 
 
+
 }
-
-
-
-
 
 
 
 
 
 /* ===========================================================
-REFRESH WEATHER
+   CHART GENERATOR
 =========================================================== */
 
 
-function refreshWeather(){
+function createCharts(data){
 
 
 
-fetchWeather();
+const hourly =
+data.hourly;
 
 
 
-fetchAQI();
-
-
-
-showToast(
-"Weather updated"
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-/* ===========================================================
-SCROLL TOP
-=========================================================== */
-
-
-function scrollTop(){
-
-
-
-window.scrollTo({
-
-top:0,
-
-behavior:"smooth"
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-/* ===========================================================
-MOBILE MENU
-=========================================================== */
-
-
-function openMobileMenu(){
-
-
-
-let menu =
-$("mobileMenu");
-
-
-
-if(menu)
-
-menu.classList.add(
-"active"
-);
-
-
-
-}
-
-
-
-function closeMobileMenu(){
-
-
-
-let menu =
-$("mobileMenu");
-
-
-
-if(menu)
-
-menu.classList.remove(
-"active"
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-/* ===========================================================
-EVENT LISTENERS
-=========================================================== */
-
-
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-
-
-
-fetchWeather();
-
-
-
-fetchAQI();
-
-
-
-renderFavorites();
-
-
-
-renderHistory();
-
-
-
-
-
-if($("searchBtn"))
-
-$("searchBtn").onclick =
-searchCity;
-
-
-
-
-
-if($("cityInput"))
-
-$("cityInput")
-.addEventListener(
-"keypress",
-(e)=>{
-
-
-if(e.key==="Enter")
-
-searchCity();
-
-
-
-});
-
-
-
-
-
-if($("locationBtn"))
-
-$("locationBtn").onclick =
-getCurrentLocation;
-
-
-
-
-
-if($("voiceBtn"))
-
-$("voiceBtn").onclick =
-startVoiceSearch;
-
-
-
-
-
-if($("themeToggle"))
-
-$("themeToggle").onclick =
-toggleTheme;
-
-
-
-
-
-if($("refreshBtn"))
-
-$("refreshBtn").onclick =
-refreshWeather;
-
-
-
-
-
-if($("scrollTopBtn"))
-
-$("scrollTopBtn").onclick =
-scrollTop;
-
-
-
-
-
-if($("addFavoriteBtn"))
-
-$("addFavoriteBtn").onclick =
-addFavorite;
-
-
-
-});
-
-/* ===========================================================
-LOADER CONTROL
-=========================================================== */
-
-
-function showLoader(){
-
-
-
-let loader =
-$("loader");
-
-
-
-if(loader)
-
-loader.style.display =
-"flex";
-
-
-
-}
-
-
-
-
-
-function hideLoader(){
-
-
-
-let loader =
-$("loader");
-
-
-
-if(loader)
-
-loader.style.display =
-"none";
-
-
-
-}
-
-
-
-
-
-
-
-/* ===========================================================
-TOAST MESSAGE
-=========================================================== */
-
-
-function showToast(message){
-
-
-
-let toast =
-$("toast");
-
-
-
-let text =
-$("toastMessage");
-
-
-
-if(!toast)
-
-return;
-
-
-
-
-
-if(text)
-
-text.innerText =
-message;
-
-
-
-
-
-toast.classList.add(
-"show"
-);
-
-
-
-
-
-setTimeout(()=>{
-
-
-toast.classList.remove(
-"show"
-);
-
-
-
-},3000);
-
-
-
-}
-
-
-
-
-
-
-
-/* ===========================================================
-ERROR MODAL
-=========================================================== */
-
-
-function showError(message){
-
-
-
-let modal =
-$("errorModal");
-
-
-
-let text =
-$("errorText");
-
-
-
-
-
-if(text)
-
-text.innerText =
-message;
-
-
-
-
-
-if(modal)
-
-modal.style.display =
-"flex";
-
-
-
-}
-
-
-
-
-
-function closeError(){
-
-
-
-let modal =
-$("errorModal");
-
-
-
-if(modal)
-
-modal.style.display =
-"none";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-WEATHER CHARTS
-=========================================================== */
-
-
-function createCharts(hourly){
-
-
-
-if(typeof Chart==="undefined")
-
-return;
-
-
-
-
-let labels=[];
-
-let temp=[];
-
-let humidity=[];
-
-let wind=[];
-
+const labels=[];
 
 
 
 for(let i=0;i<24;i++){
 
 
+const time =
+new Date(
+hourly.time[i]
+);
+
+
 
 labels.push(
 
-new Date(
-hourly.time[i]
-)
-
-.toLocaleTimeString(
+time.toLocaleTimeString(
 [],
 {
-hour:"numeric"
+hour:"2-digit"
 }
 
 )
@@ -2668,90 +1271,48 @@ hour:"numeric"
 
 
 
-temp.push(
-hourly.temperature_2m[i]
-);
-
-
-
-humidity.push(
-hourly.relative_humidity_2m[i]
-);
-
-
-
-wind.push(
-hourly.wind_speed_10m[i]
-);
-
-
-
 }
 
 
 
 
-
-createChart(
-"temperatureChart",
-labels,
-temp,
-"Temperature"
-);
+/* Destroy old charts */
 
 
+[
+temperatureChart,
+humidityChart,
+windChart,
+pressureChart
 
-createChart(
-"humidityChart",
-labels,
-humidity,
-"Humidity"
-);
-
-
-
-createChart(
-"windChart",
-labels,
-wind,
-"Wind Speed"
-);
+].forEach(chart=>{
 
 
+if(chart){
+
+chart.destroy();
 
 }
 
 
+});
 
 
 
 
 
 
-function createChart(
-id,
-labels,
-data,
-label
-){
+/* Temperature */
 
 
-
-let canvas =
-$(id);
+if($("temperatureChart")){
 
 
-
-if(!canvas)
-
-return;
-
-
-
-
-
+temperatureChart =
 new Chart(
-canvas,
+
+$("temperatureChart"),
+
 {
 
 
@@ -2766,22 +1327,19 @@ labels:labels,
 
 datasets:[{
 
+label:"Temperature °C",
 
-label:label,
-
-
-data:data,
-
-
-borderWidth:2,
+data:
+hourly.temperature_2m.slice(
+0,
+24
+),
 
 
 tension:.4
 
 
-
 }]
-
 
 
 },
@@ -2806,7 +1364,6 @@ display:true
 }
 
 
-
 }
 
 
@@ -2816,8 +1373,6 @@ display:true
 
 
 }
-
-
 
 );
 
@@ -2826,6 +1381,214 @@ display:true
 }
 
 
+
+
+
+
+
+/* Humidity */
+
+
+if($("humidityChart")){
+
+
+humidityChart =
+new Chart(
+
+$("humidityChart"),
+
+{
+
+
+type:"line",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+label:"Humidity %",
+
+data:
+hourly.relative_humidity_2m.slice(
+0,
+24
+),
+
+
+tension:.4
+
+
+}]
+
+
+},
+
+
+options:{
+
+
+responsive:true
+
+}
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* Wind */
+
+
+if($("windChart")){
+
+
+windChart =
+new Chart(
+
+$("windChart"),
+
+{
+
+
+type:"bar",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+
+label:"Wind km/h",
+
+
+data:
+hourly.wind_speed_10m.slice(
+0,
+24
+)
+
+
+
+}]
+
+
+
+},
+
+
+options:{
+
+
+responsive:true
+
+}
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* Pressure */
+
+
+if($("pressureChart")){
+
+
+pressureChart =
+new Chart(
+
+$("pressureChart"),
+
+{
+
+
+type:"line",
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[{
+
+
+label:"Pressure hPa",
+
+
+data:
+hourly.surface_pressure.slice(
+0,
+24
+),
+
+
+tension:.4
+
+
+}]
+
+
+
+},
+
+
+options:{
+
+
+responsive:true
+
+
+}
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+}
 
 
 
@@ -2835,41 +1598,23 @@ display:true
 
 
 /* ===========================================================
-LEAFLET MAP
+   LEAFLET MAP
 =========================================================== */
 
 
-function initMap(){
+function initializeMap(){
 
 
 
-if(typeof L==="undefined")
-
+if(!$("weatherMap"))
 return;
-
-
-
-if(map)
-
-return;
-
-
 
 
 
 map =
 L.map(
 "weatherMap"
-)
-.setView(
-[
-currentLat,
-currentLon
-],
-10
 );
-
-
 
 
 
@@ -2880,30 +1625,80 @@ L.tileLayer(
 {
 
 
-maxZoom:19
+maxZoom:18,
+
+
+attribution:
+"© OpenStreetMap"
 
 
 }
 
-)
+).addTo(map);
 
-.addTo(map);
 
+
+updateMap();
+
+
+}
+
+
+
+
+
+
+
+function updateMap(){
+
+
+
+if(!map)
+return;
+
+
+
+map.setView(
+
+[
+currentLat,
+currentLon
+
+],
+
+10
+
+);
 
 
 
 
 L.marker(
+
 [
 currentLat,
 currentLon
+
 ]
+
 )
 
 .addTo(map)
 
 .bindPopup(
-currentCity
+
+`
+
+<h3>
+${currentCity}
+</h3>
+
+<p>
+Live Weather Location
+</p>
+
+`
+
 )
 
 .openPopup();
@@ -2917,255 +1712,39 @@ currentCity
 
 
 
-
-
-function updateMap(){
-
-
-
-if(!map)
-
-return;
-
-
-
-
-map.setView(
-
-[
-currentLat,
-currentLon
-],
-
-10
-
-);
-
-
-
-
-
-L.marker(
-
-[
-currentLat,
-currentLon
-]
-
-)
-
-.addTo(map)
-
-.bindPopup(
-currentCity
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
 /* ===========================================================
-OFFLINE DETECTOR
+   EXTEND WEATHER LOADING
 =========================================================== */
 
 
-function checkOnlineStatus(){
+const oldFetchWeather =
+fetchWeather;
 
 
 
-let banner =
-$("offlineBanner");
+fetchWeather = async function(){
 
 
 
-if(!banner)
-
-return;
+await oldFetchWeather();
 
 
 
+if(weatherData){
 
 
-if(navigator.onLine){
-
-
-
-banner.classList.remove(
-"show"
+updateForecastSections(
+weatherData
 );
 
 
 
-}
-
-else{
-
-
-banner.classList.add(
-"show"
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-window.addEventListener(
-"online",
-checkOnlineStatus
-);
-
-
-
-window.addEventListener(
-"offline",
-checkOnlineStatus
-);
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-ERROR MODAL EVENTS
-=========================================================== */
-
-
-document.addEventListener(
-"click",
-(e)=>{
-
-
-
-if(
-e.target.classList.contains(
-"close-modal"
-)
-){
-
-
-closeError();
-
-
-
-}
-
-
-
-});
-
-
-
-
-
-
-
-
-if($("retryBtn")){
-
-
-
-$("retryBtn").onclick =
-function(){
-
-
-
-closeError();
-
-
-
-fetchWeather();
-
-
-
-};
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-FINAL APP START
-=========================================================== */
-
-
-window.addEventListener(
-"load",
-()=>{
-
-
-
-hideLoader();
-
-
-
-initMap();
-
-
-
-checkOnlineStatus();
-
-
-
-});
-
-
-
-
-
-
-
-
-
-/* ===========================================================
-CONNECT EXTRA FEATURES
-=========================================================== */
-
-
-const originalUpdateAllWeather =
-updateAllWeather;
-
-
-
-updateAllWeather =
-function(data){
-
-
-
-originalUpdateAllWeather(data);
+fetchAirQuality();
 
 
 
 createCharts(
-data.hourly
+weatherData
 );
 
 
@@ -3174,10 +1753,1484 @@ updateMap();
 
 
 
-updateUV(
-data.daily
+}
+
+
+};
+
+ /* ===========================================================
+    PART 4/5
+    UI CONTROLS + USER FEATURES
+=========================================================== */
+
+
+
+/* ===========================================================
+   SEARCH CITY BUTTON
+=========================================================== */
+
+
+if($("searchBtn")){
+
+
+$("searchBtn").addEventListener(
+"click",
+()=>{
+
+
+const city =
+$("cityInput").value.trim();
+
+
+
+if(city){
+
+addSearchHistory(city);
+
+searchCity(city);
+
+
+}
+
+
+
+});
+
+
+}
+
+
+
+
+
+/* ENTER KEY SEARCH */
+
+
+if($("cityInput")){
+
+
+$("cityInput")
+.addEventListener(
+"keypress",
+(e)=>{
+
+
+if(e.key==="Enter"){
+
+
+const city =
+$("cityInput").value.trim();
+
+
+
+if(city){
+
+addSearchHistory(city);
+
+searchCity(city);
+
+}
+
+
+}
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   CURRENT LOCATION
+=========================================================== */
+
+
+if($("locationBtn")){
+
+
+$("locationBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+if(
+navigator.geolocation
+){
+
+
+
+navigator.geolocation.getCurrentPosition(
+
+async(position)=>{
+
+
+currentLat =
+position.coords.latitude;
+
+
+currentLon =
+position.coords.longitude;
+
+
+
+await reverseLocation();
+
+
+fetchWeather();
+
+
+
+},
+
+
+()=>{
+
+
+showToast(
+"Location permission denied"
+);
+
+
+}
+
+
+
+);
+
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   REVERSE GEOCODING
+=========================================================== */
+
+
+async function reverseLocation(){
+
+
+try{
+
+
+const url =
+
+`https://geocoding-api.open-meteo.com/v1/reverse?
+latitude=${currentLat}
+&longitude=${currentLon}
+&count=1`;
+
+
+
+const response =
+await fetch(
+url.replace(/\s+/g,"")
+);
+
+
+
+const data =
+await response.json();
+
+
+
+if(data.results){
+
+
+currentCity =
+data.results[0].name;
+
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   VOICE SEARCH
+=========================================================== */
+
+
+if($("voiceBtn")){
+
+
+$("voiceBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+
+
+if(!SpeechRecognition){
+
+
+showToast(
+"Voice search not supported"
+);
+
+
+return;
+
+
+}
+
+
+
+const recognition =
+new SpeechRecognition();
+
+
+
+recognition.lang="en-US";
+
+
+
+const modal =
+$("voiceModal");
+
+
+
+modal.style.display="flex";
+
+
+
+recognition.start();
+
+
+
+recognition.onresult=
+(event)=>{
+
+
+const text =
+event.results[0][0].transcript;
+
+
+
+$("cityInput").value=text;
+
+
+
+modal.style.display="none";
+
+
+
+searchCity(text);
+
+
+
+};
+
+
+
+recognition.onerror=
+()=>{
+
+
+modal.style.display="none";
+
+
+};
+
+
+
+recognition.onend=
+()=>{
+
+
+modal.style.display="none";
+
+
+};
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   SEARCH HISTORY
+=========================================================== */
+
+
+function addSearchHistory(city){
+
+
+
+let history =
+JSON.parse(
+localStorage.getItem(
+"weatherHistory"
+)
+)
+|| [];
+
+
+
+history =
+history.filter(
+(item)=>item!==city
+);
+
+
+
+history.unshift(city);
+
+
+
+history =
+history.slice(
+0,
+8
+);
+
+
+
+localStorage.setItem(
+"weatherHistory",
+JSON.stringify(history)
+);
+
+
+
+renderHistory();
+
+
+}
+
+
+
+
+
+
+
+function renderHistory(){
+
+
+
+const container =
+$("searchHistory");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+const history =
+JSON.parse(
+localStorage.getItem(
+"weatherHistory"
+)
+)
+|| [];
+
+
+
+history.forEach(city=>{
+
+
+const item =
+document.createElement("div");
+
+
+
+item.className =
+"history-item";
+
+
+
+item.innerText=city;
+
+
+
+item.onclick=
+()=>searchCity(city);
+
+
+
+container.appendChild(item);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   FAVORITE CITIES
+=========================================================== */
+
+
+if($("addFavoriteBtn")){
+
+
+$("addFavoriteBtn")
+.addEventListener(
+"click",
+()=>{
+
+
+let favorites =
+JSON.parse(
+localStorage.getItem(
+"favorites"
+)
+)
+|| [];
+
+
+
+if(
+!favorites.includes(currentCity)
+){
+
+
+favorites.push(currentCity);
+
+
+localStorage.setItem(
+"favorites",
+JSON.stringify(favorites)
+);
+
+
+showToast(
+"Added to favorites"
+);
+
+
+
+renderFavorites();
+
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+function renderFavorites(){
+
+
+
+const container =
+$("favoriteCities");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+let favorites =
+JSON.parse(
+localStorage.getItem(
+"favorites"
+)
+)
+|| [];
+
+
+
+favorites.forEach(city=>{
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className =
+"favorite-card";
+
+
+
+card.innerHTML=`
+
+<h3>
+
+❤️ ${city}
+
+</h3>
+
+
+<p>
+Click to view weather
+</p>
+
+
+`;
+
+
+
+card.onclick=
+()=>searchCity(city);
+
+
+
+container.appendChild(card);
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   TEMPERATURE SWITCH
+=========================================================== */
+
+
+if($("celsiusBtn")){
+
+
+$("celsiusBtn")
+.onclick=()=>{
+
+
+temperatureUnit="celsius";
+
+
+$("celsiusBtn")
+.classList.add("active");
+
+
+$("fahrenheitBtn")
+.classList.remove("active");
+
+
+if(weatherData)
+updateCurrentWeather(weatherData);
+
+
+};
+
+
+
+}
+
+
+
+
+if($("fahrenheitBtn")){
+
+
+$("fahrenheitBtn")
+.onclick=()=>{
+
+
+temperatureUnit="fahrenheit";
+
+
+$("fahrenheitBtn")
+.classList.add("active");
+
+
+$("celsiusBtn")
+.classList.remove("active");
+
+
+if(weatherData)
+updateCurrentWeather(weatherData);
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   DARK / LIGHT THEME
+=========================================================== */
+
+
+if($("themeToggle")){
+
+
+$("themeToggle")
+.onclick=()=>{
+
+
+document.body.classList.toggle(
+"day"
 );
 
 
 
 };
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================================================
+   REFRESH WEATHER
+=========================================================== */
+
+
+if($("refreshBtn")){
+
+
+$("refreshBtn")
+.onclick=()=>{
+
+
+fetchWeather();
+
+
+showToast(
+"Weather refreshed"
+);
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   SCROLL TOP
+=========================================================== */
+
+
+if($("scrollTopBtn")){
+
+
+$("scrollTopBtn")
+.onclick=()=>{
+
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+/* ===========================================================
+   MOBILE MENU
+=========================================================== */
+
+
+if($("menuBtn")){
+
+
+$("menuBtn")
+.onclick=()=>{
+
+
+$("mobileMenu")
+.classList.add(
+"active"
+);
+
+
+};
+
+
+}
+
+
+
+
+if($("closeMenu")){
+
+
+$("closeMenu")
+.onclick=()=>{
+
+
+$("mobileMenu")
+.classList.remove(
+"active"
+);
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   INTERNET STATUS
+=========================================================== */
+
+
+window.addEventListener(
+"offline",
+()=>{
+
+
+$("offlineBanner")
+?.classList.add(
+"show"
+);
+
+
+
+});
+
+
+
+window.addEventListener(
+"online",
+()=>{
+
+
+$("offlineBanner")
+?.classList.remove(
+"show"
+);
+
+
+
+showToast(
+"Internet restored"
+);
+
+
+});
+
+ /* ===========================================================
+    PART 5/5
+    FINAL INITIALIZATION
+=========================================================== */
+
+
+
+
+
+/* ===========================================================
+   LIVE CLOCK
+=========================================================== */
+
+
+function updateClock(){
+
+
+const now =
+new Date();
+
+
+
+if($("currentTime")){
+
+
+$("currentTime").innerText =
+
+now.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+}
+
+);
+
+
+
+}
+
+
+
+if($("currentDate")){
+
+
+$("currentDate").innerText =
+
+now.toLocaleDateString(
+"en-US",
+{
+
+weekday:"long",
+
+day:"numeric",
+
+month:"long"
+
+}
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+setInterval(
+updateClock,
+1000
+);
+
+
+updateClock();
+
+
+
+
+
+
+
+
+/* ===========================================================
+   WEATHER INSIGHTS
+=========================================================== */
+
+
+function updateWeatherAdvice(){
+
+
+
+if(!weatherData)
+return;
+
+
+
+const temp =
+weatherData.current.temperature_2m;
+
+
+const rain =
+weatherData.current.precipitation;
+
+
+
+let advice =
+"";
+
+
+let activity =
+"";
+
+
+let health =
+"";
+
+
+
+
+
+if(temp>35){
+
+
+advice=
+"Very hot today. Stay hydrated and avoid direct sunlight.";
+
+
+activity=
+"Indoor activities are recommended.";
+
+
+health=
+"High temperature may cause heat stress.";
+
+
+}
+
+
+else if(rain>0){
+
+
+advice=
+"Rain expected. Carry an umbrella before going outside.";
+
+
+activity=
+"Enjoy indoor activities or short outdoor trips.";
+
+
+health=
+"Humidity may feel higher. Stay comfortable.";
+
+
+}
+
+
+else{
+
+
+advice=
+"Weather looks pleasant. Good day for outdoor activities.";
+
+
+activity=
+"Perfect time for walking or outdoor plans.";
+
+
+health=
+"Weather conditions are comfortable.";
+
+
+}
+
+
+
+
+
+
+if($("weatherAdvice"))
+
+$("weatherAdvice").innerText=
+advice;
+
+
+
+
+if($("activityAdvice"))
+
+$("activityAdvice").innerText=
+activity;
+
+
+
+
+if($("healthAdvice"))
+
+$("healthAdvice").innerText=
+health;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   WORLD WEATHER
+=========================================================== */
+
+
+const worldCities=[
+
+
+{
+name:"London",
+lat:51.5072,
+lon:-0.1276
+},
+
+
+{
+name:"Tokyo",
+lat:35.6762,
+lon:139.6503
+},
+
+
+{
+name:"New York",
+lat:40.7128,
+lon:-74.0060
+},
+
+
+{
+name:"Paris",
+lat:48.8566,
+lon:2.3522
+},
+
+
+{
+name:"Dubai",
+lat:25.2048,
+lon:55.2708
+}
+
+
+];
+
+
+
+
+
+
+async function loadWorldWeather(){
+
+
+
+const container =
+$("worldCities");
+
+
+
+if(!container)
+return;
+
+
+
+container.innerHTML="";
+
+
+
+for(
+const city of worldCities
+){
+
+
+
+try{
+
+
+const response =
+await fetch(
+
+`https://api.open-meteo.com/v1/forecast?
+latitude=${city.lat}
+&longitude=${city.lon}
+&current=
+temperature_2m,
+weather_code`
+.replace(/\s+/g,"")
+
+);
+
+
+
+const data =
+await response.json();
+
+
+
+const info =
+getWeatherInfo(
+data.current.weather_code
+);
+
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className=
+"world-card";
+
+
+
+card.innerHTML=`
+
+<h3>
+
+${city.name}
+
+</h3>
+
+
+<div class="emoji">
+
+${info.emoji}
+
+</div>
+
+
+<h2>
+
+${Math.round(
+data.current.temperature_2m
+)}°C
+
+</h2>
+
+
+<p>
+
+${info.text}
+
+</p>
+
+
+`;
+
+
+
+container.appendChild(card);
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   ERROR MODAL
+=========================================================== */
+
+
+function showError(message){
+
+
+
+if($("errorModal")){
+
+
+$("errorText").innerText=
+message;
+
+
+$("errorModal").style.display=
+"flex";
+
+
+}
+
+
+
+}
+
+
+
+
+if(document.querySelector(".close-modal")){
+
+
+document
+.querySelector(".close-modal")
+.onclick=()=>{
+
+
+$("errorModal")
+.style.display="none";
+
+
+};
+
+
+}
+
+
+
+
+
+if($("retryBtn")){
+
+
+$("retryBtn")
+.onclick=()=>{
+
+
+$("errorModal")
+.style.display="none";
+
+
+fetchWeather();
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   ANIMATION TOGGLE
+=========================================================== */
+
+
+if($("animationToggle")){
+
+
+$("animationToggle")
+.onchange=function(){
+
+
+
+if(this.checked){
+
+
+document.body.style.animationPlayState=
+"running";
+
+
+}
+
+
+else{
+
+
+document.body.style.animationPlayState=
+"paused";
+
+
+}
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   INITIAL APP START
+=========================================================== */
+
+
+async function initializeApp(){
+
+
+
+try{
+
+
+initializeMap();
+
+
+
+renderHistory();
+
+
+
+renderFavorites();
+
+
+
+await fetchWeather();
+
+
+
+loadWorldWeather();
+
+
+
+setTimeout(()=>{
+
+
+updateWeatherAdvice();
+
+
+
+},1500);
+
+
+
+}
+
+
+catch(error){
+
+
+console.error(error);
+
+
+showError(
+"Unable to load weather information"
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+initializeApp();
+
+
+
+});
+
+
+
+/* ===========================================================
+   END OF WEATHERSPHERE PRO 4.0 JS
+=========================================================== */
