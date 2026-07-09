@@ -84,23 +84,24 @@ window.addEventListener("load",()=>{
 =========================================================== */
 
 
-function getWeatherInfo(code, isDay = 1){
+function getWeatherInfo(code){
 
-    const weather = {
+
+    const weather={
 
         0:{
-            emoji: isDay ? "☀️" : "🌙",
-            text: isDay ? "Clear Sky" : "Clear Night"
+            emoji:"☀️",
+            text:"Clear Sky"
         },
 
         1:{
-            emoji: isDay ? "🌤️" : "🌙",
-            text: isDay ? "Mainly Clear" : "Mostly Clear Night"
+            emoji:"🌤️",
+            text:"Mainly Clear"
         },
 
         2:{
-            emoji: isDay ? "⛅" : "☁️",
-            text: isDay ? "Partly Cloudy" : "Cloudy Night"
+            emoji:"⛅",
+            text:"Partly Cloudy"
         },
 
         3:{
@@ -183,11 +184,10 @@ function getWeatherInfo(code, isDay = 1){
 
     return weather[code] || {
 
-        emoji: isDay ? "🌍" : "🌌",
+        emoji:"🌍",
         text:"Unknown"
 
     };
-
 
 }
 
@@ -320,13 +320,13 @@ async function fetchWeather(){
 try{
 
 
-const url =
+const url = 
 `https://api.open-meteo.com/v1/forecast?
 latitude=${currentLat}
 &longitude=${currentLon}
-&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,is_day,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
-&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,is_day,visibility
-&daily=weather_code,is_day,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
+&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m
+&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,surface_pressure,dew_point_2m,weather_code,visibility
+&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum
 &timezone=auto`;
 
 
@@ -378,9 +378,8 @@ function updateCurrentWeather(data){
 const current=data.current;
 
 
-const info = getWeatherInfo(
-    current.weather_code,
-    current.is_day
+const info=getWeatherInfo(
+current.weather_code
 );
 
 
@@ -436,6 +435,16 @@ info.text;
 
 $("cityName").innerText=
 `${currentCity}`;
+
+
+
+$("feelsLike").innerText =
+current.apparent_temperature !== undefined
+?
+convertTemperature(current.apparent_temperature)
+:
+convertTemperature(current.temperature_2m);
+
 
 
 $("windSpeed").innerText=
@@ -823,20 +832,14 @@ for(let i=0;i<24;i++){
 
 
 
-   const info =
-getWeatherInfo(
-    hourly.weather_code
-    ?
-    hourly.weather_code[i]
-    :
-    data.current.weather_code,
-
-    hourly.is_day
-    ?
-    hourly.is_day[i]
-    :
-    data.current.is_day
-);
+    const info =
+    getWeatherInfo(
+        hourly.weather_code
+        ?
+        hourly.weather_code[i]
+        :
+        data.current.weather_code
+    );
 
 
 
@@ -951,24 +954,11 @@ daily.time[i]
 
 
 
-const sunrise =
-new Date(daily.sunrise[i]);
-
-const sunset =
-new Date(daily.sunset[i]);
-
-const now =
-new Date();
-
-const isDay =
-now >= sunrise && now <= sunset ? 1 : 0;
-
-
 const info =
 getWeatherInfo(
-daily.weather_code[i],
-isDay
+daily.weather_code[i]
 );
+
 
 
 const card =
@@ -2955,8 +2945,7 @@ await response.json();
 
 const info =
 getWeatherInfo(
-data.current.weather_code,
-data.current.is_day
+data.current.weather_code
 );
 
 
