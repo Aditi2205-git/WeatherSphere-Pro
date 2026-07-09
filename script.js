@@ -82,129 +82,139 @@ window.addEventListener("load",()=>{
 /* ===========================================================
    WEATHER CODE TO EMOJI + DESCRIPTION
 =========================================================== */
-
-
 function getWeatherInfo(code,isDay=true){
 
-    const weather={
+const weather={
 
-        0:{
-            emoji:"☀️",
-            text:"Clear Sky"
-        },
+0:{
+day:"☀️",
+night:"🌙",
+text:"Clear Sky"
+},
 
-        1:{
-            emoji:"🌤️",
-            text:"Mainly Clear"
-        },
+1:{
+day:"🌤️",
+night:"🌙",
+text:"Mainly Clear"
+},
 
-        2:{
-            emoji:"⛅",
-            text:"Partly Cloudy"
-        },
+2:{
+day:"⛅",
+night:"☁️",
+text:"Partly Cloudy"
+},
 
-        3:{
-            emoji:"☁️",
-            text:"Overcast"
-        },
+3:{
+day:"☁️",
+night:"☁️",
+text:"Overcast"
+},
 
-        45:{
-            emoji:"🌫️",
-            text:"Fog"
-        },
+45:{
+day:"🌫️",
+night:"🌫️",
+text:"Fog"
+},
 
-        48:{
-            emoji:"🌫️",
-            text:"Depositing Rime Fog"
-        },
+48:{
+day:"🌫️",
+night:"🌫️",
+text:"Depositing Rime Fog"
+},
 
-        51:{
-            emoji:"🌦️",
-            text:"Light Drizzle"
-        },
+51:{
+day:"🌦️",
+night:"🌧️",
+text:"Light Drizzle"
+},
 
-        53:{
-            emoji:"🌧️",
-            text:"Moderate Drizzle"
-        },
+53:{
+day:"🌧️",
+night:"🌧️",
+text:"Moderate Drizzle"
+},
 
-        55:{
-            emoji:"🌧️",
-            text:"Heavy Drizzle"
-        },
+55:{
+day:"🌧️",
+night:"🌧️",
+text:"Heavy Drizzle"
+},
 
-        61:{
-            emoji:"🌧️",
-            text:"Rain"
-        },
+61:{
+day:"🌦️",
+night:"🌧️",
+text:"Rain"
+},
 
-        63:{
-            emoji:"🌧️",
-            text:"Moderate Rain"
-        },
+63:{
+day:"🌧️",
+night:"🌧️",
+text:"Moderate Rain"
+},
 
-        65:{
-            emoji:"⛈️",
-            text:"Heavy Rain"
-        },
+65:{
+day:"⛈️",
+night:"⛈️",
+text:"Heavy Rain"
+},
 
-        71:{
-            emoji:"❄️",
-            text:"Snow"
-        },
+71:{
+day:"❄️",
+night:"🌨️",
+text:"Snow"
+},
 
-        80:{
-            emoji:"🌦️",
-            text:"Rain Showers"
-        },
+80:{
+day:"🌦️",
+night:"🌧️",
+text:"Rain Showers"
+},
 
-        81:{
-            emoji:"🌧️",
-            text:"Heavy Showers"
-        },
+81:{
+day:"🌧️",
+night:"🌧️",
+text:"Heavy Showers"
+},
 
-        95:{
-            emoji:"⛈️",
-            text:"Thunderstorm"
-        },
+95:{
+day:"⛈️",
+night:"⛈️",
+text:"Thunderstorm"
+},
 
-        96:{
-            emoji:"⛈️",
-            text:"Thunderstorm + Hail"
-        },
+96:{
+day:"⛈️",
+night:"⛈️",
+text:"Thunderstorm + Hail"
+},
 
-        99:{
-            emoji:"⛈️",
-            text:"Severe Thunderstorm"
-        }
-
-    };
-
-
-    let data = weather[code] || {
-
-    emoji:"🌍",
-    text:"Unknown"
+99:{
+day:"⛈️",
+night:"⛈️",
+text:"Severe Thunderstorm"
+}
 
 };
 
 
-if(!isDay){
+let data = weather[code] || {
 
-    if(data.text==="Clear Sky")
-        data.emoji="🌙";
+day:"🌍",
+night:"🌍",
+text:"Unknown"
 
-    if(data.text==="Mainly Clear")
-        data.emoji="🌙";
+};
+
+
+return {
+
+emoji: isDay ? data.day : data.night,
+
+text:data.text
+
+};
 
 }
-
-
-return data;
-
-}
-
-
 
 /* ===========================================================
    WIND DEGREE TO DIRECTION
@@ -846,15 +856,11 @@ for(let i=0;i<24;i++){
 
 
     const info =
-    getWeatherInfo(
-        hourly.weather_code
-        ?
-        hourly.weather_code[i]
-        :
-        data.current.weather_code
-    );
-
-
+getWeatherInfo(
+    hourly.weather_code[i],
+    new Date(hourly.time[i]).getHours() >= 6 &&
+    new Date(hourly.time[i]).getHours() <= 18
+);
 
     const card=document.createElement("div");
 
